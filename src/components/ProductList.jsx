@@ -6,8 +6,11 @@ import ProductForm from './ProductForm';
 import ClientInfoStep from './ClientInfoStep';
 import './ProductList.css';
 
-const ProductList = () => {
+const ProductList = ({ caseId: initialCaseId }) => {
     const [currentStep, setCurrentStep] = useState(1); // Step 1: Client Info, Step 2: Products
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [activeCaseId, setActiveCaseId] = useState(initialCaseId || null);
 
     const [products, setProducts] = useState([
         { id: 1, productId: '', name: '', price: 0, quantity: 1, thumbnail: '', condition: 'Brand New' }
@@ -24,12 +27,82 @@ const ProductList = () => {
 
     const [availableProducts, setAvailableProducts] = useState([]);
 
+    // Fetch product catalog from dummyjson
     useEffect(() => {
         fetch('https://dummyjson.com/products?limit=100')
             .then(res => res.json())
             .then(data => setAvailableProducts(data.products))
             .catch(err => console.error("Failed to load products", err));
     }, []);
+
+    // Fetch case data from API when caseId is provided (edit mode)
+    useEffect(() => {
+        if (!initialCaseId) return;
+
+        const fetchCaseData = async () => {
+            setIsLoading(true);
+            try {
+                const response = await fetch(`http://localhost:3000/v4/test?caseId=${initialCaseId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                const caseData = result.data;
+
+                // Hydrate client details
+                if (caseData.clientDetails) {
+                    setClientDetails(caseData.clientDetails);
+                }
+
+                // Hydrate products with unique ids for React keys
+                if (caseData.products && caseData.products.length > 0) {
+                    const hydratedProducts = caseData.products.map((p, idx) => ({
+                        id: Date.now() + idx,
+                        productId: p.productId,
+                        name: p.name,
+                        price: p.price,
+                        quantity: p.quantity,
+                        condition: p.condition || 'Brand New',
+                        thumbnail: '', // Will be restored once availableProducts loads
+                    }));
+                    setProducts(hydratedProducts);
+                }
+
+                // Enter edit mode and skip to Step 2
+                setIsEditMode(true);
+                setActiveCaseId(initialCaseId);
+                setCurrentStep(2);
+
+            } catch (error) {
+                console.error('Error fetching case data:', error);
+                alert(`Failed to load case data: ${error.message}`);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchCaseData();
+    }, [initialCaseId]);
+
+    // Restore thumbnails when availableProducts loads (for edit mode)
+    useEffect(() => {
+        if (!isEditMode || availableProducts.length === 0) return;
+
+        setProducts(prevProducts =>
+            prevProducts.map(product => {
+                if (product.productId && !product.thumbnail) {
+                    const catalogProduct = availableProducts.find(p => p.id === product.productId);
+                    if (catalogProduct) {
+                        return {
+                            ...product,
+                            thumbnail: catalogProduct.thumbnail,
+                        };
+                    }
+                }
+                return product;
+            })
+        );
+    }, [availableProducts, isEditMode]);
 
     const addProduct = () => {
         setProducts([
@@ -84,7 +157,7 @@ const ProductList = () => {
             }
 
             const result = await response.json();
-            alert(`Order saved successfully! Case ID: ${caseId}`);
+            alert(`Order ${isEditMode ? 'updated' : 'saved'} successfully! Case ID: ${caseId}`);
         } catch (error) {
             console.error('Error saving to database:', error);
             alert(`Failed to save order to database: ${error.message}`);
@@ -92,7 +165,8 @@ const ProductList = () => {
     };
 
     const generatePDF = async () => {
-        const caseId = uuidv4();
+        // In edit mode, reuse the existing caseId; otherwise generate a new one
+        const caseId = isEditMode ? activeCaseId : uuidv4();
         const timestamp = new Date().toISOString();
         const doc = new jsPDF();
 
@@ -146,11 +220,17 @@ const ProductList = () => {
         const finalY = doc.lastAutoTable?.finalY || (yPos + 15);
         doc.text(`Grand Total: Php ${calculateGrandTotal()}`, 14, finalY + 10);
 
-        // Save PDF with UUID filename
+        // Save PDF with caseId filename
         doc.save(`${caseId}.pdf`);
 
         // Save to backend API
         await saveToDatabase(caseId, timestamp);
+
+        // If this was a new order, update state to edit mode
+        if (!isEditMode) {
+            setIsEditMode(true);
+            setActiveCaseId(caseId);
+        }
     };
 
     const handleNext = () => {
@@ -161,15 +241,22 @@ const ProductList = () => {
         setCurrentStep(1);
     };
 
+    // Loading state
+    if (isLoading) {
+        return (
+            <div className="app-container">
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p className="loading-text">Loading case data...</p>
+                </div>
+            </div>
+        );
+    }
+
     // Step 1: Client Information
     if (currentStep === 1) {
         return (
             <div className="app-container">
-                <header className="app-header">
-                    <h1 className="heading">Dynamic Product Manager</h1>
-                    <p className="subtitle">Add, select, and manage product inventory seamlessly.</p>
-                </header>
-
                 <ClientInfoStep
                     clientDetails={clientDetails}
                     onChange={setClientDetails}
@@ -182,10 +269,6 @@ const ProductList = () => {
     // Step 2: Product Management
     return (
         <div className="app-container">
-            <header className="app-header">
-                <h1 className="heading">Dynamic Product Manager</h1>
-                <p className="subtitle">Add, select, and manage product inventory seamlessly.</p>
-            </header>
 
             {/* Step Indicator & Client Summary */}
             <div className="step-indicator">
@@ -193,11 +276,30 @@ const ProductList = () => {
                     ← Back to Client Info
                 </button>
                 <div className="client-summary">
+                    {isEditMode && (
+                        <span className="edit-badge">Editing</span>
+                    )}
                     <span className="summary-label">Client:</span>
                     <span className="summary-value">
                         {clientDetails.clientName || clientDetails.businessName || 'N/A'}
                     </span>
                 </div>
+            </div>
+
+            <div className="step-header">
+                <h2 className="step-title">Product Information</h2>
+                {isEditMode && (
+                    <p className="case-id-label">Case ID: {activeCaseId}</p>
+                )}
+            </div>
+
+            <div className="product-header">
+                <span className="header-label product">Product</span>
+                <span className="header-label condition">Condition</span>
+                <span className="header-label price">Price</span>
+                <span className="header-label qty">Qty</span>
+                <span className="header-label total">Total</span>
+                <span className="header-label action"></span>
             </div>
 
             <div className="product-grid">
@@ -229,7 +331,7 @@ const ProductList = () => {
                         className="glass-btn generate-btn"
                         onClick={generatePDF}
                     >
-                        <span className="icon">📄</span> Generate PDF
+                        <span className="icon">📄</span> {isEditMode ? 'Update & Generate PDF' : 'Generate PDF'}
                     </button>
 
                     <div className="grand-total-card">

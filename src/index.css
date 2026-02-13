@@ -4,8 +4,7 @@
   font-weight: 400;
 
   color-scheme: light;
-  color: #1a1a1a;
-  background-color: #f8f9fc;
+  color: #0f172a;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -17,14 +16,10 @@ body {
   margin: 0;
   display: flex;
   place-items: flex-start;
-  /* Changed from center to allow scroll from top */
   justify-content: center;
   min-width: 320px;
   min-height: 100vh;
-  background: #f8f9fc;
-  /* Clean white/gray background */
   overflow-x: hidden;
-  padding-top: 2rem;
 }
 
 #root {
@@ -35,13 +30,12 @@ body {
   text-align: center;
 }
 
-/* Premium Panel Style (White Card with Shadow) */
+/* Premium Panel Style (White Card) */
 .glass-panel {
   background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  /* Soft premium shadow */
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  border: 1px solid #dadce0;
   padding: 1.5rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -51,13 +45,13 @@ body {
   /* Slightly elevated on hover */
 }
 
-/* Premium Inputs */
+/* Premium Inputs (White on Gray) */
 .glass-input {
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 12px 16px;
-  color: #1f2937;
+  background: #ffffff;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  padding: 14px 18px;
+  color: #0f172a;
   width: 100%;
   font-size: 0.95rem;
   font-family: inherit;
@@ -100,7 +94,7 @@ body {
 
 .glass-btn.secondary {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #dadce0;
   color: #475569;
 }
 

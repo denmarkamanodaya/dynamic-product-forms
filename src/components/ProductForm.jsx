@@ -36,7 +36,6 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts }) => 
         <div className="product-row glass-panel">
             {/* 1. Product Selection & Preview */}
             <div className="field-group product-select-group">
-                <label className="field-label">Product</label>
                 <div className="select-wrapper">
                     {data.thumbnail && (
                         <img src={data.thumbnail} alt={data.name} className="mini-thumb" />
@@ -62,7 +61,6 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts }) => 
 
             {/* 1.5 Condition */}
             <div className="field-group condition-group">
-                <label className="field-label">Condition</label>
                 <select
                     className="glass-input"
                     value={data.condition || 'Brand New'}
@@ -75,7 +73,6 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts }) => 
 
             {/* 2. Price */}
             <div className="field-group price-group">
-                <label className="field-label">Price</label>
                 <div className="input-wrapper symbol-input">
                     <span className="currency-symbol">Php</span>
                     <input
@@ -91,7 +88,6 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts }) => 
 
             {/* 3. Quantity */}
             <div className="field-group qty-group">
-                <label className="field-label">Qty</label>
                 <input
                     type="number"
                     className="glass-input center-text"
@@ -103,7 +99,6 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts }) => 
 
             {/* 4. Total */}
             <div className="field-group total-group">
-                <label className="field-label">Total</label>
                 <span className="row-total">
                     Php {((data.price || 0) * (data.quantity || 1)).toFixed(2)}
                 </span>
