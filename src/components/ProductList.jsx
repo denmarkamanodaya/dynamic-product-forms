@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import ProductForm from './ProductForm';
+import ClientInfoStep from './ClientInfoStep';
 import './ProductList.css';
 
 const ProductList = () => {
+    const [currentStep, setCurrentStep] = useState(1); // Step 1: Client Info, Step 2: Products
+
     const [products, setProducts] = useState([
         { id: 1, productId: '', name: '', price: 0, quantity: 1, thumbnail: '', condition: 'Brand New' }
     ]);
@@ -105,6 +108,33 @@ const ProductList = () => {
         doc.save("product-order.pdf");
     };
 
+    const handleNext = () => {
+        setCurrentStep(2);
+    };
+
+    const handleBack = () => {
+        setCurrentStep(1);
+    };
+
+    // Step 1: Client Information
+    if (currentStep === 1) {
+        return (
+            <div className="app-container">
+                <header className="app-header">
+                    <h1 className="heading">Dynamic Product Manager</h1>
+                    <p className="subtitle">Add, select, and manage product inventory seamlessly.</p>
+                </header>
+
+                <ClientInfoStep
+                    clientDetails={clientDetails}
+                    onChange={setClientDetails}
+                    onNext={handleNext}
+                />
+            </div>
+        );
+    }
+
+    // Step 2: Product Management
     return (
         <div className="app-container">
             <header className="app-header">
@@ -112,63 +142,16 @@ const ProductList = () => {
                 <p className="subtitle">Add, select, and manage product inventory seamlessly.</p>
             </header>
 
-            <div className="client-details-section glass-panel">
-                <h2 className="section-title">Client Information</h2>
-                <div className="details-grid">
-                    <div className="input-group">
-                        <label>Client Name</label>
-                        <input
-                            type="text"
-                            className="glass-input"
-                            value={clientDetails.clientName}
-                            onChange={(e) => setClientDetails({ ...clientDetails, clientName: e.target.value })}
-                        />
-                    </div>
-                    <div className="input-group">
-                        <label>Business Name</label>
-                        <input
-                            type="text"
-                            className="glass-input"
-                            value={clientDetails.businessName}
-                            onChange={(e) => setClientDetails({ ...clientDetails, businessName: e.target.value })}
-                        />
-                    </div>
-                    <div className="input-group">
-                        <label>Tax Identity Number</label>
-                        <input
-                            type="text"
-                            className="glass-input"
-                            value={clientDetails.taxId}
-                            onChange={(e) => setClientDetails({ ...clientDetails, taxId: e.target.value })}
-                        />
-                    </div>
-                    <div className="input-group">
-                        <label>Business Address</label>
-                        <input
-                            type="text"
-                            className="glass-input"
-                            value={clientDetails.businessAddress}
-                            onChange={(e) => setClientDetails({ ...clientDetails, businessAddress: e.target.value })}
-                        />
-                    </div>
-                    <div className="input-group">
-                        <label>Date</label>
-                        <input
-                            type="date"
-                            className="glass-input"
-                            value={clientDetails.date}
-                            onChange={(e) => setClientDetails({ ...clientDetails, date: e.target.value })}
-                        />
-                    </div>
-                    <div className="input-group">
-                        <label>No. of Terms (Days)</label>
-                        <input
-                            type="number"
-                            className="glass-input"
-                            value={clientDetails.terms}
-                            onChange={(e) => setClientDetails({ ...clientDetails, terms: e.target.value })}
-                        />
-                    </div>
+            {/* Step Indicator & Client Summary */}
+            <div className="step-indicator">
+                <button className="back-btn" onClick={handleBack}>
+                    ← Back to Client Info
+                </button>
+                <div className="client-summary">
+                    <span className="summary-label">Client:</span>
+                    <span className="summary-value">
+                        {clientDetails.clientName || clientDetails.businessName || 'N/A'}
+                    </span>
                 </div>
             </div>
 
@@ -210,7 +193,7 @@ const ProductList = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
