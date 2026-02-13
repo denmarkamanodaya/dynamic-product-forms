@@ -1,0 +1,159 @@
+.product-row {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr 1fr 0.8fr 1fr auto;
+    /* Product | Condition | Price | Qty | Total | Remove */
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.product-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    /* Lift effect */
+    border-color: #e2e8f0;
+    z-index: 10;
+}
+
+/* Field Groups */
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.field-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+/* Product Selection Area */
+.select-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.mini-thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.custom-select {
+    flex: 1;
+    font-weight: 500;
+    color: #1e293b;
+    min-width: 0;
+    /* Prevent overflow */
+}
+
+/* Inputs */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.currency-symbol {
+    position: absolute;
+    left: 0.75rem;
+    color: #64748b;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.symbol-input input {
+    padding-left: 2.75rem;
+    /* Space for symbol */
+}
+
+.center-text {
+    text-align: center;
+}
+
+.glass-input[type="number"] {
+    width: 100%;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Row Total */
+.row-total {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    text-align: right;
+    padding-right: 0.5rem;
+}
+
+.total-group {
+    align-items: flex-end;
+    /* Align label and value to right */
+}
+
+/* Remove Button */
+.remove-btn {
+    background: transparent;
+    border: none;
+    color: #cbd5e1;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    /* Visual alignment with inputs */
+}
+
+.remove-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+    transform: rotate(90deg);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .product-row {
+        grid-template-columns: 1fr 1fr;
+        /* 2 columns */
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .product-select-group {
+        grid-column: 1 / -1;
+        /* Full width */
+    }
+
+    .remove-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        margin-top: 0;
+    }
+
+    .total-group {
+        align-items: flex-start;
+        /* Align left */
+    }
+
+    .row-total {
+        text-align: left;
+        padding-left: 0.5rem;
+    }
+}
