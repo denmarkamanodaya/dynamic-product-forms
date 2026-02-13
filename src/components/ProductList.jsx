@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { v4 as uuidv4 } from 'uuid';
 import ProductForm from './ProductForm';
 import ClientInfoStep from './ClientInfoStep';
 import './ProductList.css';
@@ -51,7 +52,48 @@ const ProductList = () => {
         return products.reduce((acc, curr) => acc + ((curr.price || 0) * (curr.quantity || 1)), 0).toFixed(2);
     };
 
-    const generatePDF = () => {
+    const saveToDatabase = async (caseId, timestamp) => {
+        try {
+            const payload = {
+                caseId,
+                timestamp,
+                data: {
+                    clientDetails,
+                    products: products.map(p => ({
+                        productId: p.productId,
+                        name: p.name,
+                        price: p.price,
+                        quantity: p.quantity,
+                        condition: p.condition,
+                        total: (p.price || 0) * (p.quantity || 1)
+                    })),
+                    grandTotal: parseFloat(calculateGrandTotal())
+                }
+            };
+
+            const response = await fetch('http://localhost:3000/v3/test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            alert(`Order saved successfully! Case ID: ${caseId}`);
+        } catch (error) {
+            console.error('Error saving to database:', error);
+            alert(`Failed to save order to database: ${error.message}`);
+        }
+    };
+
+    const generatePDF = async () => {
+        const caseId = uuidv4();
+        const timestamp = new Date().toISOString();
         const doc = new jsPDF();
 
         // Title
@@ -104,8 +146,11 @@ const ProductList = () => {
         const finalY = doc.lastAutoTable?.finalY || (yPos + 15);
         doc.text(`Grand Total: Php ${calculateGrandTotal()}`, 14, finalY + 10);
 
-        // Save PDF
-        doc.save("product-order.pdf");
+        // Save PDF with UUID filename
+        doc.save(`${caseId}.pdf`);
+
+        // Save to backend API
+        await saveToDatabase(caseId, timestamp);
     };
 
     const handleNext = () => {
