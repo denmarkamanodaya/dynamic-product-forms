@@ -1,0 +1,91 @@
+.top-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--surface-color);
+    padding: 1rem 2rem;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+    /* Subtle border-like shadow */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    box-sizing: border-box;
+    height: 80px;
+    /* Fixed height for consistency */
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.navbar-menu {
+    display: flex;
+    gap: 22px;
+    /* Specific spacing from MindJournals */
+    margin-right: auto;
+    /* Push actions to the right if any, or just sit on the left */
+    margin-left: 2rem;
+    /* Add some space from logo */
+}
+
+.nav-link {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0.5rem 0;
+    /* Removing horizontal padding to look link-like */
+    border-radius: 0;
+    position: relative;
+    background: transparent;
+}
+
+.nav-link:hover {
+    color: var(--accent-color);
+    background: transparent;
+}
+
+.nav-link.active {
+    color: var(--accent-color);
+    background: transparent;
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+.navbar-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .top-navbar {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem;
+    }
+
+    .navbar-menu {
+        display: none;
+        /* Hide for mobile for now, or use hamburger */
+    }
+}
