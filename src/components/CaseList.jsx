@@ -300,8 +300,9 @@ const CaseList = ({ onSelectCase }) => {
 
     return (
         <div className="kanban-board">
+            <br />
             <div className="kanban-header">
-                <h1 className="page-title">Case Dashboard</h1>
+                <h2 className="page-title">Board</h2>
             </div>
 
             {isLoading ? (

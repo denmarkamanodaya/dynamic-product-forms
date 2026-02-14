@@ -12,6 +12,14 @@
     margin-bottom: 1.5rem;
 }
 
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
 .kanban-columns-container {
     display: flex;
     gap: 1.5rem;
@@ -27,7 +35,7 @@
     /* Fixed width columns */
     background: #f1f5f9;
     /* Light grey/slate for column background */
-    border-radius: 12px;
+    border-radius: 4px;
     /* Smooth corners */
     display: flex;
     flex-direction: column;
@@ -40,18 +48,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0px;
+    /* border-bottom: 1px solid #e2e8f0;
     background: #f8fafc;
-    border-radius: 12px 12px 0 0;
+    border-radius: 12px 12px 0 0; */
 }
 
 .column-title {
-    font-size: 0.95rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #475569;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
     font-weight: 700;
-    margin: 0;
 }
 
 .column-count {
@@ -60,7 +68,7 @@
     font-size: 0.75rem;
     font-weight: 600;
     padding: 2px 8px;
-    border-radius: 10px;
+    border-radius: 4px;
 }
 
 .column-droppable {
@@ -80,7 +88,7 @@
 
 .kanban-card {
     background: #ffffff;
-    border-radius: 8px;
+    border-radius: 2px;
     padding: 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     border: 1px solid #dadce0;
@@ -112,18 +120,18 @@
 
 .card-id {
     font-family: monospace;
-    font-size: 0.75rem;
-    color: #94a3b8;
-    background: #f1f5f9;
+    font-size: 0.65rem;
+    /* color: #94a3b8;
+    background: #f1f5f9; */
     padding: 2px 6px;
-    border-radius: 4px;
+    border-radius: 2px;
 }
 
 .card-client {
-    font-weight: 600;
-    color: #1e293b;
+    font-weight: 700;
     font-size: 0.95rem;
     line-height: 1.4;
+    color: var(--accent-color)
 }
 
 .card-date {

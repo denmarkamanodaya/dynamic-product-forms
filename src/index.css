@@ -41,7 +41,7 @@ body {
 /* Premium Panel Style (White Card) */
 .glass-panel {
   background: var(--surface-color);
-  border-radius: 12px;
+  border-radius: 4px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   /* Slightly stronger shadow for contrast on grey */
   border: none;
@@ -58,10 +58,10 @@ body {
 .glass-input {
   background: #ffffff;
   border: 1px solid #dadce0;
-  border-radius: 6px;
+  border-radius: 2px;
   padding: 14px 18px;
   color: var(--text-heading);
-  width: 100%;
+  width: 90% !important;
   font-size: 0.95rem;
   font-family: inherit;
   font-weight: 500;
@@ -80,7 +80,7 @@ body {
 .glass-btn {
   background: var(--accent-color);
   border: none;
-  border-radius: 5px;
+  border-radius: 2px;
   /* MindJournals specific */
   padding: 12px 30px;
   /* MindJournals specific */
