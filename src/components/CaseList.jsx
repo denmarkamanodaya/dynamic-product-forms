@@ -88,8 +88,8 @@ const SortableItem = ({ id, caseItem, onClick }) => {
                         {caseItem.data?.grandTotal || '0.00'}
                     </span>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 
