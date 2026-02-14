@@ -10,7 +10,7 @@
     width: 100%;
     max-width: 900px;
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 4px;
     padding: 4rem;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.02);
     border: 1px solid #dadce0;
@@ -38,7 +38,7 @@
 .client-form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 3.5rem;
+    gap: 1.5rem;
     margin-bottom: 3rem;
 }
 
@@ -75,7 +75,7 @@
     background: var(--accent-color);
     color: white;
     padding: 1rem 3rem;
-    border-radius: 12px;
+    border-radius: 2px;
     border: none;
     font-weight: 700;
     font-size: 1rem;

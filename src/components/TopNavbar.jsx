@@ -2,7 +2,7 @@ import React from 'react';
 import firetronLogo from '../assets/firetron-logo.png';
 import './TopNavbar.css';
 
-const TopNavbar = ({ currentView, onNavigate, clientName }) => {
+const TopNavbar = ({ currentView, onNavigate, clientName, currentUser, onLogout }) => {
     return (
         <nav className="top-navbar">
             <div className="navbar-brand">
@@ -29,13 +29,28 @@ const TopNavbar = ({ currentView, onNavigate, clientName }) => {
                 >
                     New Case
                 </a>
-                {/* Add dummy links to match the crowded nature of MindJournals nav if desired, 
-                    but sticking to functional ones for now */}
             </div>
 
             <div className="navbar-actions">
-                {/* Placeholder for right-side actions like Search/Login to balance the grid */}
-                <div style={{ width: '24px' }}></div>
+                {currentUser && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{ textAlign: 'right', marginRight: '0.5rem' }}>
+                            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#1e293b' }}>
+                                {currentUser.name}
+                            </div>
+                            <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                                {currentUser.role}
+                            </div>
+                        </div>
+                        <button
+                            className="glass-btn secondary"
+                            onClick={onLogout}
+                            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                )}
             </div>
         </nav>
     );

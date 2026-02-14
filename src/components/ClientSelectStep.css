@@ -10,7 +10,7 @@
     width: 100%;
     max-width: 600px;
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 4px;
     padding: 3rem;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.02);
     border: 1px solid #dadce0;
@@ -59,7 +59,7 @@
     padding: 1rem;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border-radius: 2px;
     font-size: 1rem;
     color: #1e293b;
     transition: all 0.2s ease;
@@ -106,7 +106,7 @@
     background: white;
     color: #64748b;
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: 2px;
     border: 1px solid #cbd5e1;
     font-weight: 600;
     font-size: 1rem;
@@ -125,7 +125,7 @@
     background: var(--accent-color);
     color: white;
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: 2px;
     border: none;
     font-weight: 700;
     font-size: 1rem;
