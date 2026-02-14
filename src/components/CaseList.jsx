@@ -18,6 +18,8 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import './CaseList.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarAlt, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 
 const COLUMNS = {
     ACTIVE: 'Active',
@@ -71,10 +73,21 @@ const SortableItem = ({ id, caseItem, onClick }) => {
                     caseItem.data?.clientDetails?.businessName ||
                     'Unknown Client'}
             </div>
-            <div className="card-date">
-                {caseItem.createdAt
-                    ? new Date(caseItem.createdAt).toLocaleDateString()
-                    : 'N/A'}
+
+            <div className="card-footer-grid">
+                <div className="card-info-item date-item">
+                    <span className="icon"><FontAwesomeIcon icon={faCalendarAlt} /></span>
+                    <span className="text">
+                        {caseItem.data?.orderDetails?.leadTime || caseItem.data?.clientDetails?.date || 'N/A'}
+                    </span>
+                </div>
+
+                <div className="card-info-item total-item">
+                    <span className="icon"><FontAwesomeIcon icon={faMoneyBillWave} /></span>
+                    <span className="text">
+                        Php {caseItem.data?.grandTotal || '0.00'}
+                    </span>
+                </div>
             </div>
         </div>
     );
@@ -222,6 +235,14 @@ const CaseList = ({ onSelectCase }) => {
         if (!activeContainer || !overContainer || activeContainer === overContainer) {
             return;
         }
+
+        // Prevent moving back from Approval to Active or Quotation
+        if (activeContainer === COLUMNS.APPROVAL) {
+            if (overContainer === COLUMNS.ACTIVE || overContainer === COLUMNS.QUOTATION) {
+                return;
+            }
+        }
+
 
         setItems((prev) => {
             const activeItems = prev[activeContainer];

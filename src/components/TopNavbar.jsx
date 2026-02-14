@@ -1,6 +1,8 @@
 import React from 'react';
 import firetronLogo from '../assets/firetron-logo.png';
 import './TopNavbar.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSignOutAlt, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 const TopNavbar = ({ currentView, onNavigate, clientName, currentUser, onLogout }) => {
     return (
@@ -34,20 +36,23 @@ const TopNavbar = ({ currentView, onNavigate, clientName, currentUser, onLogout 
             <div className="navbar-actions">
                 {currentUser && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <div style={{ textAlign: 'right', marginRight: '0.5rem' }}>
-                            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#1e293b' }}>
-                                {currentUser.name}
+                        <div style={{ textAlign: 'right', marginRight: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                                <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#1e293b' }}>
+                                    {currentUser.name}
+                                </div>
+                                <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                                    {currentUser.role}
+                                </div>
                             </div>
-                            <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
-                                {currentUser.role}
-                            </div>
+                            <FontAwesomeIcon icon={faUserCircle} size="2x" style={{ color: '#cbd5e1' }} />
                         </div>
                         <button
                             className="glass-btn secondary"
                             onClick={onLogout}
                             style={{ padding: '8px 16px', fontSize: '0.85rem' }}
                         >
-                            Logout
+                            <FontAwesomeIcon icon={faSignOutAlt} /> Logout
                         </button>
                     </div>
                 )}

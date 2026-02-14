@@ -6,10 +6,13 @@ import ProductForm from './ProductForm';
 import ClientInfoStep from './ClientInfoStep';
 import ClientSelectStep from './ClientSelectStep';
 import './ProductList.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faFilePdf, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
     const [currentStep, setCurrentStep] = useState(0); // Step 0: Client Select, Step 1: Client Info, Step 2: Products
     const [isEditMode, setIsEditMode] = useState(false);
+    const [isReadOnly, setIsReadOnly] = useState(false); // New State for Read-Only Mode
     const [isLoading, setIsLoading] = useState(false);
     const [activeCaseId, setActiveCaseId] = useState(initialCaseId || null);
     const [isManualClient, setIsManualClient] = useState(false);
@@ -23,7 +26,10 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
         businessName: '',
         taxId: '',
         businessAddress: '',
-        date: new Date().toISOString().split('T')[0],
+    });
+
+    const [orderDetails, setOrderDetails] = useState({
+        leadTime: new Date().toISOString().split('T')[0],
         terms: ''
     });
 
@@ -50,6 +56,12 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
                 }
                 const result = await response.json();
                 const caseData = result.data.data;
+                const status = result.data.status; // Get status from API
+
+                // Check if case is in Approval state
+                if (status === 'approved') {
+                    setIsReadOnly(true);
+                }
 
                 // Hydrate client details
                 if (caseData.clientDetails) {
@@ -57,6 +69,20 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
                     if (onClientDataLoaded) {
                         onClientDataLoaded(caseData.clientDetails.clientName || caseData.clientDetails.businessName);
                     }
+                }
+
+                // Hydrate order details
+                if (caseData.orderDetails) {
+                    setOrderDetails({
+                        leadTime: caseData.orderDetails.leadTime || caseData.orderDetails.date || new Date().toISOString().split('T')[0],
+                        terms: caseData.orderDetails.terms || ''
+                    });
+                } else if (caseData.clientDetails && (caseData.clientDetails.date || caseData.clientDetails.terms)) {
+                    // Backward compatibility
+                    setOrderDetails({
+                        leadTime: caseData.clientDetails.date || new Date().toISOString().split('T')[0],
+                        terms: caseData.clientDetails.terms || ''
+                    });
                 }
 
                 // Hydrate products with unique ids for React keys
@@ -131,11 +157,17 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
     };
 
     const saveToDatabase = async (caseId, timestamp) => {
+        if (isReadOnly) return; // Prevent saving in read-only mode
+
         try {
             const payload = {
                 caseId,
                 timestamp,
                 data: {
+                    orderDetails: {
+                        leadTime: orderDetails.leadTime,
+                        terms: orderDetails.terms
+                    },
                     clientDetails,
                     products: products.map(p => ({
                         productId: p.productId,
@@ -179,6 +211,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
         doc.setFontSize(18);
         doc.text("Product Order Summary", 14, 22);
 
+        // ... (PDF Generation Code remains same) ...
         // Client Details
         doc.setFontSize(11);
         doc.setTextColor(100);
@@ -192,8 +225,8 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
         doc.text(`Address: ${clientDetails.businessAddress || 'N/A'}`, 110, yPos);
 
         yPos += 7;
-        doc.text(`Date: ${clientDetails.date}`, 14, yPos);
-        doc.text(`Terms: ${clientDetails.terms ? clientDetails.terms + ' Days' : 'N/A'}`, 110, yPos);
+        doc.text(`Lead Time: ${orderDetails.leadTime}`, 14, yPos);
+        doc.text(`Terms: ${orderDetails.terms ? orderDetails.terms + ' Days' : 'N/A'}`, 110, yPos);
 
         // Table Data
         const tableColumn = ["Product", "Condition", "Price", "Quantity", "Total"];
@@ -228,13 +261,15 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
         // Save PDF with caseId filename
         doc.save(`${caseId}.pdf`);
 
-        // Save to backend API
-        await saveToDatabase(caseId, timestamp);
+        // Save to backend API ONLY if NOT Read-Only
+        if (!isReadOnly) {
+            await saveToDatabase(caseId, timestamp);
 
-        // If this was a new order, update state to edit mode
-        if (!isEditMode) {
-            setIsEditMode(true);
-            setActiveCaseId(caseId);
+            // If this was a new order, update state to edit mode
+            if (!isEditMode) {
+                setIsEditMode(true);
+                setActiveCaseId(caseId);
+            }
         }
     };
 
@@ -243,19 +278,24 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
     };
 
     const handleBack = () => {
+        if (isReadOnly) return; // Disable back if read-only
         setCurrentStep(1);
     };
 
+    // ... (Client Handlers remain same) ...
     const handleClientSelect = (selectedClient) => {
+        // ... implementation ...
         console.log("handleClientSelect called with:", selectedClient);
         const newClientDetails = {
             clientName: selectedClient.clientName || '',
             businessName: selectedClient.businessName || '',
             taxId: selectedClient.taxId || '',
             businessAddress: selectedClient.businessAddress || '',
-            date: new Date().toISOString().split('T')[0],
-            terms: selectedClient.terms || ''
         };
+        // Update terms if available in selected client, otherwise keep current input
+        if (selectedClient.terms) {
+            setOrderDetails(prev => ({ ...prev, terms: selectedClient.terms }));
+        }
         console.log("Setting client details to:", newClientDetails);
         setClientDetails(newClientDetails);
         if (onClientDataLoaded) {
@@ -266,7 +306,9 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
     };
 
     const handleManualInput = () => {
-        setClientDetails({ ...clientDetails, clientName: '', businessName: '', taxId: '', businessAddress: '', terms: '' });
+        setClientDetails({ ...clientDetails, clientName: '', businessName: '', taxId: '', businessAddress: '' });
+        // Reset order details or keep them? Probably keep them or reset to default:
+        setOrderDetails({ leadTime: new Date().toISOString().split('T')[0], terms: '' });
         if (onClientDataLoaded) onClientDataLoaded(''); // Clear name
         setIsManualClient(true);
         setCurrentStep(1);
@@ -288,9 +330,6 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
                     throw new Error('Failed to create client');
                 }
 
-                // Assuming successful creation, proceed to product list
-                // We might want to use the returned ID, but for now just proceeding is fine
-                // const result = await response.json(); 
                 if (onClientDataLoaded) {
                     onClientDataLoaded(clientDetails.clientName || clientDetails.businessName);
                 }
@@ -350,12 +389,16 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
 
             {/* Step Indicator & Client Summary */}
             <div className="step-indicator">
-                <button className="back-btn" onClick={handleBack}>
-                    ← Back to Client Info
-                </button>
+                {!isReadOnly && (
+                    <button className="back-btn" onClick={handleBack}>
+                        ← Back to Client Info
+                    </button>
+                )}
                 <div className="client-summary">
                     {isEditMode && (
-                        <span className="edit-badge">Editing</span>
+                        <span className={`edit-badge ${isReadOnly ? 'readonly' : ''}`}>
+                            {isReadOnly ? 'Read-Only (Approved)' : 'Editing'}
+                        </span>
                     )}
                     <span className="summary-label">Client:</span>
                     <span className="summary-value">
@@ -365,10 +408,37 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
             </div>
 
             <div className="step-header">
-                <h2 className="step-title">Product Information</h2>
+                <h2 className="step-title">Order Details</h2>
                 {isEditMode && (
                     <p className="case-id-label">Case ID: {activeCaseId}</p>
                 )}
+            </div>
+
+            {/* Order Details Section */}
+            <div className="client-details-section" style={{ marginBottom: '2rem' }}>
+                <div className="details-grid">
+                    <div className="input-group">
+                        <label>Lead Time (Date)</label>
+                        <input
+                            type="date"
+                            className="glass-input"
+                            value={orderDetails.leadTime}
+                            onChange={(e) => setOrderDetails({ ...orderDetails, leadTime: e.target.value })}
+                            disabled={isReadOnly}
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label>Terms (Days)</label>
+                        <input
+                            type="number"
+                            className="glass-input"
+                            placeholder="e.g., 30"
+                            value={orderDetails.terms}
+                            onChange={(e) => setOrderDetails({ ...orderDetails, terms: e.target.value })}
+                            disabled={isReadOnly}
+                        />
+                    </div>
+                </div>
             </div>
 
             <div className="product-header">
@@ -389,19 +459,22 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
                         availableProducts={availableProducts}
                         onChange={updateProduct}
                         onRemove={() => removeProduct(index)}
+                        readOnly={isReadOnly}
                     />
                 ))}
             </div>
 
             {/* Add Button moved to body below products */}
-            <div className="add-button-container">
-                <button
-                    className="add-btn"
-                    onClick={addProduct}
-                >
-                    <span className="icon">+</span> Add New Product
-                </button>
-            </div>
+            {!isReadOnly && (
+                <div className="add-button-container">
+                    <button
+                        className="add-btn"
+                        onClick={addProduct}
+                    >
+                        <FontAwesomeIcon icon={faPlus} /> Add New Product
+                    </button>
+                </div>
+            )}
 
             <div className="controls-area">
                 <div className="controls-wrapper">
@@ -409,7 +482,8 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
                         className="glass-btn generate-btn"
                         onClick={generatePDF}
                     >
-                        <span className="icon">📄</span> {isEditMode ? 'Update & Generate PDF' : 'Generate PDF'}
+                        <FontAwesomeIcon icon={faFilePdf} />
+                        {isReadOnly ? 'Download PDF' : (isEditMode ? 'Update & Generate PDF' : 'Generate PDF')}
                     </button>
 
                     <div className="grand-total-card">

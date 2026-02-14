@@ -4,6 +4,8 @@ import TopNavbar from './components/TopNavbar';
 import CaseList from './components/CaseList';
 import Login from './components/Login';
 import ChatWidget from './components/ChatWidget';
+import CalendarWidget from './components/CalendarWidget';
+import LeftSidebar from './components/LeftSidebar';
 import './App.css';
 
 function App() {
@@ -14,6 +16,10 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [view, setView] = useState(initialCaseId ? 'form' : 'list'); // 'list' or 'form'
   const [selectedCaseId, setSelectedCaseId] = useState(initialCaseId);
+
+  // Widget State
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   useEffect(() => {
     // Check for existing session
@@ -59,28 +65,51 @@ function App() {
     window.history.pushState({}, '', newUrl);
   };
 
+  const toggleChat = (status) => {
+    const newStatus = status !== undefined ? status : !isChatOpen;
+    setIsChatOpen(newStatus);
+    if (newStatus) setIsCalendarOpen(false); // Close calendar if opening chat
+  };
+
+  const toggleCalendar = (status) => {
+    const newStatus = status !== undefined ? status : !isCalendarOpen;
+    setIsCalendarOpen(newStatus);
+    if (newStatus) setIsChatOpen(false); // Close chat if opening calendar
+  };
+
   if (!currentUser) {
     return <Login onLogin={handleLogin} />;
   }
 
   return (
     <div className="App">
-      <TopNavbar
-        currentView={view}
-        onNavigate={handleNavigate}
-        currentUser={currentUser}
-        onLogout={handleLogout}
+      <LeftSidebar
+        isChatOpen={isChatOpen}
+        onToggleChat={() => toggleChat()}
+        isCalendarOpen={isCalendarOpen}
+        onToggleCalendar={() => toggleCalendar()}
+        onNewCase={() => handleNavigate('form')}
       />
 
-      <div className="main-content">
-        {view === 'list' ? (
-          <CaseList onSelectCase={handleCaseSelect} />
-        ) : (
-          <ProductList caseId={selectedCaseId} />
-        )}
+      <div className="main-layout" style={{ marginLeft: '60px', width: 'calc(100% - 60px)' }}>
+        <TopNavbar
+          currentView={view}
+          onNavigate={handleNavigate}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+        />
+
+        <div className="main-content">
+          {view === 'list' ? (
+            <CaseList onSelectCase={handleCaseSelect} />
+          ) : (
+            <ProductList caseId={selectedCaseId} />
+          )}
+        </div>
       </div>
 
-      <ChatWidget currentUser={currentUser} />
+      <ChatWidget currentUser={currentUser} isOpen={isChatOpen} onToggle={toggleChat} />
+      <CalendarWidget isOpen={isCalendarOpen} onToggle={toggleCalendar} />
     </div>
   );
 }
