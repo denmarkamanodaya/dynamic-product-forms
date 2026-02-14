@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import ProductList from './components/ProductList';
-import TopNavbar from './components/TopNavbar';
-import CaseList from './components/CaseList';
+import NavigationSidebar from './components/NavigationSidebar';
+import LeftSidebar from './components/LeftSidebar';
 import Login from './components/Login';
+import CaseList from './components/CaseList';
 import ChatWidget from './components/ChatWidget';
 import CalendarWidget from './components/CalendarWidget';
-import LeftSidebar from './components/LeftSidebar';
 import './App.css';
 
 function App() {
-  // Parse caseId from URL query string for edit mode (initial load)
+  // ... (existing state) ...
   const params = new URLSearchParams(window.location.search);
   const initialCaseId = params.get('caseId');
 
@@ -91,14 +91,14 @@ function App() {
         onNewCase={() => handleNavigate('form')}
       />
 
-      <div className="main-layout" style={{ marginLeft: '60px', width: 'calc(100% - 60px)' }}>
-        <TopNavbar
-          currentView={view}
-          onNavigate={handleNavigate}
-          currentUser={currentUser}
-          onLogout={handleLogout}
-        />
+      <NavigationSidebar
+        currentView={view}
+        onNavigate={handleNavigate}
+        currentUser={currentUser}
+        onLogout={handleLogout}
+      />
 
+      <div className="main-layout" style={{ marginLeft: '340px', width: 'calc(100% - 340px)' }}>
         <div className="main-content">
           {view === 'list' ? (
             <CaseList onSelectCase={handleCaseSelect} />
