@@ -1,7 +1,9 @@
 import React from 'react';
 import './ProductForm.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-const ProductForm = ({ data, onChange, onRemove, index, availableProducts }) => {
+const ProductForm = ({ data, onChange, onRemove, index, availableProducts, readOnly }) => {
 
     const handleProductSelect = (e) => {
         const selectedId = parseInt(e.target.value);
@@ -33,7 +35,7 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts }) => 
     };
 
     return (
-        <div className="product-row glass-panel">
+        <div className={`product-row glass-panel ${readOnly ? 'readonly-row' : ''}`}>
             {/* 1. Product Selection & Preview */}
             <div className="field-group product-select-group">
                 <div className="select-wrapper">
@@ -44,6 +46,7 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts }) => 
                         className="glass-input custom-select"
                         value={data.productId || ''}
                         onChange={handleProductSelect}
+                        disabled={readOnly}
                     >
                         <option value="">Select a Product...</option>
                         {availableProducts && availableProducts.length > 0 ? (
@@ -65,6 +68,7 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts }) => 
                     className="glass-input"
                     value={data.condition || 'Brand New'}
                     onChange={(e) => handleChange('condition', e.target.value)}
+                    disabled={readOnly}
                 >
                     <option value="Brand New">Brand New</option>
                     <option value="Refill">Refill</option>
@@ -82,6 +86,7 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts }) => 
                         onChange={(e) => handleChange('price', parseFloat(e.target.value) || 0)}
                         min="0"
                         step="0.01"
+                        disabled={readOnly}
                     />
                 </div>
             </div>
@@ -94,6 +99,7 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts }) => 
                     value={data.quantity}
                     onChange={(e) => handleChange('quantity', parseInt(e.target.value) || 1)}
                     min="1"
+                    disabled={readOnly}
                 />
             </div>
 
@@ -105,13 +111,15 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts }) => 
             </div>
 
             {/* 5. Actions */}
-            <button
-                onClick={() => onRemove(index)}
-                className="remove-btn"
-                title="Remove Item"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
+            {!readOnly && (
+                <button
+                    onClick={() => onRemove(index)}
+                    className="remove-btn"
+                    title="Remove Item"
+                >
+                    <FontAwesomeIcon icon={faTrash} />
+                </button>
+            )}
         </div>
     );
 };

@@ -77,27 +77,6 @@ const ClientInfoStep = ({ clientDetails, onChange, onNext }) => {
                             onChange={(e) => handleChange('businessAddress', e.target.value)}
                         />
                     </div>
-
-                    <div className="form-field">
-                        <label>Date</label>
-                        <input
-                            type="date"
-                            className="glass-input"
-                            value={clientDetails.date}
-                            onChange={(e) => handleChange('date', e.target.value)}
-                        />
-                    </div>
-
-                    <div className="form-field">
-                        <label>No. of Terms (Days)</label>
-                        <input
-                            type="number"
-                            className="glass-input"
-                            placeholder="e.g., 30"
-                            value={clientDetails.terms}
-                            onChange={(e) => handleChange('terms', e.target.value)}
-                        />
-                    </div>
                 </div>
 
                 <div className="step-actions">

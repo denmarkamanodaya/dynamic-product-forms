@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import './ChatWidget.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
-const ChatWidget = ({ currentUser }) => {
-    const [isOpen, setIsOpen] = useState(false);
+const ChatWidget = ({ currentUser, isOpen, onToggle }) => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef(null);
@@ -54,12 +54,12 @@ const ChatWidget = ({ currentUser }) => {
     };
 
     return (
-        <div className="chat-widget">
+        <div className={`chat-widget ${isOpen ? 'open' : ''}`}>
             {isOpen && (
                 <div className="chat-window">
                     <div className="chat-header">
                         <span className="chat-title">Team Chat</span>
-                        <button className="close-btn" onClick={() => setIsOpen(false)}>×</button>
+                        <button className="close-btn" onClick={() => onToggle(false)}>×</button>
                     </div>
 
                     <div className="chat-messages">
@@ -95,25 +95,11 @@ const ChatWidget = ({ currentUser }) => {
                             onChange={(e) => setNewMessage(e.target.value)}
                         />
                         <button type="submit" className="send-btn">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                            </svg>
+                            <FontAwesomeIcon icon={faPaperPlane} />
                         </button>
                     </form>
                 </div>
             )}
-
-            <button className="chat-toggle-btn" onClick={() => setIsOpen(!isOpen)}>
-                {isOpen ? (
-                    <svg viewBox="0 0 24 24">
-                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                    </svg>
-                ) : (
-                    <svg viewBox="0 0 24 24">
-                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-                    </svg>
-                )}
-            </button>
         </div>
     );
 };
