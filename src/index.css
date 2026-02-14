@@ -1,10 +1,18 @@
 :root {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light;
-  color: #0f172a;
+
+  /* MindJournals Palette */
+  --bg-color: #EBEBEC;
+  --surface-color: #FFFFFF;
+  --text-primary: #454545;
+  --text-heading: #1A1A1A;
+  --accent-color: #CC782E;
+
+  color: var(--text-primary);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -20,29 +28,30 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
+  background-color: var(--bg-color) !important;
 }
 
 #root {
   width: 100%;
-  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
+  /* text-align: left; - moved to App.css or component specific */
 }
 
 /* Premium Panel Style (White Card) */
 .glass-panel {
-  background: #ffffff;
+  background: var(--surface-color);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-  border: 1px solid #dadce0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  /* Slightly stronger shadow for contrast on grey */
+  border: none;
+  /* Removed border for cleaner look */
   padding: 1.5rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .glass-panel:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  /* Slightly elevated on hover */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
 /* Premium Inputs (White on Gray) */
@@ -51,7 +60,7 @@ body {
   border: 1px solid #dadce0;
   border-radius: 6px;
   padding: 14px 18px;
-  color: #0f172a;
+  color: var(--text-heading);
   width: 100%;
   font-size: 0.95rem;
   font-family: inherit;
@@ -62,20 +71,22 @@ body {
 
 .glass-input:focus {
   background: #ffffff;
-  border-color: #6366f1;
-  /* Indigo brand color */
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(204, 120, 46, 0.1);
+  /* Accent color with opacity */
 }
 
 /* Buttons */
 .glass-btn {
-  background: #0f172a;
-  /* Dark slate (almost black) for premium feel */
+  background: var(--accent-color);
   border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
+  border-radius: 5px;
+  /* MindJournals specific */
+  padding: 12px 30px;
+  /* MindJournals specific */
   color: white;
-  font-weight: 600;
+  font-weight: 700;
+  /* MindJournals specific */
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -87,15 +98,16 @@ body {
 }
 
 .glass-btn:hover {
-  background: #1e293b;
+  background: #b16524;
+  /* Darker shade of accent */
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 4px 12px rgba(204, 120, 46, 0.2);
 }
 
 .glass-btn.secondary {
   background: #ffffff;
   border: 1px solid #dadce0;
-  color: #475569;
+  color: var(--text-primary);
 }
 
 .glass-btn.secondary:hover {
@@ -122,12 +134,12 @@ body {
   font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 0.5rem;
-  color: #0f172a;
+  color: var(--text-heading);
   letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: #64748b;
+  color: var(--text-primary);
   font-size: 1.1rem;
   margin-top: 0;
   margin-bottom: 3rem;
@@ -167,7 +179,7 @@ select.glass-input {
   -webkit-appearance: none;
   -moz-appearance: none;
   /* Dark chevrons for light theme */
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23454545' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 1rem center;
   background-size: 1em;
@@ -177,6 +189,6 @@ select.glass-input {
 
 select.glass-input option {
   background-color: #ffffff;
-  color: #1f2937;
+  color: var(--text-heading);
   padding: 10px;
 }

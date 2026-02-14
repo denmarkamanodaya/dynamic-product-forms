@@ -4,13 +4,15 @@ import autoTable from 'jspdf-autotable';
 import { v4 as uuidv4 } from 'uuid';
 import ProductForm from './ProductForm';
 import ClientInfoStep from './ClientInfoStep';
+import ClientSelectStep from './ClientSelectStep';
 import './ProductList.css';
 
-const ProductList = ({ caseId: initialCaseId }) => {
-    const [currentStep, setCurrentStep] = useState(1); // Step 1: Client Info, Step 2: Products
+const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
+    const [currentStep, setCurrentStep] = useState(0); // Step 0: Client Select, Step 1: Client Info, Step 2: Products
     const [isEditMode, setIsEditMode] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [activeCaseId, setActiveCaseId] = useState(initialCaseId || null);
+    const [isManualClient, setIsManualClient] = useState(false);
 
     const [products, setProducts] = useState([
         { id: 1, productId: '', name: '', price: 0, quantity: 1, thumbnail: '', condition: 'Brand New' }
@@ -42,16 +44,19 @@ const ProductList = ({ caseId: initialCaseId }) => {
         const fetchCaseData = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(`http://localhost:3000/v4/test?caseId=${initialCaseId}`);
+                const response = await fetch(`http://localhost:3000/case/v1/get?id=${initialCaseId}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const result = await response.json();
-                const caseData = result.data;
+                const caseData = result.data.data;
 
                 // Hydrate client details
                 if (caseData.clientDetails) {
                     setClientDetails(caseData.clientDetails);
+                    if (onClientDataLoaded) {
+                        onClientDataLoaded(caseData.clientDetails.clientName || caseData.clientDetails.businessName);
+                    }
                 }
 
                 // Hydrate products with unique ids for React keys
@@ -144,7 +149,7 @@ const ProductList = ({ caseId: initialCaseId }) => {
                 }
             };
 
-            const response = await fetch('http://localhost:3000/v3/test', {
+            const response = await fetch('http://localhost:3000/case/v1/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -241,6 +246,66 @@ const ProductList = ({ caseId: initialCaseId }) => {
         setCurrentStep(1);
     };
 
+    const handleClientSelect = (selectedClient) => {
+        console.log("handleClientSelect called with:", selectedClient);
+        const newClientDetails = {
+            clientName: selectedClient.clientName || '',
+            businessName: selectedClient.businessName || '',
+            taxId: selectedClient.taxId || '',
+            businessAddress: selectedClient.businessAddress || '',
+            date: new Date().toISOString().split('T')[0],
+            terms: selectedClient.terms || ''
+        };
+        console.log("Setting client details to:", newClientDetails);
+        setClientDetails(newClientDetails);
+        if (onClientDataLoaded) {
+            onClientDataLoaded(newClientDetails.clientName || newClientDetails.businessName);
+        }
+        setIsManualClient(false);
+        setCurrentStep(1);
+    };
+
+    const handleManualInput = () => {
+        setClientDetails({ ...clientDetails, clientName: '', businessName: '', taxId: '', businessAddress: '', terms: '' });
+        if (onClientDataLoaded) onClientDataLoaded(''); // Clear name
+        setIsManualClient(true);
+        setCurrentStep(1);
+    };
+
+    const handleNextStep1 = async () => {
+        if (isManualClient) {
+            setIsLoading(true);
+            try {
+                const response = await fetch('http://localhost:3000/client/v1/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(clientDetails)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create client');
+                }
+
+                // Assuming successful creation, proceed to product list
+                // We might want to use the returned ID, but for now just proceeding is fine
+                // const result = await response.json(); 
+                if (onClientDataLoaded) {
+                    onClientDataLoaded(clientDetails.clientName || clientDetails.businessName);
+                }
+            } catch (error) {
+                console.error('Error creating client:', error);
+                alert('Failed to save client details. Please try again.');
+                setIsLoading(false);
+                return; // Stop if failed
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        setCurrentStep(2);
+    };
+
     // Loading state
     if (isLoading) {
         return (
@@ -253,6 +318,18 @@ const ProductList = ({ caseId: initialCaseId }) => {
         );
     }
 
+    // Step 0: Client Selection
+    if (currentStep === 0) {
+        return (
+            <div className="app-container">
+                <ClientSelectStep
+                    onClientSelect={handleClientSelect}
+                    onManualInput={handleManualInput}
+                />
+            </div>
+        );
+    }
+
     // Step 1: Client Information
     if (currentStep === 1) {
         return (
@@ -260,7 +337,7 @@ const ProductList = ({ caseId: initialCaseId }) => {
                 <ClientInfoStep
                     clientDetails={clientDetails}
                     onChange={setClientDetails}
-                    onNext={handleNext}
+                    onNext={handleNextStep1}
                 />
             </div>
         );
@@ -269,6 +346,7 @@ const ProductList = ({ caseId: initialCaseId }) => {
     // Step 2: Product Management
     return (
         <div className="app-container">
+            <br />
 
             {/* Step Indicator & Client Summary */}
             <div className="step-indicator">

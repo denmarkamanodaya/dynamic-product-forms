@@ -3,6 +3,7 @@
     /* Accounts for fixed sidebar */
     padding: 0 2rem 6rem;
     /* Add bottom padding for fixed footer */
+    max-width: 1200px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -107,7 +108,7 @@
 }
 
 .generate-btn {
-    background: #3b82f6;
+    background: var(--accent-color);
     color: white;
     padding: 12px 24px;
     border-radius: 8px;
@@ -123,9 +124,9 @@
 }
 
 .generate-btn:hover {
-    background: #2563eb;
+    background: #b16524;
     transform: translateY(-1px);
-    box-shadow: 0 6px 12px -2px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 6px 12px -2px rgba(204, 120, 46, 0.4);
 }
 
 .grand-total-card {

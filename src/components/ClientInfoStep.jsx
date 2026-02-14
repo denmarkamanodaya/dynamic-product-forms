@@ -1,18 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './ClientInfoStep.css';
 
 const ClientInfoStep = ({ clientDetails, onChange, onNext }) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const handleChange = (field, value) => {
         onChange({ ...clientDetails, [field]: value });
     };
 
-    const validateAndProceed = () => {
+    const validateAndProceed = async () => {
         // Validation: At least client name or business name required
         if (!clientDetails.clientName.trim() && !clientDetails.businessName.trim()) {
             alert('Please provide at least a Client Name or Business Name');
             return;
         }
-        onNext();
+
+        setIsSubmitting(true);
+        try {
+            await onNext();
+        } catch (error) {
+            console.error("Error proceeding to next step:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -91,8 +101,13 @@ const ClientInfoStep = ({ clientDetails, onChange, onNext }) => {
                 </div>
 
                 <div className="step-actions">
-                    <button className="continue-btn" onClick={validateAndProceed}>
-                        Continue to Products →
+                    <button
+                        className="continue-btn"
+                        onClick={validateAndProceed}
+                        disabled={isSubmitting}
+                        style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'wait' : 'pointer' }}
+                    >
+                        {isSubmitting ? 'Processing...' : 'Continue to Products →'}
                     </button>
                 </div>
             </div>
