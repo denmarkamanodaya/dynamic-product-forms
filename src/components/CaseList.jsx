@@ -19,7 +19,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import './CaseList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faPesoSign, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 
 const COLUMNS = {
     ACTIVE: 'Active',
@@ -83,9 +83,9 @@ const SortableItem = ({ id, caseItem, onClick }) => {
                 </div>
 
                 <div className="card-info-item total-item">
-                    <span className="icon"><FontAwesomeIcon icon={faMoneyBillWave} /></span>
+                    <span className="icon"><FontAwesomeIcon icon={faPesoSign} /></span>
                     <span className="text">
-                        Php {caseItem.data?.grandTotal || '0.00'}
+                        {caseItem.data?.grandTotal || '0.00'}
                     </span>
                 </div>
             </div>
