@@ -13,7 +13,7 @@ import generateDeliveryReceipt from '../utils/pdf/generateDeliveryReceipt';
 import { useNotification } from '../context/NotificationContext';
 import { getLocalDateString } from '../utils/dateHelpers';
 
-const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate }) => {
+const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, currentUser }) => {
     const [currentStep, setCurrentStep] = useState(0); // Step 0: Client Select, Step 1: Client Info, Step 2: Products
     const [isEditMode, setIsEditMode] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(false); // New State for Read-Only Mode
@@ -186,8 +186,16 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate }) 
                         total: (p.price || 0) * (p.quantity || 1)
                     })),
                     grandTotal: parseFloat(calculateGrandTotal())
-                }
+                },
+                createdBy: {
+                    email: currentUser?.emailAddress,
+                    firstName: currentUser?.firstName,
+                    lastName: currentUser?.lastName,
+                    avatarUrl: currentUser?.avatarUrl
+                } // Tag the creator with full details
             };
+
+            console.log('Saving case with payload:', payload);
 
             const response = await fetch(endpoints.caseCreate, {
                 method: 'POST',

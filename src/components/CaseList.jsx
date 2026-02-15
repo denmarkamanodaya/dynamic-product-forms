@@ -19,7 +19,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import './CaseList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faPesoSign, faMoneyBillWave, faTrash, faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faPesoSign, faMoneyBillWave, faTrash, faClipboardCheck, faUser } from '@fortawesome/free-solid-svg-icons';
 import endpoints from '../config';
 import { useNotification } from '../context/NotificationContext';
 
@@ -57,6 +57,36 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
         opacity: isDragging ? 0.5 : 1,
     };
 
+    const getInitials = (firstName, lastName) => {
+        const first = firstName ? firstName.charAt(0).toUpperCase() : '';
+        const last = lastName ? lastName.charAt(0).toUpperCase() : '';
+        return `${first}${last}`;
+    };
+
+    const renderUserAvatar = (user) => {
+        if (!user) return <div className="user-avatar-circle unknown">?</div>;
+
+        // Handle legacy string data
+        if (typeof user === 'string') {
+            return (
+                <div className="user-avatar-circle legacy" title={user}>
+                    <FontAwesomeIcon icon={faUser} />
+                </div>
+            );
+        }
+
+        if (user.avatarUrl) {
+            return <img src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} className="user-avatar-circle image" />;
+        }
+
+        const initials = getInitials(user.firstName, user.lastName);
+        return (
+            <div className="user-avatar-circle initials" title={`${user.firstName} ${user.lastName}`}>
+                {initials}
+            </div>
+        );
+    };
+
     return (
         <div
             ref={setNodeRef}
@@ -67,10 +97,12 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
             onClick={() => onClick(caseItem.caseId || caseItem._id)}
         >
             <div className="card-content">
-                <div className="card-client">
-                    {caseItem.data?.clientDetails?.clientName ||
-                        caseItem.data?.clientDetails?.businessName ||
-                        'Unknown Client'}
+                <div className="card-header-row">
+                    <div className="card-client">
+                        {caseItem.data?.clientDetails?.clientName ||
+                            caseItem.data?.clientDetails?.businessName ||
+                            'Unknown Client'}
+                    </div>
                 </div>
 
                 <div className="card-badge-row">
@@ -94,6 +126,10 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
                         <span className="text">
                             {caseItem.data?.grandTotal || '0.00'}
                         </span>
+                    </div>
+
+                    <div className="card-user-footer">
+                        {renderUserAvatar(caseItem.createdBy)}
                     </div>
                 </div>
             </div>
@@ -136,7 +172,7 @@ const TrashDropZone = ({ isDelivery }) => {
     );
 };
 
-const CaseList = ({ onSelectCase }) => {
+const CaseList = ({ onSelectCase, currentUser }) => {
     const [items, setItems] = useState({
         [COLUMNS.QUOTATION]: [],
         [COLUMNS.APPROVAL]: [],
@@ -222,8 +258,15 @@ const CaseList = ({ onSelectCase }) => {
                 body: JSON.stringify({
                     caseId: caseId,
                     status: newStatus,
+                    user: {
+                        email: currentUser?.emailAddress,
+                        firstName: currentUser?.firstName,
+                        lastName: currentUser?.lastName,
+                        avatarUrl: currentUser?.avatarUrl
+                    }
                 }),
             });
+            console.log("Status Update Payload User:", currentUser);
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -352,7 +395,7 @@ const CaseList = ({ onSelectCase }) => {
                 if (newStatus === 'completed') {
                     showNotification(`Case ${item.caseId || item._id} marked as Completed!`, 'success');
                 } else {
-                    showNotification(`Case ${item.caseId || item._id} moved to Trash.`, 'error');
+                    showNotification(`Case ${item.caseId || item._id} moved to Trash.`, 'info');
                 }
             }
             setActiveId(null);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './HistoryWidget.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHistory, faClock, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faClock, faEye, faUser } from '@fortawesome/free-solid-svg-icons';
 import endpoints from '../config';
 
 const HistoryWidget = ({ isOpen, onToggle }) => {
@@ -21,6 +21,7 @@ const HistoryWidget = ({ isOpen, onToggle }) => {
             const response = await fetch(endpoints.historyList);
             if (!response.ok) throw new Error('Failed to fetch history');
             const result = await response.json();
+            console.log("History Logs:", result.data);
             setLogs(result.data || []);
         } catch (error) {
             console.error("Error loading history:", error);
@@ -69,7 +70,9 @@ const HistoryWidget = ({ isOpen, onToggle }) => {
                                 <div key={log.SK} className="history-item">
                                     <div className="history-dot"></div>
                                     <div className="history-content">
-                                        <div className="history-action">{log.action.replace('_', ' ')}</div>
+                                        <div className="history-header-row">
+                                            <div className="history-action">{log.action.replace('_', ' ')}</div>
+                                        </div>
                                         <div className="history-description">
                                             {log.description}
                                         </div>
@@ -77,6 +80,16 @@ const HistoryWidget = ({ isOpen, onToggle }) => {
                                             <FontAwesomeIcon icon={faClock} />
                                             {formatDate(log.createdAt || log.timestamp)}
                                         </div>
+                                        {log.user && (
+                                            <div className="history-user">
+                                                <FontAwesomeIcon icon={faUser} />
+                                                <span>
+                                                    {(log.user.firstName || log.user.lastName)
+                                                        ? `${log.user.firstName || ''} ${log.user.lastName || ''}`
+                                                        : (log.user.email || 'Unknown')}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ))}
