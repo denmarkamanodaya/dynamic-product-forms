@@ -11,8 +11,9 @@ import generateQuotation from '../utils/pdf/generateQuotation';
 import generateInvoice from '../utils/pdf/generateInvoice';
 import generateDeliveryReceipt from '../utils/pdf/generateDeliveryReceipt';
 import { useNotification } from '../context/NotificationContext';
+import { getLocalDateString } from '../utils/dateHelpers';
 
-const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
+const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate }) => {
     const [currentStep, setCurrentStep] = useState(0); // Step 0: Client Select, Step 1: Client Info, Step 2: Products
     const [isEditMode, setIsEditMode] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(false); // New State for Read-Only Mode
@@ -34,7 +35,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
     });
 
     const [orderDetails, setOrderDetails] = useState({
-        leadTime: new Date().toISOString().split('T')[0],
+        leadTime: getLocalDateString(),
         terms: ''
     });
 
@@ -80,13 +81,13 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
                 // Hydrate order details
                 if (caseData.orderDetails) {
                     setOrderDetails({
-                        leadTime: caseData.orderDetails.leadTime || caseData.orderDetails.date || new Date().toISOString().split('T')[0],
+                        leadTime: caseData.orderDetails.leadTime || caseData.orderDetails.date || getLocalDateString(),
                         terms: caseData.orderDetails.terms || ''
                     });
                 } else if (caseData.clientDetails && (caseData.clientDetails.date || caseData.clientDetails.terms)) {
                     // Backward compatibility
                     setOrderDetails({
-                        leadTime: caseData.clientDetails.date || new Date().toISOString().split('T')[0],
+                        leadTime: caseData.clientDetails.date || getLocalDateString(),
                         terms: caseData.clientDetails.terms || ''
                     });
                 }
@@ -237,6 +238,11 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
                 setIsEditMode(true);
                 setActiveCaseId(caseId);
             }
+
+            // Redirect to Board (List View) after save
+            if (onNavigate) {
+                onNavigate('list');
+            }
         }
     };
 
@@ -275,7 +281,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
     const handleManualInput = () => {
         setClientDetails({ ...clientDetails, clientName: '', businessName: '', taxId: '', businessAddress: '' });
         // Reset order details or keep them? Probably keep them or reset to default:
-        setOrderDetails({ leadTime: new Date().toISOString().split('T')[0], terms: '' });
+        setOrderDetails({ leadTime: getLocalDateString(), terms: '' });
         if (onClientDataLoaded) onClientDataLoaded(''); // Clear name
         setIsManualClient(true);
         setCurrentStep(1);

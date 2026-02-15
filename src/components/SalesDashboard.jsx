@@ -7,7 +7,9 @@ import {
     CartesianGrid,
     Tooltip,
     Legend,
-    ResponsiveContainer
+    ResponsiveContainer,
+    BarChart,
+    Bar
 } from 'recharts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faShoppingCart, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
@@ -16,15 +18,20 @@ import endpoints from '../config';
 
 const SalesDashboard = () => {
     const [cases, setCases] = useState([]);
+    const [topProducts, setTopProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchCompletedCases = async () => {
+        const fetchData = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(endpoints.caseCompleted); // Use config endpoint
-                if (response.ok) {
-                    const result = await response.json();
+                const [casesRes, productsRes] = await Promise.all([
+                    fetch(endpoints.caseCompleted),
+                    fetch(endpoints.topProducts)
+                ]);
+
+                if (casesRes.ok) {
+                    const result = await casesRes.json();
                     let data = [];
                     if (Array.isArray(result)) {
                         data = result;
@@ -33,14 +40,26 @@ const SalesDashboard = () => {
                     }
                     setCases(data);
                 }
+
+                if (productsRes.ok) {
+                    const result = await productsRes.json();
+                    let data = [];
+                    if (Array.isArray(result)) {
+                        data = result;
+                    } else if (result.data && Array.isArray(result.data)) {
+                        data = result.data;
+                    }
+                    setTopProducts(data);
+                }
+
             } catch (error) {
-                console.error("Failed to fetch completed cases for dashboard", error);
+                console.error("Failed to fetch dashboard data", error);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchCompletedCases();
+        fetchData();
     }, []);
 
     // Process data for the chart
@@ -165,17 +184,52 @@ const SalesDashboard = () => {
                 </div>
             </div>
 
-            {/* Placeholder for Product Monitoring */}
+            {/* Product Monitoring */}
             <div className="dashboard-widget products-widget">
                 <div className="dashboard-header">
                     <h3 className="dashboard-title">
                         <FontAwesomeIcon icon={faShoppingCart} /> Product Monitoring
                     </h3>
                 </div>
-                <div className="placeholder-content">
-                    <p style={{ color: '#64748b', textAlign: 'center', marginTop: '2rem' }}>
-                        Product analytics module coming soon...
-                    </p>
+                <div className="dashboard-chart">
+                    {isLoading ? (
+                        <div className="loading-container" style={{ height: '300px' }}>
+                            <div className="loading-spinner"></div>
+                        </div>
+                    ) : (
+                        <ResponsiveContainer width="100%" height={300}>
+                            <BarChart
+                                data={topProducts}
+                                layout="vertical"
+                                margin={{
+                                    top: 5,
+                                    right: 30,
+                                    left: 40,
+                                    bottom: 5,
+                                }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
+                                <XAxis type="number" hide />
+                                <YAxis
+                                    dataKey="name"
+                                    type="category"
+                                    width={100}
+                                    tick={{ fill: '#64748b', fontSize: 12 }}
+                                />
+                                <Tooltip
+                                    cursor={{ fill: 'transparent' }}
+                                    contentStyle={{
+                                        backgroundColor: '#fff',
+                                        borderRadius: '0px',
+                                        border: 'none',
+                                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                    }}
+                                />
+                                <Legend />
+                                <Bar dataKey="quantity" name="Quantity Sold" fill="#10b981" barSize={20} radius={[0, 4, 4, 0]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    )}
                 </div>
             </div>
         </div>

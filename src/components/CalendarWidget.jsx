@@ -3,19 +3,12 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CalendarWidget.css';
 import endpoints from '../config';
+import { getLocalDateString } from '../utils/dateHelpers';
 
 const CalendarWidget = ({ isOpen, onToggle }) => {
     const [date, setDate] = useState(new Date());
     const [cases, setCases] = useState([]);
     const [selectedDateCases, setSelectedDateCases] = useState([]);
-
-    // Helper to format date as YYYY-MM-DD in local time
-    const formatDateLocal = (dateObj) => {
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
 
     // Fetch cases on mount
     useEffect(() => {
@@ -30,7 +23,6 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
 
                 const results = await Promise.all(fetchPromises);
                 const allCases = results.flat();
-                console.log("CalendarWidget: Fetched all cases:", allCases);
                 setCases(allCases);
             } catch (error) {
                 console.error("Failed to fetch cases for calendar", error);
@@ -41,7 +33,8 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
 
     // Update selected cases when date changes or cases load
     useEffect(() => {
-        const dateString = formatDateLocal(date);
+        const dateString = getLocalDateString(date);
+
         const filtered = cases.filter(c => {
             // Check data.orderDetails.leadTime first, fallback to data.clientDetails.date
             const leadTime = c.data?.orderDetails?.leadTime || c.data?.clientDetails?.date;
@@ -51,6 +44,8 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
             if (leadTime && leadTime.includes('T')) {
                 normalizedLeadTime = leadTime.split('T')[0];
             }
+
+
 
             return normalizedLeadTime === dateString;
         });
@@ -64,7 +59,7 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
     // Custom tile content to show dots
     const tileContent = ({ date, view }) => {
         if (view === 'month') {
-            const dateString = formatDateLocal(date);
+            const dateString = getLocalDateString(date);
             const dayCases = cases.filter(c => {
                 const leadTime = c.data?.orderDetails?.leadTime || c.data?.clientDetails?.date;
                 let normalizedLeadTime = leadTime;
