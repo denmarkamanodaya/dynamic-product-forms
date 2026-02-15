@@ -66,35 +66,37 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
             className="kanban-card"
             onClick={() => onClick(caseItem.caseId || caseItem._id)}
         >
-            <div className="card-header">
-                <span className="card-id">
-                    {columnName
-                        ? `${columnName.slice(0, 3).toUpperCase()}-${String(caseItem.caseId || caseItem._id).slice(-4).toUpperCase()}`
-                        : (caseItem.caseId || caseItem._id)}
-                </span>
-                {/* Placeholder for menu/more options if needed */}
-            </div>
-            <div className="card-client">
-                {caseItem.data?.clientDetails?.clientName ||
-                    caseItem.data?.clientDetails?.businessName ||
-                    'Unknown Client'}
-            </div>
+            <div className="card-content">
+                <div className="card-client">
+                    {caseItem.data?.clientDetails?.clientName ||
+                        caseItem.data?.clientDetails?.businessName ||
+                        'Unknown Client'}
+                </div>
 
-            <div className="card-footer-grid">
-                <div className="card-info-item date-item">
-                    <span className="icon"><FontAwesomeIcon icon={faCalendarAlt} /></span>
-                    <span className="text">
-                        {caseItem.data?.orderDetails?.leadTime || caseItem.data?.clientDetails?.date || 'N/A'}
+                <div className="card-badge-row">
+                    <span className={`card-id status-badge status-${COLUMN_TO_STATUS[columnName]}`}>
+                        {columnName
+                            ? `${columnName.slice(0, 3).toUpperCase()}-${String(caseItem.caseId || caseItem._id).slice(-4).toUpperCase()}`
+                            : (caseItem.caseId || caseItem._id)}
                     </span>
                 </div>
 
-                <div className="card-info-item total-item">
-                    <span className="icon"><FontAwesomeIcon icon={faPesoSign} /></span>
-                    <span className="text">
-                        {caseItem.data?.grandTotal || '0.00'}
-                    </span>
+                <div className="card-footer-row">
+                    <div className="card-info-item date-item">
+                        <span className="icon"><FontAwesomeIcon icon={faCalendarAlt} /></span>
+                        <span className="text">
+                            {caseItem.data?.orderDetails?.leadTime || caseItem.data?.clientDetails?.date || 'N/A'}
+                        </span>
+                    </div>
+
+                    <div className="card-info-item total-item">
+                        <span className="icon"><FontAwesomeIcon icon={faPesoSign} /></span>
+                        <span className="text">
+                            {caseItem.data?.grandTotal || '0.00'}
+                        </span>
+                    </div>
                 </div>
-            </div >
+            </div>
         </div >
     );
 };
@@ -144,6 +146,7 @@ const CaseList = ({ onSelectCase }) => {
     const [activeId, setActiveId] = useState(null);
     const [dragStartContainer, setDragStartContainer] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
     const { showNotification } = useNotification();
 
     const sensors = useSensors(
@@ -241,6 +244,17 @@ const CaseList = ({ onSelectCase }) => {
         );
     };
 
+    const matchesSearch = (item) => {
+        if (!searchQuery) return true;
+
+        const query = searchQuery.toLowerCase();
+        const caseId = (item.caseId || item._id || '').toLowerCase();
+        const clientName = (item.data?.clientDetails?.clientName || item.data?.clientDetails?.businessName || '').toLowerCase();
+
+        // Search by Case ID or Client Name
+        return caseId.includes(query) || clientName.includes(query);
+    };
+
     const handleDragStart = (event) => {
         setActiveId(event.active.id);
         const container = findContainer(event.active.id);
@@ -269,14 +283,6 @@ const CaseList = ({ onSelectCase }) => {
         if (dragStartContainer === COLUMNS.DELIVERY) {
             return;
         }
-
-        // Prevent moving back from Approval to Quotation
-        if (activeContainer === COLUMNS.APPROVAL) {
-            if (overContainer === COLUMNS.QUOTATION) {
-                return;
-            }
-        }
-
 
         setItems((prev) => {
             const activeItems = prev[activeContainer];
@@ -396,6 +402,16 @@ const CaseList = ({ onSelectCase }) => {
             <br />
             <div className="kanban-header">
                 <h2 className="page-title">Board</h2>
+                <div className="kanban-search">
+                    <i className="search-icon">🔍</i>
+                    <input
+                        type="text"
+                        placeholder="Search Case ID or Client..."
+                        className="glass-input search-input"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
             </div>
 
 
@@ -415,20 +431,23 @@ const CaseList = ({ onSelectCase }) => {
                     <div className="kanban-columns-container">
                         {Object.keys(COLUMNS).map((key) => {
                             const columnId = COLUMNS[key];
+                            // Filter items for display
+                            const filteredItems = items[columnId].filter(matchesSearch);
+
                             return (
                                 <DroppableColumn
                                     key={columnId}
                                     id={columnId}
                                     title={columnId}
-                                    count={items[columnId].length}
+                                    count={filteredItems.length}
                                 >
                                     <div className="card-list">
                                         <SortableContext
                                             id={columnId}
-                                            items={items[columnId].map(c => c.dndId)}
+                                            items={filteredItems.map(c => c.dndId)}
                                             strategy={verticalListSortingStrategy}
                                         >
-                                            {items[columnId].map((caseItem) => (
+                                            {filteredItems.map((caseItem) => (
                                                 <SortableItem
                                                     key={caseItem.dndId}
                                                     id={caseItem.dndId}

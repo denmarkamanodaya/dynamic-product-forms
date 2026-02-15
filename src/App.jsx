@@ -6,6 +6,7 @@ import Login from './components/Login';
 import CaseList from './components/CaseList';
 import ChatWidget from './components/ChatWidget';
 import CalendarWidget from './components/CalendarWidget';
+import HistoryWidget from './components/HistoryWidget';
 import SalesDashboard from './components/SalesDashboard';
 import { NotificationProvider } from './context/NotificationContext';
 import Notification from './components/Notification';
@@ -23,6 +24,7 @@ function App() {
   // Widget State
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   useEffect(() => {
     // Check for existing session
@@ -71,13 +73,28 @@ function App() {
   const toggleChat = (status) => {
     const newStatus = status !== undefined ? status : !isChatOpen;
     setIsChatOpen(newStatus);
-    if (newStatus) setIsCalendarOpen(false); // Close calendar if opening chat
+    if (newStatus) {
+      setIsCalendarOpen(false);
+      setIsHistoryOpen(false);
+    }
   };
 
   const toggleCalendar = (status) => {
     const newStatus = status !== undefined ? status : !isCalendarOpen;
     setIsCalendarOpen(newStatus);
-    if (newStatus) setIsChatOpen(false); // Close chat if opening calendar
+    if (newStatus) {
+      setIsChatOpen(false);
+      setIsHistoryOpen(false);
+    }
+  };
+
+  const toggleHistory = (status) => {
+    const newStatus = status !== undefined ? status : !isHistoryOpen;
+    setIsHistoryOpen(newStatus);
+    if (newStatus) {
+      setIsChatOpen(false);
+      setIsCalendarOpen(false);
+    }
   };
 
   if (!currentUser) {
@@ -92,6 +109,8 @@ function App() {
           onToggleChat={() => toggleChat()}
           isCalendarOpen={isCalendarOpen}
           onToggleCalendar={() => toggleCalendar()}
+          isHistoryOpen={isHistoryOpen}
+          onToggleHistory={() => toggleHistory()}
           onNewCase={() => handleNavigate('form')}
         />
 
@@ -119,6 +138,7 @@ function App() {
 
         <ChatWidget currentUser={currentUser} isOpen={isChatOpen} onToggle={toggleChat} />
         <CalendarWidget isOpen={isCalendarOpen} onToggle={toggleCalendar} />
+        <HistoryWidget isOpen={isHistoryOpen} onToggle={toggleHistory} />
         <Notification />
       </div>
     </NotificationProvider>

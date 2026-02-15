@@ -170,8 +170,6 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate }) 
             const payload = {
                 caseId,
                 timestamp,
-                caseId,
-                timestamp,
                 status: caseStatus, // Use current status
                 data: {
                     orderDetails: {
