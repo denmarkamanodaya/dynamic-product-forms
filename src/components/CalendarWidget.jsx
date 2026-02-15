@@ -14,15 +14,17 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
     useEffect(() => {
         const fetchCases = async () => {
             try {
-                const statuses = ['quotation', 'approved', 'invoicing', 'delivery'];
-                const fetchPromises = statuses.map(status =>
-                    fetch(`${endpoints.caseList}?status=${status}`)
-                        .then(res => res.ok ? res.json() : [])
-                        .then(data => Array.isArray(data) ? data : (data.data || []))
-                );
+                // Fetch ALL cases in one go
+                const response = await fetch(endpoints.caseList);
+                if (!response.ok) throw new Error('Failed to fetch cases');
 
-                const results = await Promise.all(fetchPromises);
-                const allCases = results.flat();
+                const result = await response.json();
+                let allCases = [];
+                if (Array.isArray(result)) {
+                    allCases = result;
+                } else if (result.data && Array.isArray(result.data)) {
+                    allCases = result.data;
+                }
                 setCases(allCases);
             } catch (error) {
                 console.error("Failed to fetch cases for calendar", error);

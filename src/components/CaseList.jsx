@@ -203,42 +203,47 @@ const CaseList = ({ onSelectCase, currentUser }) => {
     const fetchAllCases = async () => {
         setIsLoading(true);
         try {
-            // Function to fetch cases for a specific status
-            const fetchByStatus = async (status) => {
-                const response = await fetch(`${endpoints.caseList}?status=${status}`);
-                if (!response.ok) {
-                    console.warn(`Failed to fetch for status: ${status}`);
-                    return [];
-                }
-                const result = await response.json();
-                let cases = [];
-                if (Array.isArray(result)) {
-                    cases = result;
-                } else if (result.data && Array.isArray(result.data)) {
-                    cases = result.data;
-                }
-                // Add dndId
-                return cases.map(c => ({
-                    ...c,
-                    dndId: String(c.caseId || c._id)
-                }));
+            // Fetch ALL cases in one go
+            const response = await fetch(endpoints.caseList);
+            if (!response.ok) throw new Error('Failed to fetch cases');
+
+            const result = await response.json();
+            let allCases = [];
+            if (Array.isArray(result)) {
+                allCases = result;
+            } else if (result.data && Array.isArray(result.data)) {
+                allCases = result.data;
+            }
+
+            // Distribute into columns
+            const newItems = {
+                [COLUMNS.QUOTATION]: [],
+                [COLUMNS.APPROVAL]: [],
+                [COLUMNS.INVOICE]: [],
+                [COLUMNS.DELIVERY]: [],
             };
 
-            // Execute fetches in parallel
-            // Execute fetches in parallel
-            const [quotation, approval, invoice, delivery] = await Promise.all([
-                fetchByStatus(COLUMN_TO_STATUS[COLUMNS.QUOTATION]),
-                fetchByStatus(COLUMN_TO_STATUS[COLUMNS.APPROVAL]),
-                fetchByStatus(COLUMN_TO_STATUS[COLUMNS.INVOICE]),
-                fetchByStatus(COLUMN_TO_STATUS[COLUMNS.DELIVERY]),
-            ]);
+            allCases.forEach(c => {
+                // Add dndId
+                const caseItem = {
+                    ...c,
+                    dndId: String(c.caseId || c._id)
+                };
 
-            setItems({
-                [COLUMNS.QUOTATION]: quotation,
-                [COLUMNS.APPROVAL]: approval,
-                [COLUMNS.INVOICE]: invoice,
-                [COLUMNS.DELIVERY]: delivery,
+                const status = (caseItem.status || '').toLowerCase();
+
+                if (status === 'quotation') {
+                    newItems[COLUMNS.QUOTATION].push(caseItem);
+                } else if (status === 'approved') {
+                    newItems[COLUMNS.APPROVAL].push(caseItem);
+                } else if (status === 'invoicing') {
+                    newItems[COLUMNS.INVOICE].push(caseItem);
+                } else if (status === 'delivery') {
+                    newItems[COLUMNS.DELIVERY].push(caseItem);
+                }
             });
+
+            setItems(newItems);
 
         } catch (error) {
             console.error("Error loading cases:", error);
