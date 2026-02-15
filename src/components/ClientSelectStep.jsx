@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ClientSelectStep.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import endpoints from '../config';
 
 const ClientSelectStep = ({ onClientSelect, onManualInput }) => {
     const [clients, setClients] = useState([]);
@@ -13,7 +14,7 @@ const ClientSelectStep = ({ onClientSelect, onManualInput }) => {
         const fetchClients = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch('http://localhost:3000/client/v1/list');
+                const response = await fetch(endpoints.clientList);
                 if (!response.ok) {
                     throw new Error('Failed to fetch clients');
                 }

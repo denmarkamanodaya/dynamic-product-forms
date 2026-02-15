@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CalendarWidget.css';
+import endpoints from '../config';
 
 const CalendarWidget = ({ isOpen, onToggle }) => {
     const [date, setDate] = useState(new Date());
@@ -20,9 +21,9 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
     useEffect(() => {
         const fetchCases = async () => {
             try {
-                const statuses = ['active', 'quotation', 'approved', 'invoicing', 'delivery'];
+                const statuses = ['quotation', 'approved', 'invoicing', 'delivery'];
                 const fetchPromises = statuses.map(status =>
-                    fetch(`http://localhost:3000/case/v1/list?status=${status}`)
+                    fetch(`${endpoints.caseList}?status=${status}`)
                         .then(res => res.ok ? res.json() : [])
                         .then(data => Array.isArray(data) ? data : (data.data || []))
                 );
@@ -150,7 +151,7 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
                                                     </span>
                                                 </div>
                                                 <div className="event-card-body">
-                                                    <p className="case-id">#{c.caseId.slice(0, 8)}</p>
+                                                    <p className="case-id">#{c.status.slice(0, 3).toUpperCase()}-{c.caseId.slice(-4).toUpperCase()}</p>
                                                     {c.data?.products && (
                                                         <p className="product-count">
                                                             {c.data.products.length} Item{c.data.products.length !== 1 ? 's' : ''}

@@ -19,10 +19,12 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import './CaseList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faPesoSign, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faPesoSign, faMoneyBillWave, faTrash } from '@fortawesome/free-solid-svg-icons';
+import endpoints from '../config';
+
+const TRASH_ID = 'trash-zone';
 
 const COLUMNS = {
-    ACTIVE: 'Active',
     QUOTATION: 'Quotation',
     APPROVAL: 'Approval',
     INVOICE: 'Invoice',
@@ -31,7 +33,6 @@ const COLUMNS = {
 
 // Map internal column IDs to API status strings
 const COLUMN_TO_STATUS = {
-    [COLUMNS.ACTIVE]: 'active',
     [COLUMNS.QUOTATION]: 'quotation',
     [COLUMNS.APPROVAL]: 'approved',
     [COLUMNS.INVOICE]: 'invoicing',
@@ -39,7 +40,7 @@ const COLUMN_TO_STATUS = {
 };
 
 // Sortable Item Component (The Card)
-const SortableItem = ({ id, caseItem, onClick }) => {
+const SortableItem = ({ id, caseItem, onClick, columnName }) => {
     const {
         attributes,
         listeners,
@@ -65,7 +66,11 @@ const SortableItem = ({ id, caseItem, onClick }) => {
             onClick={() => onClick(caseItem.caseId || caseItem._id)}
         >
             <div className="card-header">
-                <span className="card-id">{caseItem.caseId || caseItem._id}</span>
+                <span className="card-id">
+                    {columnName
+                        ? `${columnName.slice(0, 3).toUpperCase()}-${String(caseItem.caseId || caseItem._id).slice(-4).toUpperCase()}`
+                        : (caseItem.caseId || caseItem._id)}
+                </span>
                 {/* Placeholder for menu/more options if needed */}
             </div>
             <div className="card-client">
@@ -112,9 +117,24 @@ const DroppableColumn = ({ id, title, count, children }) => {
     );
 };
 
+const TrashDropZone = () => {
+    const { setNodeRef, isOver } = useDroppable({
+        id: TRASH_ID,
+    });
+
+    return (
+        <div
+            ref={setNodeRef}
+            className={`trash-drop-zone ${isOver ? 'over' : ''}`}
+        >
+            <FontAwesomeIcon icon={faTrash} />
+            <span className="trash-label">Delete</span>
+        </div>
+    );
+};
+
 const CaseList = ({ onSelectCase }) => {
     const [items, setItems] = useState({
-        [COLUMNS.ACTIVE]: [],
         [COLUMNS.QUOTATION]: [],
         [COLUMNS.APPROVAL]: [],
         [COLUMNS.INVOICE]: [],
@@ -143,7 +163,7 @@ const CaseList = ({ onSelectCase }) => {
         try {
             // Function to fetch cases for a specific status
             const fetchByStatus = async (status) => {
-                const response = await fetch(`http://localhost:3000/case/v1/list?status=${status}`);
+                const response = await fetch(`${endpoints.caseList}?status=${status}`);
                 if (!response.ok) {
                     console.warn(`Failed to fetch for status: ${status}`);
                     return [];
@@ -163,8 +183,8 @@ const CaseList = ({ onSelectCase }) => {
             };
 
             // Execute fetches in parallel
-            const [active, quotation, approval, invoice, delivery] = await Promise.all([
-                fetchByStatus(COLUMN_TO_STATUS[COLUMNS.ACTIVE]),
+            // Execute fetches in parallel
+            const [quotation, approval, invoice, delivery] = await Promise.all([
                 fetchByStatus(COLUMN_TO_STATUS[COLUMNS.QUOTATION]),
                 fetchByStatus(COLUMN_TO_STATUS[COLUMNS.APPROVAL]),
                 fetchByStatus(COLUMN_TO_STATUS[COLUMNS.INVOICE]),
@@ -172,7 +192,6 @@ const CaseList = ({ onSelectCase }) => {
             ]);
 
             setItems({
-                [COLUMNS.ACTIVE]: active,
                 [COLUMNS.QUOTATION]: quotation,
                 [COLUMNS.APPROVAL]: approval,
                 [COLUMNS.INVOICE]: invoice,
@@ -189,7 +208,7 @@ const CaseList = ({ onSelectCase }) => {
     const updateCaseStatus = async (caseId, newStatus) => {
         try {
             console.log(`Updating case ${caseId} to ${newStatus}`);
-            const response = await fetch('http://localhost:3000/case/v1/status-update', {
+            const response = await fetch(endpoints.caseStatusUpdate, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -233,12 +252,17 @@ const CaseList = ({ onSelectCase }) => {
         const overContainer = findContainer(overId);
 
         if (!activeContainer || !overContainer || activeContainer === overContainer) {
+            // Check if overContainer is TRASH_ID
+            if (overId === TRASH_ID) {
+                // Allow dragging to trash
+                return;
+            }
             return;
         }
 
-        // Prevent moving back from Approval to Active or Quotation
+        // Prevent moving back from Approval to Quotation
         if (activeContainer === COLUMNS.APPROVAL) {
-            if (overContainer === COLUMNS.ACTIVE || overContainer === COLUMNS.QUOTATION) {
+            if (overContainer === COLUMNS.QUOTATION) {
                 return;
             }
         }
@@ -282,6 +306,22 @@ const CaseList = ({ onSelectCase }) => {
         const { active, over } = event;
         const activeContainer = findContainer(active.id);
         const overContainer = findContainer(over?.id);
+
+        // Handle Drop to Trash
+        if (over?.id === TRASH_ID) {
+            const item = items[activeContainer]?.find(i => i.dndId === active.id);
+            if (item) {
+                // Optimistic update: Remove from UI
+                setItems((prev) => ({
+                    ...prev,
+                    [activeContainer]: prev[activeContainer].filter((i) => i.dndId !== active.id),
+                }));
+                // API Call
+                updateCaseStatus(item.caseId || item._id, 'deleted');
+            }
+            setActiveId(null);
+            return;
+        }
 
         if (
             activeContainer &&
@@ -361,6 +401,7 @@ const CaseList = ({ onSelectCase }) => {
                                                     id={caseItem.dndId}
                                                     caseItem={caseItem}
                                                     onClick={onSelectCase}
+                                                    columnName={columnId}
                                                 />
                                             ))}
                                         </SortableContext>
@@ -368,6 +409,7 @@ const CaseList = ({ onSelectCase }) => {
                                 </DroppableColumn>
                             );
                         })}
+                        {activeId && <TrashDropZone />}
                     </div>
                     <DragOverlay>
                         {activeId ? (
