@@ -1,5 +1,5 @@
 .kanban-board {
-    padding: 1rem 2rem;
+    padding: var(--space-md) var(--space-lg);
     height: calc(100vh - 80px);
     /* Full height minus navbar */
     display: flex;
@@ -9,23 +9,23 @@
 }
 
 .kanban-header {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-lg);
 }
 
 .page-title {
-    font-size: 1.75rem;
+    font-size: var(--font-xl);
     font-weight: 800;
-    color: #0f172a;
-    margin-bottom: 0.5rem;
+    color: var(--text-heading);
+    margin-bottom: var(--space-xs);
     letter-spacing: -0.02em;
 }
 
 .kanban-columns-container {
     display: flex;
-    gap: 1.5rem;
+    gap: var(--space-lg);
     height: 100%;
     overflow-x: auto;
-    padding-bottom: 1rem;
+    padding-bottom: var(--space-md);
     /* Space for scrollbar */
     align-items: flex-start;
 }
@@ -35,16 +35,16 @@
     /* Fixed width columns */
     background: #f1f5f9;
     /* Light grey/slate for column background */
-    border-radius: 4px;
+    border-radius: var(--radius-md);
     /* Smooth corners */
     display: flex;
     flex-direction: column;
     max-height: 100%;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
 }
 
 .column-header {
-    padding: 1rem;
+    padding: var(--space-md);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -55,7 +55,7 @@
 }
 
 .column-title {
-    font-size: 0.75rem;
+    font-size: var(--font-xs);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: #94a3b8;
@@ -63,16 +63,16 @@
 }
 
 .column-count {
-    background: #e2e8f0;
+    background: var(--border-color);
     color: #475569;
-    font-size: 0.75rem;
+    font-size: var(--font-xs);
     font-weight: 600;
     padding: 2px 8px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .column-droppable {
-    padding: 1rem;
+    padding: var(--space-md);
     flex: 1;
     overflow-y: auto;
     min-height: 100px;
@@ -82,32 +82,32 @@
 .card-list {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--space-md);
     min-height: 100%;
 }
 
 .kanban-card {
     background: #ffffff;
-    border-radius: 2px;
-    padding: 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    border: 1px solid #dadce0;
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
     cursor: grab;
     transition: all 0.2s ease;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-xs);
 }
 
 .kanban-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
     transform: translateY(-2px);
     border-color: #cbd5e1;
 }
 
 .kanban-card.overlay {
     cursor: grabbing;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-lg);
     transform: scale(1.02);
     z-index: 1000;
 }
@@ -124,13 +124,16 @@
     color: #94a3b8;
     background: #f1f5f9;
     padding: 2px 6px;
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
     font-weight: 700;
 }
 
 .card-client {
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: var(--font-md);
+    --font-md 14px? Wait,
+    index has base 14px,
+    md 16px. Original was 0.95rem (~15px). Let's use font-base or font-md. font-base is 14px. font-md is 16px. 0.95rem is closer to 15px. I' ll use var(--font-base) for slightly reduced look as requested. font-size: var(--font-base);
     line-height: 1.4;
     color: var(--accent-color)
 }
@@ -140,7 +143,7 @@
     justify-content: space-between;
     align-items: center;
     margin-top: auto;
-    padding-top: 0.75rem;
+    padding-top: var(--space-sm);
     border-top: 1px solid #f1f5f9;
 }
 
@@ -148,7 +151,7 @@
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    font-size: 0.75rem;
+    font-size: var(--font-xs);
     color: #64748b;
 }
 
@@ -171,8 +174,8 @@
     color: #94a3b8;
     background: #f8fafc;
     transition: all 0.2s ease;
-    gap: 0.5rem;
-    margin-right: 1rem;
+    gap: var(--space-xs);
+    margin-right: var(--space-md);
 }
 
 .trash-drop-zone.over {
@@ -182,11 +185,17 @@
     transform: scale(1.05);
 }
 
+.trash-drop-zone.complete-zone.over {
+    border-color: #22c55e;
+    background: #f0fdf4;
+    color: #15803d;
+}
+
 .trash-drop-zone .svg-inline--fa {
-    font-size: 1.5rem;
+    font-size: var(--font-xl);
 }
 
 .trash-label {
-    font-size: 0.75rem;
+    font-size: var(--font-xs);
     font-weight: 600;
 }

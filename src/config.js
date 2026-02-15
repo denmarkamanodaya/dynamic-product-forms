@@ -9,6 +9,7 @@ const endpoints = {
     clientList: `${API_BASE_URL}/client/v1/list`,
     clientCreate: `${API_BASE_URL}/client/v1/create`,
     caseCompleted: `${API_BASE_URL}/case/v1/list?status=completed`,
+    caseDeleted: `${API_BASE_URL}/case/v1/list?status=deleted`,
 };
 
 export { API_BASE_URL, PRODUCT_API_URL, endpoints };

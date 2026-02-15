@@ -9,6 +9,7 @@ import { faPlus, faFilePdf, faArrowLeft, faPrint } from '@fortawesome/free-solid
 import endpoints, { PRODUCT_API_URL } from '../config';
 import generateQuotation from '../utils/pdf/generateQuotation';
 import generateInvoice from '../utils/pdf/generateInvoice';
+import generateDeliveryReceipt from '../utils/pdf/generateDeliveryReceipt';
 
 const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
     const [currentStep, setCurrentStep] = useState(0); // Step 0: Client Select, Step 1: Client Info, Step 2: Products
@@ -219,6 +220,8 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
 
         if (typeHelper === 'invoice') {
             generateInvoice(caseId, clientDetails, orderDetails, products, calculateGrandTotal);
+        } else if (typeHelper === 'delivery_receipt') {
+            generateDeliveryReceipt(caseId, clientDetails, orderDetails, products, calculateGrandTotal);
         } else {
             generateQuotation(caseId, clientDetails, orderDetails, products, calculateGrandTotal);
         }
@@ -441,20 +444,12 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
             <div className="controls-area">
                 <div className="controls-wrapper">
                     {caseStatus === 'delivery' ? (
-                        <>
-                            <button
-                                className="glass-btn generate-btn"
-                                onClick={() => generatePDF('quotation')}
-                            >
-                                <FontAwesomeIcon icon={faFilePdf} /> Download Quotation
-                            </button>
-                            <button
-                                className="glass-btn generate-btn"
-                                onClick={() => generatePDF('invoice')}
-                            >
-                                <FontAwesomeIcon icon={faPrint} /> Download Invoice
-                            </button>
-                        </>
+                        <button
+                            className="glass-btn generate-btn"
+                            onClick={() => generatePDF('delivery_receipt')}
+                        >
+                            <FontAwesomeIcon icon={faPrint} /> Download Delivery Receipt
+                        </button>
                     ) : (
                         <button
                             className="glass-btn generate-btn"

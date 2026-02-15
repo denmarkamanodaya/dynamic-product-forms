@@ -7,21 +7,21 @@
     height: 96vh;
     background-color: var(--surface-color);
     /* #ffffff or distinct surface */
-    border-right: 1px solid #e2e8f0;
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 1.5rem;
+    padding: var(--space-lg);
     z-index: 1001;
     /* Below icon sidebar (1002) but above content */
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-sm);
 }
 
 .nav-header {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-xl);
 }
 
 .nav-logo {
@@ -32,8 +32,8 @@
 }
 
 .client-info {
-    font-size: 0.8rem;
-    color: #64748b;
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
     font-weight: 500;
 }
 
@@ -45,8 +45,8 @@
 }
 
 .nav-item {
-    padding: 0.75rem 1rem;
-    border-radius: 6px;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-lg);
     color: var(--text-heading);
     text-decoration: none;
     font-weight: 600;
@@ -54,7 +54,7 @@
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: var(--space-sm);
 }
 
 .nav-item:hover {
@@ -71,15 +71,15 @@
 .nav-footer {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #e2e8f0;
+    gap: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border-color);
 }
 
 .user-profile {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: var(--space-sm);
 }
 
 .user-avatar {
@@ -93,22 +93,22 @@
 }
 
 .user-name {
-    font-size: 0.9rem;
+    font-size: var(--font-base);
     font-weight: 700;
     color: #1e293b;
 }
 
 .user-role {
-    font-size: 0.75rem;
+    font-size: var(--font-xs);
     color: #64748b;
 }
 
 .logout-btn {
     width: 100%;
-    padding: 0.75rem;
+    padding: var(--space-sm);
     background: transparent;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
     color: #64748b;
     font-weight: 600;
     cursor: pointer;
@@ -116,7 +116,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: var(--space-xs);
 }
 
 .logout-btn:hover {

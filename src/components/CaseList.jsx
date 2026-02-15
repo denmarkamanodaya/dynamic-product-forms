@@ -19,7 +19,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import './CaseList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faPesoSign, faMoneyBillWave, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faPesoSign, faMoneyBillWave, faTrash, faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
 import endpoints from '../config';
 
 const TRASH_ID = 'trash-zone';
@@ -117,7 +117,7 @@ const DroppableColumn = ({ id, title, count, children }) => {
     );
 };
 
-const TrashDropZone = () => {
+const TrashDropZone = ({ isDelivery }) => {
     const { setNodeRef, isOver } = useDroppable({
         id: TRASH_ID,
     });
@@ -125,10 +125,10 @@ const TrashDropZone = () => {
     return (
         <div
             ref={setNodeRef}
-            className={`trash-drop-zone ${isOver ? 'over' : ''}`}
+            className={`trash-drop-zone ${isOver ? 'over' : ''} ${isDelivery ? 'complete-zone' : ''}`}
         >
-            <FontAwesomeIcon icon={faTrash} />
-            <span className="trash-label">Delete</span>
+            <FontAwesomeIcon icon={isDelivery ? faClipboardCheck : faTrash} />
+            <span className="trash-label">{isDelivery ? 'Complete' : 'Delete'}</span>
         </div>
     );
 };
@@ -141,6 +141,7 @@ const CaseList = ({ onSelectCase }) => {
         [COLUMNS.DELIVERY]: [],
     });
     const [activeId, setActiveId] = useState(null);
+    const [dragStartContainer, setDragStartContainer] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const sensors = useSensors(
@@ -240,6 +241,8 @@ const CaseList = ({ onSelectCase }) => {
 
     const handleDragStart = (event) => {
         setActiveId(event.active.id);
+        const container = findContainer(event.active.id);
+        setDragStartContainer(container);
     };
 
     const handleDragOver = (event) => {
@@ -254,9 +257,14 @@ const CaseList = ({ onSelectCase }) => {
         if (!activeContainer || !overContainer || activeContainer === overContainer) {
             // Check if overContainer is TRASH_ID
             if (overId === TRASH_ID) {
-                // Allow dragging to trash
+                // Allow dragging to trash/complete zone
                 return;
             }
+            return;
+        }
+
+        // STRICT One-Way Delivery: Cannot move OUT of Delivery to another column
+        if (dragStartContainer === COLUMNS.DELIVERY) {
             return;
         }
 
@@ -307,19 +315,28 @@ const CaseList = ({ onSelectCase }) => {
         const activeContainer = findContainer(active.id);
         const overContainer = findContainer(over?.id);
 
-        // Handle Drop to Trash
+        // Handle Drop to Trash/Complete Zone
         if (over?.id === TRASH_ID) {
+            // Use dragStartContainer to find the ORIGINAL item state before drag-over mutations
+            // NOTE: items state has been mutated by dragOver, so iterating items might look for it in new location.
+            // But we need the item object to get caseId. 
+            // We can find the item in activeContainer (where it is NOW visually)
             const item = items[activeContainer]?.find(i => i.dndId === active.id);
+
             if (item) {
+                // Determine new status based on START container, not current activeContainer
+                const newStatus = dragStartContainer === COLUMNS.DELIVERY ? 'completed' : 'deleted';
+
                 // Optimistic update: Remove from UI
                 setItems((prev) => ({
                     ...prev,
                     [activeContainer]: prev[activeContainer].filter((i) => i.dndId !== active.id),
                 }));
                 // API Call
-                updateCaseStatus(item.caseId || item._id, 'deleted');
+                updateCaseStatus(item.caseId || item._id, newStatus);
             }
             setActiveId(null);
+            setDragStartContainer(null);
             return;
         }
 
@@ -340,6 +357,7 @@ const CaseList = ({ onSelectCase }) => {
         }
 
         setActiveId(null);
+        setDragStartContainer(null);
 
         // Final Status Check & Update
         // activeContainer is where the item ended up after DragOver + DragEnd
@@ -410,7 +428,7 @@ const CaseList = ({ onSelectCase }) => {
                                 </DroppableColumn>
                             );
                         })}
-                        {activeId && <TrashDropZone />}
+                        {activeId && <TrashDropZone isDelivery={dragStartContainer === COLUMNS.DELIVERY} />}
                     </div>
                     <DragOverlay>
                         {activeId ? (
