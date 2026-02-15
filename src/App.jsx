@@ -126,7 +126,7 @@ function App() {
         <div className="main-layout" style={{ marginLeft: '340px', width: 'calc(100% - 340px)' }}>
           <div className="main-content">
             {view === 'list' ? (
-              <CaseList onSelectCase={handleCaseSelect} />
+              <CaseList onSelectCase={handleCaseSelect} currentUser={currentUser} />
             ) : view === 'dashboard' ? (
               <SalesDashboard />
             ) : view === 'user-create' ? (
@@ -137,6 +137,7 @@ function App() {
               <ProductList
                 caseId={selectedCaseId}
                 onNavigate={handleNavigate}
+                currentUser={currentUser}
               />
             )}
           </div>
