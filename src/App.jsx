@@ -8,6 +8,8 @@ import ChatWidget from './components/ChatWidget';
 import CalendarWidget from './components/CalendarWidget';
 import HistoryWidget from './components/HistoryWidget';
 import SalesDashboard from './components/SalesDashboard';
+import UserCreate from './components/UserCreate';
+import ClientCreate from './components/ClientCreate';
 import { NotificationProvider } from './context/NotificationContext';
 import Notification from './components/Notification';
 import './App.css';
@@ -127,6 +129,10 @@ function App() {
               <CaseList onSelectCase={handleCaseSelect} />
             ) : view === 'dashboard' ? (
               <SalesDashboard />
+            ) : view === 'user-create' ? (
+              <UserCreate onNavigate={handleNavigate} />
+            ) : view === 'client-create' ? (
+              <ClientCreate onNavigate={handleNavigate} />
             ) : (
               <ProductList
                 caseId={selectedCaseId}

@@ -4,11 +4,12 @@
     align-items: center;
     justify-content: center;
     padding: 2rem 1rem;
+    background-color: #f8fafc;
 }
 
-.step-card {
+.client-info-card {
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px;
     background: #ffffff;
     border-radius: 0;
     padding: 4rem;
@@ -16,12 +17,12 @@
     border: 1px solid #dadce0;
 }
 
-.step-header {
+.client-info-header {
     text-align: center;
     margin-bottom: 4rem;
 }
 
-.step-title {
+.client-info-title {
     font-size: 1.75rem;
     font-weight: 800;
     color: #0f172a;
@@ -29,7 +30,7 @@
     letter-spacing: -0.02em;
 }
 
-.step-subtitle {
+.client-info-subtitle {
     font-size: 0.95rem;
     color: #64748b;
     font-weight: 400;
@@ -67,7 +68,7 @@
 
 .step-actions {
     display: flex;
-    justify-content: center;
+    justify-content: right;
     padding-top: 1rem;
 }
 

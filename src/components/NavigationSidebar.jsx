@@ -2,7 +2,7 @@ import React from 'react';
 import firetronLogo from '../assets/firetron-logo.png';
 import './NavigationSidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOutAlt, faUserCircle, faTachometerAlt, faFolderPlus, faList, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faSignOutAlt, faUserCircle, faTachometerAlt, faFolderPlus, faList, faPlus, faUserPlus, faUserTie } from '@fortawesome/free-solid-svg-icons';
 
 const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, onLogout }) => {
     return (
@@ -36,6 +36,20 @@ const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, o
                     <FontAwesomeIcon icon={faPlus} />
                     New Case
                 </a>
+                <a
+                    className={`nav-item ${currentView === 'user-create' ? 'active' : ''}`}
+                    onClick={() => onNavigate('user-create')}
+                >
+                    <FontAwesomeIcon icon={faUserPlus} />
+                    New User
+                </a>
+                <a
+                    className={`nav-item ${currentView === 'client-create' ? 'active' : ''}`}
+                    onClick={() => onNavigate('client-create')}
+                >
+                    <FontAwesomeIcon icon={faUserTie} />
+                    New Client
+                </a>
             </div>
 
             <div className="nav-footer">
@@ -44,7 +58,7 @@ const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, o
                         <div className="user-profile">
                             <FontAwesomeIcon icon={faUserCircle} className="user-avatar" />
                             <div className="user-details">
-                                <span className="user-name">{currentUser.name}</span>
+                                <span className="user-name">{currentUser.firstName} {currentUser.lastName}</span>
                                 <span className="user-role">{currentUser.role}</span>
                             </div>
                         </div>

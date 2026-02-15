@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './ClientInfoStep.css';
 
-const ClientInfoStep = ({ clientDetails, onChange, onNext }) => {
+const ClientInfoStep = ({ clientDetails, onChange, onNext, submitLabel = 'Continue to Products →' }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (field, value) => {
@@ -27,10 +27,10 @@ const ClientInfoStep = ({ clientDetails, onChange, onNext }) => {
 
     return (
         <div className="client-info-step">
-            <div className="step-card">
-                <div className="step-header">
-                    <h2 className="step-title">Client Information</h2>
-                    <p className="step-subtitle">Please provide the client details to get started</p>
+            <div className="client-info-card">
+                <div className="client-info-header">
+                    <h2 className="client-info-title">Client Information</h2>
+                    <p className="client-info-subtitle">Please provide the client details to get started</p>
                 </div>
 
                 <div className="client-form-grid">
@@ -86,7 +86,7 @@ const ClientInfoStep = ({ clientDetails, onChange, onNext }) => {
                         disabled={isSubmitting}
                         style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'wait' : 'pointer' }}
                     >
-                        {isSubmitting ? 'Processing...' : 'Continue to Products →'}
+                        {isSubmitting ? 'Processing...' : submitLabel}
                     </button>
                 </div>
             </div>

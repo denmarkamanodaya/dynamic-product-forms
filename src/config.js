@@ -12,7 +12,11 @@ const endpoints = {
     caseDeleted: `${API_BASE_URL}/case/v1/list?status=deleted`,
     topProducts: `${API_BASE_URL}/reports/v1/top-products`,
     historyList: `${API_BASE_URL}/history/v1/list`,
+    userCreate: `${API_BASE_URL}/user/v1/create`,
+    userLogin: `${API_BASE_URL}/user/v1/login`,
 };
 
-export { API_BASE_URL, PRODUCT_API_URL, endpoints };
+const LOGIN_BACKGROUND_URL = 'https://firetron.ph/wp-content/uploads/2017/11/Firetron-banner_01.jpg';
+
+export { API_BASE_URL, PRODUCT_API_URL, LOGIN_BACKGROUND_URL, endpoints };
 export default endpoints;
