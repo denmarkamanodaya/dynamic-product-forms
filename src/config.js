@@ -10,6 +10,7 @@ const endpoints = {
     clientCreate: `${API_BASE_URL}/client/v1/create`,
     caseCompleted: `${API_BASE_URL}/case/v1/list?status=completed`,
     caseDeleted: `${API_BASE_URL}/case/v1/list?status=deleted`,
+    topProducts: `${API_BASE_URL}/reports/v1/top-products`,
 };
 
 export { API_BASE_URL, PRODUCT_API_URL, endpoints };

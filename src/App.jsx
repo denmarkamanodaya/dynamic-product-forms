@@ -109,7 +109,10 @@ function App() {
             ) : view === 'dashboard' ? (
               <SalesDashboard />
             ) : (
-              <ProductList caseId={selectedCaseId} />
+              <ProductList
+                caseId={selectedCaseId}
+                onNavigate={handleNavigate}
+              />
             )}
           </div>
         </div>
