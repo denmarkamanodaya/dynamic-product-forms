@@ -6,6 +6,7 @@ import Login from './components/Login';
 import CaseList from './components/CaseList';
 import ChatWidget from './components/ChatWidget';
 import CalendarWidget from './components/CalendarWidget';
+import SalesDashboard from './components/SalesDashboard';
 import './App.css';
 
 function App() {
@@ -102,6 +103,8 @@ function App() {
         <div className="main-content">
           {view === 'list' ? (
             <CaseList onSelectCase={handleCaseSelect} />
+          ) : view === 'dashboard' ? (
+            <SalesDashboard />
           ) : (
             <ProductList caseId={selectedCaseId} />
           )}

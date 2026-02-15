@@ -16,11 +16,18 @@ const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, o
 
             <div className="nav-menu">
                 <a
+                    className={`nav-item ${currentView === 'dashboard' ? 'active' : ''}`}
+                    onClick={() => onNavigate('dashboard')}
+                >
+                    <FontAwesomeIcon icon={faTachometerAlt} />
+                    Dashboard
+                </a>
+                <a
                     className={`nav-item ${currentView === 'list' ? 'active' : ''}`}
                     onClick={() => onNavigate('list')}
                 >
                     <FontAwesomeIcon icon={faList} />
-                    Dashboard
+                    Kanban Board
                 </a>
                 <a
                     className={`nav-item ${currentView === 'form' ? 'active' : ''}`}
