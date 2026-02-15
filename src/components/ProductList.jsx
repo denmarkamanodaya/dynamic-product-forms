@@ -331,25 +331,21 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate }) 
     // Step 0: Client Selection
     if (currentStep === 0) {
         return (
-            <div className="app-container">
-                <ClientSelectStep
-                    onClientSelect={handleClientSelect}
-                    onManualInput={handleManualInput}
-                />
-            </div>
+            <ClientSelectStep
+                onClientSelect={handleClientSelect}
+                onManualInput={handleManualInput}
+            />
         );
     }
 
     // Step 1: Client Information
     if (currentStep === 1) {
         return (
-            <div className="app-container">
-                <ClientInfoStep
-                    clientDetails={clientDetails}
-                    onChange={setClientDetails}
-                    onNext={handleNextStep1}
-                />
-            </div>
+            <ClientInfoStep
+                clientDetails={clientDetails}
+                onChange={setClientDetails}
+                onNext={handleNextStep1}
+            />
         );
     }
 
