@@ -7,6 +7,8 @@ import CaseList from './components/CaseList';
 import ChatWidget from './components/ChatWidget';
 import CalendarWidget from './components/CalendarWidget';
 import SalesDashboard from './components/SalesDashboard';
+import { NotificationProvider } from './context/NotificationContext';
+import Notification from './components/Notification';
 import './App.css';
 
 function App() {
@@ -83,37 +85,40 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <LeftSidebar
-        isChatOpen={isChatOpen}
-        onToggleChat={() => toggleChat()}
-        isCalendarOpen={isCalendarOpen}
-        onToggleCalendar={() => toggleCalendar()}
-        onNewCase={() => handleNavigate('form')}
-      />
+    <NotificationProvider>
+      <div className="App">
+        <LeftSidebar
+          isChatOpen={isChatOpen}
+          onToggleChat={() => toggleChat()}
+          isCalendarOpen={isCalendarOpen}
+          onToggleCalendar={() => toggleCalendar()}
+          onNewCase={() => handleNavigate('form')}
+        />
 
-      <NavigationSidebar
-        currentView={view}
-        onNavigate={handleNavigate}
-        currentUser={currentUser}
-        onLogout={handleLogout}
-      />
+        <NavigationSidebar
+          currentView={view}
+          onNavigate={handleNavigate}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+        />
 
-      <div className="main-layout" style={{ marginLeft: '340px', width: 'calc(100% - 340px)' }}>
-        <div className="main-content">
-          {view === 'list' ? (
-            <CaseList onSelectCase={handleCaseSelect} />
-          ) : view === 'dashboard' ? (
-            <SalesDashboard />
-          ) : (
-            <ProductList caseId={selectedCaseId} />
-          )}
+        <div className="main-layout" style={{ marginLeft: '340px', width: 'calc(100% - 340px)' }}>
+          <div className="main-content">
+            {view === 'list' ? (
+              <CaseList onSelectCase={handleCaseSelect} />
+            ) : view === 'dashboard' ? (
+              <SalesDashboard />
+            ) : (
+              <ProductList caseId={selectedCaseId} />
+            )}
+          </div>
         </div>
-      </div>
 
-      <ChatWidget currentUser={currentUser} isOpen={isChatOpen} onToggle={toggleChat} />
-      <CalendarWidget isOpen={isCalendarOpen} onToggle={toggleCalendar} />
-    </div>
+        <ChatWidget currentUser={currentUser} isOpen={isChatOpen} onToggle={toggleChat} />
+        <CalendarWidget isOpen={isCalendarOpen} onToggle={toggleCalendar} />
+        <Notification />
+      </div>
+    </NotificationProvider>
   );
 }
 

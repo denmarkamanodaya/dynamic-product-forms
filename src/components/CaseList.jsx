@@ -21,6 +21,7 @@ import './CaseList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faPesoSign, faMoneyBillWave, faTrash, faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
 import endpoints from '../config';
+import { useNotification } from '../context/NotificationContext';
 
 const TRASH_ID = 'trash-zone';
 
@@ -143,6 +144,7 @@ const CaseList = ({ onSelectCase }) => {
     const [activeId, setActiveId] = useState(null);
     const [dragStartContainer, setDragStartContainer] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const { showNotification } = useNotification();
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -315,6 +317,11 @@ const CaseList = ({ onSelectCase }) => {
         const activeContainer = findContainer(active.id);
         const overContainer = findContainer(over?.id);
 
+        // One-Way Restriction Notification
+        if (dragStartContainer === COLUMNS.DELIVERY && activeContainer === COLUMNS.DELIVERY && overContainer && overContainer !== COLUMNS.DELIVERY && over?.id !== TRASH_ID) {
+            showNotification("Delivery cases cannot be moved back to previous stages.", "error");
+        }
+
         // Handle Drop to Trash/Complete Zone
         if (over?.id === TRASH_ID) {
             // Use dragStartContainer to find the ORIGINAL item state before drag-over mutations
@@ -334,6 +341,13 @@ const CaseList = ({ onSelectCase }) => {
                 }));
                 // API Call
                 updateCaseStatus(item.caseId || item._id, newStatus);
+
+                // Show Notification
+                if (newStatus === 'completed') {
+                    showNotification(`Case ${item.caseId || item._id} marked as Completed!`, 'success');
+                } else {
+                    showNotification(`Case ${item.caseId || item._id} moved to Trash.`, 'error');
+                }
             }
             setActiveId(null);
             setDragStartContainer(null);

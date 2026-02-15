@@ -10,6 +10,7 @@ import endpoints, { PRODUCT_API_URL } from '../config';
 import generateQuotation from '../utils/pdf/generateQuotation';
 import generateInvoice from '../utils/pdf/generateInvoice';
 import generateDeliveryReceipt from '../utils/pdf/generateDeliveryReceipt';
+import { useNotification } from '../context/NotificationContext';
 
 const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
     const [currentStep, setCurrentStep] = useState(0); // Step 0: Client Select, Step 1: Client Info, Step 2: Products
@@ -19,6 +20,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
     const [activeCaseId, setActiveCaseId] = useState(initialCaseId || null);
     const [isManualClient, setIsManualClient] = useState(false);
     const [caseStatus, setCaseStatus] = useState('quotation');
+    const { showNotification } = useNotification();
 
     const [products, setProducts] = useState([
         { id: 1, productId: '', name: '', price: 0, quantity: 1, thumbnail: '', condition: 'Brand New' }
@@ -110,7 +112,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
 
             } catch (error) {
                 console.error('Error fetching case data:', error);
-                alert(`Failed to load case data: ${error.message}`);
+                showNotification(`Failed to load case data: ${error.message}`, 'error');
             } finally {
                 setIsLoading(false);
             }
@@ -201,10 +203,10 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
             }
 
             const result = await response.json();
-            alert(`Order ${isEditMode ? 'updated' : 'saved'} successfully! Case ID: ${caseId}`);
+            showNotification(`Order ${isEditMode ? 'updated' : 'saved'} successfully! Case ID: ${caseId}`, 'info');
         } catch (error) {
             console.error('Error saving to database:', error);
-            alert(`Failed to save order to database: ${error.message}`);
+            showNotification(`Failed to save order to database: ${error.message}`, 'error');
         }
     };
 
@@ -300,7 +302,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
                 }
             } catch (error) {
                 console.error('Error creating client:', error);
-                alert('Failed to save client details. Please try again.');
+                showNotification('Failed to save client details. Please try again.', 'error');
                 setIsLoading(false);
                 return; // Stop if failed
             } finally {
