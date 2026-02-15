@@ -1,19 +1,31 @@
-.dashboard-layout {
+/* Add this to existing SalesDashboard.css */
+
+.sales-dashboard-wrapper {
     display: flex;
-    gap: var(--space-lg);
+    flex-direction: column;
+    width: 100%;
+    gap: var(--space-md);
+}
+
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
     width: 100%;
 }
 
 .dashboard-widget {
-    flex: 1;
     background: var(--surface-color);
     border-radius: 0;
-    /* No rounded corners */
-    padding: var(--space-lg);
-    box-shadow: var(--shadow-sm);
+    padding: var(--space-md);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     border: 1px solid var(--border-color);
-    min-height: 500px;
-    /* Ensure height matches for now */
+    aspect-ratio: 1 / 1;
+    /* Make it square */
+    display: flex;
+    flex-direction: column;
+    /* Ensure content doesn't force it taller than width if width is constrained */
+    min-height: 0;
 }
 
 /* Specific widget styling if needed */
@@ -35,32 +47,33 @@
 }
 
 .dashboard-title {
-    font-size: var(--font-lg);
-    font-weight: 600;
+    font-size: var(--font-xl);
+    font-weight: 700;
     color: var(--text-heading);
     display: flex;
     align-items: center;
-    gap: var(--space-xs);
+    gap: var(--space-sm);
     margin: 0;
+    letter-spacing: -0.02em;
 }
 
 .dashboard-metrics {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--space-lg);
-    margin-bottom: var(--space-xl);
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
 }
 
 .metric-card {
     display: flex;
     align-items: center;
     padding: var(--space-md);
-    border-radius: 0;
-    /* No rounded corners */
-    background: #f8fafc;
-    /* Keep specific background or variable if created */
+    /* Comfortable padding */
+    border-radius: var(--radius-lg);
+    background: var(--surface-color);
     border: 1px solid var(--border-color);
-    transition: transform 0.2s;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .metric-card:hover {
@@ -69,25 +82,25 @@
 }
 
 .metric-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 0;
-    /* No rounded corners */
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     margin-right: var(--space-md);
 }
 
+/* Use semantic colors but kept professional */
 .metric-card.sales .metric-icon {
-    background: #dbeafe;
-    color: #2563eb;
+    background: #eff6ff;
+    color: #3b82f6;
 }
 
 .metric-card.orders .metric-icon {
-    background: #dcfce7;
-    color: #16a34a;
+    background: #f0fdf4;
+    color: #22c55e;
 }
 
 .metric-content {
@@ -96,16 +109,20 @@
 }
 
 .metric-label {
-    font-size: var(--font-sm);
+    font-size: var(--font-xs);
     color: var(--text-secondary);
-    font-weight: 500;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
 }
 
 .metric-value {
-    font-size: var(--font-xl);
+    font-size: var(--font-lg);
     font-weight: 700;
     color: var(--text-heading);
     line-height: 1.2;
+    font-feature-settings: "tnum";
 }
 
 .dashboard-chart {

@@ -11,6 +11,7 @@ const endpoints = {
     caseCompleted: `${API_BASE_URL}/case/v1/list?status=completed`,
     caseDeleted: `${API_BASE_URL}/case/v1/list?status=deleted`,
     topProducts: `${API_BASE_URL}/reports/v1/top-products`,
+    historyList: `${API_BASE_URL}/history/v1/list`,
 };
 
 export { API_BASE_URL, PRODUCT_API_URL, endpoints };

@@ -1,5 +1,5 @@
 .kanban-board {
-    padding: var(--space-md) var(--space-lg);
+    padding: var(--space-sm) var(--space-md);
     height: calc(100vh - 80px);
     /* Full height minus navbar */
     display: flex;
@@ -9,7 +9,57 @@
 }
 
 .kanban-header {
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+}
+
+.kanban-search-wrapper {
+    width: 100%;
+    max-width: 400px;
+}
+
+.kanban-search {
+    position: relative;
+    width: 100%;
+}
+
+.kanban-search .search-input {
+    padding-left: 2.5rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    /* Space for icon */
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 0;
+    /* Remove rounded corners */
+    box-shadow: none;
+    font-size: var(--font-sm);
+    transition: all 0.2s ease;
+}
+
+.kanban-search .search-input:focus {
+    border-bottom-color: var(--accent-color);
+    background: transparent;
+    box-shadow: none;
+}
+
+.kanban-search .search-icon {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-style: normal;
+    pointer-events: none;
+}
+
+.kanban-search .search-input:focus+.search-icon {
+    color: var(--accent-color);
 }
 
 .page-title {
@@ -22,37 +72,34 @@
 
 .kanban-columns-container {
     display: flex;
-    gap: 0;
-    /* No gaps */
+    gap: var(--space-md);
+    /* Add gap back for separation */
     height: 100%;
     overflow-x: auto;
-    padding-bottom: 0;
+    padding-bottom: var(--space-sm);
     align-items: stretch;
-    /* Stretch columns to full height */
-    background: #fff;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    /* contain child borders */
+    background: transparent;
+    /* Remove container bg */
+    border: none;
+    border-radius: 0;
+    overflow: visible;
 }
 
 .kanban-column {
     flex: 1;
-    /* Distribute space evenly */
     min-width: 280px;
-    background: #f8fafc;
-    /* Very subtle background */
-    border-radius: 0;
-    /* Remove rounded corners */
+    background: var(--bg-color);
+    /* Match global bg or subtle darker */
+    border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
     max-height: 100%;
-    border: none;
-    border-right: 1px solid var(--border-color);
+    border: 1px solid var(--border-color);
 }
 
 .kanban-column:last-child {
-    border-right: none;
+    border-right: 1px solid var(--border-color);
+    /* Restore border */
 }
 
 .column-header {
@@ -60,21 +107,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #fff;
-    /* White header for contrast */
-    border-bottom: 1px solid var(--border-color);
+    background: transparent;
 }
 
 .column-title {
-    font-size: var(--font-xs);
+    font-size: var(--font-sm);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-heading);
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
     font-weight: 700;
 }
 
 .column-count {
-    background: var(--bg-secondary);
+    background: rgba(0, 0, 0, 0.05);
     color: var(--text-secondary);
     font-size: var(--font-xs);
     font-weight: 600;
@@ -83,26 +128,27 @@
 }
 
 .column-droppable {
-    padding: var(--space-md);
+    padding: var(--space-sm);
     flex: 1;
     overflow-y: auto;
     min-height: 100px;
-    /* Ensure drop area exists even if empty */
 }
 
 .card-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: var(--space-sm);
     min-height: 100%;
 }
 
 .kanban-card {
     background: #ffffff;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
+    /* 6px */
     padding: var(--space-md);
     box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--border-color);
+    /* Subtle border */
     cursor: grab;
     transition: all 0.2s ease;
     display: flex;
@@ -113,7 +159,7 @@
 .kanban-card:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
-    border-color: #cbd5e1;
+    border-color: var(--accent-subtle);
 }
 
 .kanban-card.overlay {
@@ -130,29 +176,75 @@
 }
 
 .card-id {
-    font-family: monospace;
-    /* font-size: 0.65rem; */
-    color: #94a3b8;
-    background: #f1f5f9;
-    padding: 2px 6px;
+    font-family: inherit;
+    /* Remove monospace */
+}
+
+/* Status Badges - Inherit from global styles or LedgerTable */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
     border-radius: var(--radius-sm);
-    font-weight: 700;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+}
+
+.status-quotation {
+    background-color: #eff6ff;
+    color: #3b82f6;
+}
+
+.status-approved {
+    background-color: #f0fdf4;
+    color: #22c55e;
+}
+
+.status-invoicing {
+    background-color: #fef9c3;
+    color: #eab308;
+}
+
+.status-delivery {
+    background-color: #f3e8ff;
+    color: #a855f7;
+}
+
+.status-completed {
+    background-color: #ecfdf5;
+    color: #10b981;
+}
+
+.status-deleted {
+    background-color: #fef2f2;
+    color: #ef4444;
+}
+
+.status-unknown {
+    background-color: #f1f5f9;
+    color: #64748b;
 }
 
 .card-client {
     font-weight: 700;
     font-size: var(--font-base);
     line-height: 1.4;
-    color: var(--accent-color);
+    color: #555;
+    margin-bottom: 0.25rem;
 }
 
-.card-footer-grid {
+.card-badge-row {
+    margin-bottom: 0.5rem;
+}
+
+.card-footer-row {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 0.25rem;
     margin-top: auto;
-    padding-top: var(--space-sm);
-    border-top: 1px solid #f1f5f9;
 }
 
 .card-info-item {
@@ -168,9 +260,7 @@
 }
 
 .card-info-item.total-item {
-    font-weight: 600;
-    /* color: #0f172a; */
-    color: green
+    color: #64748b;
 }
 
 .trash-drop-zone {
@@ -179,7 +269,7 @@
     right: 30px;
     width: 60px;
     height: 60px;
-    border-radius: 50%;
+    border-radius: 0;
     display: flex;
     flex-direction: column;
     align-items: center;

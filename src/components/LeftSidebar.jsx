@@ -1,9 +1,9 @@
 import React from 'react';
 import './LeftSidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCommentDots, faCalendarAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faCommentDots, faCalendarAlt, faPlus, faEye } from '@fortawesome/free-solid-svg-icons';
 
-const LeftSidebar = ({ isChatOpen, onToggleChat, isCalendarOpen, onToggleCalendar, onNewCase }) => {
+const LeftSidebar = ({ isChatOpen, onToggleChat, isCalendarOpen, onToggleCalendar, isHistoryOpen, onToggleHistory, onNewCase }) => {
     return (
         <aside className="left-sidebar">
             <button
@@ -28,6 +28,14 @@ const LeftSidebar = ({ isChatOpen, onToggleChat, isCalendarOpen, onToggleCalenda
                 title="Toggle Calendar"
             >
                 <FontAwesomeIcon icon={faCalendarAlt} />
+            </button>
+
+            <button
+                className={`sidebar-icon-btn ${isHistoryOpen ? 'active' : ''}`}
+                onClick={onToggleHistory}
+                title="Audit History"
+            >
+                <FontAwesomeIcon icon={faEye} />
             </button>
         </aside>
     );

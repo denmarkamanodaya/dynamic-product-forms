@@ -1,67 +1,72 @@
 :root {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light;
 
-  /* Colors */
-  --bg-color: #EBEBEC;
-  --surface-color: #FFFFFF;
-  --text-primary: #454545;
-  --text-heading: #1A1A1A;
+  /* Colors - Flat Professional Palette */
+  --bg-color: #f8fafc;
+  /* Slate 50 - Very clean flat background */
+  --surface-color: #ffffff;
+
+  /* Typography Colors - High Contrast Flat */
+  --text-heading: #1e293b;
+  /* Slate 800 */
+  --text-primary: #334155;
+  /* Slate 700 */
   --text-secondary: #64748b;
-  --accent-color: #CC782E;
-  --accent-hover: #b16524;
+  /* Slate 500 */
+  --text-tertiary: #94a3b8;
+  /* Slate 400 */
+
+  /* Brand Colors - Flat & Muted */
+  --accent-color: #3b82f6;
+  /* Flat Blue - Professional */
+  --accent-hover: #2563eb;
+  /* Darker Blue */
+  --accent-subtle: #eff6ff;
+  /* Light Blue Background */
+
+  /* UI Elements - Borders & Dividers */
   --border-color: #e2e8f0;
-  --border-light: #dadce0;
+  /* Slate 200 */
+  --border-light: #f1f5f9;
+  /* Slate 100 */
+  --divider-color: #cbd5e1;
+  /* Slate 300 */
 
-  /* Typography Scale (Reduced) */
+  /* Typography Scale */
   --font-xs: 0.75rem;
-  /* 12px */
-  --font-sm: 0.8125rem;
-  /* 13px */
-  --font-base: 0.875rem;
-  /* 14px - Base size */
-  --font-md: 1rem;
-  /* 16px */
-  --font-lg: 1.125rem;
-  /* 18px */
+  --font-sm: 0.875rem;
+  --font-base: 1rem;
+  --font-md: 1.125rem;
+  --font-lg: 1.25rem;
   --font-xl: 1.5rem;
-  /* 24px */
   --font-xxl: 2rem;
-  /* 32px */
 
-  /* Spacing Scale (Reduced) */
+  /* Spacing Scale */
   --space-xxs: 0.25rem;
-  /* 4px */
   --space-xs: 0.5rem;
-  /* 8px */
   --space-sm: 0.75rem;
-  /* 12px */
   --space-md: 1rem;
-  /* 16px */
   --space-lg: 1.5rem;
-  /* 24px */
   --space-xl: 2rem;
-  /* 32px */
   --space-xxl: 3rem;
-  /* 48px */
 
-  /* Radius */
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
-  --radius-full: 9999px;
+  /* Radius - STRICTLY SQUARE */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-full: 0px !important;
 
-  /* Shadows */
+  /* Shadows - Flat / Subtle */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05);
 
   color: var(--text-primary);
-  font-size: var(--font-base);
-
+  font-size: 16px;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -83,77 +88,69 @@ body {
   width: 100%;
   margin: 0 auto;
   padding: var(--space-lg);
-  /* text-align: left; - moved to App.css or component specific */
 }
 
-/* Premium Panel Style (White Card) */
+/* Premium Panel Style (Square & Flat) */
 .glass-panel {
   background: var(--surface-color);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  border-radius: 0;
+  box-shadow: none;
+  /* Flat style uses borders mostly */
   border: 1px solid var(--border-color);
-  /* Added border back for cleaner separation */
   padding: var(--space-md);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .glass-panel:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Premium Inputs (White on Gray) */
-/* Premium Inputs (White on Gray) */
+/* Premium Inputs (Square & Flat) */
 .glass-input {
   background: #ffffff;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  border-radius: 0;
   padding: var(--space-xs) var(--space-sm);
-  /* Reduced padding */
   color: var(--text-heading);
   width: 100% !important;
-  /* Standardize width */
   font-size: var(--font-base);
   font-family: inherit;
-  font-weight: 500;
+  font-weight: 400;
   transition: all 0.2s ease;
   outline: none;
+  box-shadow: none;
 }
 
 .glass-input:focus {
   background: #ffffff;
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(204, 120, 46, 0.1);
-  /* Reduced shadow spread */
+  box-shadow: 0 0 0 1px var(--accent-color);
 }
 
-/* Buttons */
 /* Buttons */
 .glass-btn {
   background: var(--accent-color);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   padding: var(--space-xs) var(--space-md);
-  /* Reduced padding */
   color: white;
-  font-weight: 600;
-  /* Slightly reduced weight */
+  font-weight: 500;
   font-size: var(--font-sm);
-  /* Smaller text */
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.1s ease;
   font-family: inherit;
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
   justify-content: center;
   height: 36px;
-  /* consistent height */
+  box-shadow: none;
 }
 
 .glass-btn:hover {
   background: var(--accent-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+  transform: none;
+  box-shadow: none;
 }
 
 .glass-btn.secondary {

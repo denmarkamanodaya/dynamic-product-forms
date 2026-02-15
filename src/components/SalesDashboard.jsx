@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faShoppingCart, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 import './SalesDashboard.css';
 import endpoints from '../config';
+import LedgerTable from './LedgerTable';
 
 const SalesDashboard = () => {
     const [cases, setCases] = useState([]);
@@ -98,140 +99,158 @@ const SalesDashboard = () => {
     const totalOrders = cases.length;
 
     return (
-        <div className="dashboard-layout">
-            <div className="dashboard-widget sales-widget">
-                <div className="dashboard-header">
-                    <h3 className="dashboard-title">
-                        <FontAwesomeIcon icon={faChartLine} /> Sales Performance
-                    </h3>
-                </div>
+        <div className="sales-dashboard-wrapper">
+            <div className="dashboard-layout">
+                <div className="dashboard-widget sales-widget">
+                    <div className="dashboard-header">
+                        <h3 className="dashboard-title">
+                            <FontAwesomeIcon icon={faChartLine} /> Sales Performance
+                        </h3>
+                    </div>
 
-                <div className="dashboard-metrics">
-                    <div className="metric-card sales">
-                        <div className="metric-icon">
-                            <FontAwesomeIcon icon={faMoneyBillWave} />
+                    <div className="dashboard-metrics">
+                        <div className="metric-card sales">
+                            <div className="metric-icon">
+                                <FontAwesomeIcon icon={faMoneyBillWave} />
+                            </div>
+                            <div className="metric-content">
+                                <span className="metric-label">Total Sales</span>
+                                <span className="metric-value">Php {totalSales.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            </div>
                         </div>
-                        <div className="metric-content">
-                            <span className="metric-label">Total Sales</span>
-                            <span className="metric-value">Php {totalSales.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+
+                        <div className="metric-card orders">
+                            <div className="metric-icon">
+                                <FontAwesomeIcon icon={faShoppingCart} />
+                            </div>
+                            <div className="metric-content">
+                                <span className="metric-label">Total Orders</span>
+                                <span className="metric-value">{totalOrders}</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="metric-card orders">
-                        <div className="metric-icon">
-                            <FontAwesomeIcon icon={faShoppingCart} />
-                        </div>
-                        <div className="metric-content">
-                            <span className="metric-label">Total Orders</span>
-                            <span className="metric-value">{totalOrders}</span>
-                        </div>
+                    <div className="dashboard-chart">
+                        {isLoading ? (
+                            <div className="loading-container" style={{ height: '300px' }}>
+                                <div className="loading-spinner"></div>
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height={300}>
+                                <LineChart
+                                    data={data}
+                                    margin={{
+                                        top: 5,
+                                        right: 30,
+                                        left: 20,
+                                        bottom: 5,
+                                    }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                    <XAxis
+                                        dataKey="name"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: '#64748b', fontSize: 12 }}
+                                        dy={10}
+                                    />
+                                    <YAxis
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: '#64748b', fontSize: 12 }}
+                                        tickFormatter={(value) => `₱${value.toLocaleString()}`}
+                                    />
+                                    <Tooltip
+                                        cursor={{ stroke: '#94a3b8', strokeWidth: 1 }}
+                                        contentStyle={{
+                                            backgroundColor: '#fff',
+                                            borderRadius: '0px',
+                                            border: 'none',
+                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                        }}
+                                        formatter={(value) => [`Php ${value.toLocaleString()}`, 'Sales']}
+                                    />
+                                    <Legend />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="sales"
+                                        name="Sales Amount"
+                                        stroke="#3b82f6"
+                                        strokeWidth={3}
+                                        dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4, stroke: '#fff' }}
+                                        activeDot={{ r: 6, strokeWidth: 0 }}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 
-                <div className="dashboard-chart">
-                    {isLoading ? (
-                        <div className="loading-container" style={{ height: '300px' }}>
-                            <div className="loading-spinner"></div>
-                        </div>
-                    ) : (
-                        <ResponsiveContainer width="100%" height={300}>
-                            <LineChart
-                                data={data}
-                                margin={{
-                                    top: 5,
-                                    right: 30,
-                                    left: 20,
-                                    bottom: 5,
-                                }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#64748b', fontSize: 12 }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#64748b', fontSize: 12 }}
-                                    tickFormatter={(value) => `₱${value.toLocaleString()}`}
-                                />
-                                <Tooltip
-                                    cursor={{ stroke: '#94a3b8', strokeWidth: 1 }}
-                                    contentStyle={{
-                                        backgroundColor: '#fff',
-                                        borderRadius: '0px',
-                                        border: 'none',
-                                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                {/* Product Monitoring */}
+                <div className="dashboard-widget products-widget">
+                    <div className="dashboard-header">
+                        <h3 className="dashboard-title">
+                            <FontAwesomeIcon icon={faShoppingCart} /> Product Monitoring
+                        </h3>
+                    </div>
+                    {/* ... chart content ... */}
+                    <div className="dashboard-chart">
+                        {isLoading ? (
+                            <div className="loading-container" style={{ height: '300px' }}>
+                                <div className="loading-spinner"></div>
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height={300}>
+                                <BarChart
+                                    data={topProducts}
+                                    layout="vertical"
+                                    margin={{
+                                        top: 5,
+                                        right: 30,
+                                        left: 40,
+                                        bottom: 5,
                                     }}
-                                    formatter={(value) => [`Php ${value.toLocaleString()}`, 'Sales']}
-                                />
-                                <Legend />
-                                <Line
-                                    type="monotone"
-                                    dataKey="sales"
-                                    name="Sales Amount"
-                                    stroke="#3b82f6"
-                                    strokeWidth={3}
-                                    dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4, stroke: '#fff' }}
-                                    activeDot={{ r: 6, strokeWidth: 0 }}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    )}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
+                                    <XAxis type="number" hide />
+                                    <YAxis
+                                        dataKey="name"
+                                        type="category"
+                                        width={100}
+                                        tick={{ fill: '#64748b', fontSize: 12 }}
+                                    />
+                                    <Tooltip
+                                        cursor={{ fill: 'transparent' }}
+                                        contentStyle={{
+                                            backgroundColor: '#fff',
+                                            borderRadius: '0px',
+                                            border: 'none',
+                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                        }}
+                                    />
+                                    <Legend />
+                                    <Bar dataKey="quantity" name="Quantity Sold" fill="#10b981" barSize={20} radius={[0, 4, 4, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        )}
+                    </div>
+                </div>
+
+                {/* Temp Box Widget */}
+                <div className="dashboard-widget temp-widget">
+                    <div className="dashboard-header">
+                        <h3 className="dashboard-title">
+                            Temp Box
+                        </h3>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}>
+                        Placeholder Content
+                    </div>
                 </div>
             </div>
 
-            {/* Product Monitoring */}
-            <div className="dashboard-widget products-widget">
-                <div className="dashboard-header">
-                    <h3 className="dashboard-title">
-                        <FontAwesomeIcon icon={faShoppingCart} /> Product Monitoring
-                    </h3>
-                </div>
-                <div className="dashboard-chart">
-                    {isLoading ? (
-                        <div className="loading-container" style={{ height: '300px' }}>
-                            <div className="loading-spinner"></div>
-                        </div>
-                    ) : (
-                        <ResponsiveContainer width="100%" height={300}>
-                            <BarChart
-                                data={topProducts}
-                                layout="vertical"
-                                margin={{
-                                    top: 5,
-                                    right: 30,
-                                    left: 40,
-                                    bottom: 5,
-                                }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
-                                <XAxis type="number" hide />
-                                <YAxis
-                                    dataKey="name"
-                                    type="category"
-                                    width={100}
-                                    tick={{ fill: '#64748b', fontSize: 12 }}
-                                />
-                                <Tooltip
-                                    cursor={{ fill: 'transparent' }}
-                                    contentStyle={{
-                                        backgroundColor: '#fff',
-                                        borderRadius: '0px',
-                                        border: 'none',
-                                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                                    }}
-                                />
-                                <Legend />
-                                <Bar dataKey="quantity" name="Quantity Sold" fill="#10b981" barSize={20} radius={[0, 4, 4, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    )}
-                </div>
-            </div>
+            {/* Ledger Table */}
+            <LedgerTable />
         </div>
     );
 };
