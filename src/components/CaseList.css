@@ -22,25 +22,37 @@
 
 .kanban-columns-container {
     display: flex;
-    gap: var(--space-lg);
+    gap: 0;
+    /* No gaps */
     height: 100%;
     overflow-x: auto;
-    padding-bottom: var(--space-md);
-    /* Space for scrollbar */
-    align-items: flex-start;
+    padding-bottom: 0;
+    align-items: stretch;
+    /* Stretch columns to full height */
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    /* contain child borders */
 }
 
 .kanban-column {
-    flex: 0 0 320px;
-    /* Fixed width columns */
-    background: #f1f5f9;
-    /* Light grey/slate for column background */
-    border-radius: var(--radius-md);
-    /* Smooth corners */
+    flex: 1;
+    /* Distribute space evenly */
+    min-width: 280px;
+    background: #f8fafc;
+    /* Very subtle background */
+    border-radius: 0;
+    /* Remove rounded corners */
     display: flex;
     flex-direction: column;
     max-height: 100%;
-    border: 1px solid var(--border-color);
+    border: none;
+    border-right: 1px solid var(--border-color);
+}
+
+.kanban-column:last-child {
+    border-right: none;
 }
 
 .column-header {
@@ -48,27 +60,26 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 0px;
-    /* border-bottom: 1px solid #e2e8f0;
-    background: #f8fafc;
-    border-radius: 12px 12px 0 0; */
+    background: #fff;
+    /* White header for contrast */
+    border-bottom: 1px solid var(--border-color);
 }
 
 .column-title {
     font-size: var(--font-xs);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #94a3b8;
+    color: var(--text-heading);
     font-weight: 700;
 }
 
 .column-count {
-    background: var(--border-color);
-    color: #475569;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
     font-size: var(--font-xs);
     font-weight: 600;
     padding: 2px 8px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-full);
 }
 
 .column-droppable {
@@ -130,12 +141,9 @@
 
 .card-client {
     font-weight: 700;
-    font-size: var(--font-md);
-    --font-md 14px? Wait,
-    index has base 14px,
-    md 16px. Original was 0.95rem (~15px). Let's use font-base or font-md. font-base is 14px. font-md is 16px. 0.95rem is closer to 15px. I' ll use var(--font-base) for slightly reduced look as requested. font-size: var(--font-base);
+    font-size: var(--font-base);
     line-height: 1.4;
-    color: var(--accent-color)
+    color: var(--accent-color);
 }
 
 .card-footer-grid {
@@ -166,16 +174,22 @@
 }
 
 .trash-drop-zone {
-    flex: 0 0 60px;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     color: #94a3b8;
-    background: #f8fafc;
+    background: #fff;
+    box-shadow: var(--shadow-lg);
     transition: all 0.2s ease;
-    gap: var(--space-xs);
-    margin-right: var(--space-md);
+    z-index: 100;
+    border: 1px solid var(--border-color);
 }
 
 .trash-drop-zone.over {

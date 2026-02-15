@@ -44,12 +44,11 @@ const ClientSelectStep = ({ onClientSelect, onManualInput }) => {
         if (!selectedClient) return;
 
         // Convert both to strings for comparison to avoid type mismatches
-        // Convert both to strings for comparison to avoid type mismatches
-        const client = clients.find(c =>
-            String(c.clientId) === String(selectedClient) ||
-            String(c.id) === String(selectedClient) ||
-            String(c._id) === String(selectedClient)
-        );
+        const client = clients.find(c => {
+            const id = c.clientId || c.id || c._id || c.PK;
+            return String(id) === String(selectedClient);
+        });
+
         if (client) {
             onClientSelect(client);
         }
@@ -84,14 +83,17 @@ const ClientSelectStep = ({ onClientSelect, onManualInput }) => {
                                 <option value="" disabled>
                                     {clients.length === 0 ? "No clients found" : "Select a client..."}
                                 </option>
-                                {clients.map((client) => (
-                                    <option
-                                        key={client.clientId || client.id || client._id}
-                                        value={client.clientId || client.id || client._id}
-                                    >
-                                        {client.clientName || client.businessName || 'Unnamed Client'}
-                                    </option>
-                                ))}
+                                {clients.map((client) => {
+                                    const id = client.clientId || client.id || client._id || client.PK;
+                                    return (
+                                        <option
+                                            key={id}
+                                            value={id}
+                                        >
+                                            {client.clientName || client.businessName || 'Unnamed Client'}
+                                        </option>
+                                    );
+                                })}
                             </select>
                             {error && <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.5rem' }}>{error}</p>}
                         </div>
