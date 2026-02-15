@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { v4 as uuidv4 } from 'uuid';
 import ProductForm from './ProductForm';
 import ClientInfoStep from './ClientInfoStep';
 import ClientSelectStep from './ClientSelectStep';
 import './ProductList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faFilePdf, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faFilePdf, faArrowLeft, faPrint } from '@fortawesome/free-solid-svg-icons';
+import endpoints, { PRODUCT_API_URL } from '../config';
+import generateQuotation from '../utils/pdf/generateQuotation';
+import generateInvoice from '../utils/pdf/generateInvoice';
 
 const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
     const [currentStep, setCurrentStep] = useState(0); // Step 0: Client Select, Step 1: Client Info, Step 2: Products
@@ -16,6 +17,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [activeCaseId, setActiveCaseId] = useState(initialCaseId || null);
     const [isManualClient, setIsManualClient] = useState(false);
+    const [caseStatus, setCaseStatus] = useState('quotation');
 
     const [products, setProducts] = useState([
         { id: 1, productId: '', name: '', price: 0, quantity: 1, thumbnail: '', condition: 'Brand New' }
@@ -37,7 +39,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
 
     // Fetch product catalog from dummyjson
     useEffect(() => {
-        fetch('https://dummyjson.com/products?limit=100')
+        fetch(PRODUCT_API_URL)
             .then(res => res.json())
             .then(data => setAvailableProducts(data.products))
             .catch(err => console.error("Failed to load products", err));
@@ -50,16 +52,17 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
         const fetchCaseData = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(`http://localhost:3000/case/v1/get?id=${initialCaseId}`);
+                const response = await fetch(`${endpoints.caseGet}?id=${initialCaseId}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const result = await response.json();
                 const caseData = result.data.data;
                 const status = result.data.status; // Get status from API
+                setCaseStatus(status);
 
-                // Check if case is in Approval state
-                if (status === 'approved') {
+                // Check if case is in read-only state (including Invoicing and Delivery)
+                if (['approved', 'invoicing', 'delivery'].includes(status)) {
                     setIsReadOnly(true);
                 }
 
@@ -163,6 +166,9 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
             const payload = {
                 caseId,
                 timestamp,
+                caseId,
+                timestamp,
+                status: caseStatus, // Use current status
                 data: {
                     orderDetails: {
                         leadTime: orderDetails.leadTime,
@@ -181,7 +187,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
                 }
             };
 
-            const response = await fetch('http://localhost:3000/case/v1/create', {
+            const response = await fetch(endpoints.caseCreate, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -201,65 +207,21 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
         }
     };
 
-    const generatePDF = async () => {
+    const generatePDF = async (forcedType) => {
         // In edit mode, reuse the existing caseId; otherwise generate a new one
         const caseId = isEditMode ? activeCaseId : uuidv4();
         const timestamp = new Date().toISOString();
-        const doc = new jsPDF();
 
-        // Title
-        doc.setFontSize(18);
-        doc.text("Product Order Summary", 14, 22);
+        // Determine which PDF to generate
+        // If a specific type is forced (e.g. for Delivery buttons), use it.
+        // Otherwise, default to 'invoice' for Invoicing status, and 'quotation' for others.
+        const typeHelper = forcedType || (caseStatus === 'invoicing' ? 'invoice' : 'quotation');
 
-        // ... (PDF Generation Code remains same) ...
-        // Client Details
-        doc.setFontSize(11);
-        doc.setTextColor(100);
-
-        let yPos = 32;
-        doc.text(`Client: ${clientDetails.clientName || 'N/A'}`, 14, yPos);
-        doc.text(`Business: ${clientDetails.businessName || 'N/A'}`, 110, yPos);
-
-        yPos += 7;
-        doc.text(`Tax ID: ${clientDetails.taxId || 'N/A'}`, 14, yPos);
-        doc.text(`Address: ${clientDetails.businessAddress || 'N/A'}`, 110, yPos);
-
-        yPos += 7;
-        doc.text(`Lead Time: ${orderDetails.leadTime}`, 14, yPos);
-        doc.text(`Terms: ${orderDetails.terms ? orderDetails.terms + ' Days' : 'N/A'}`, 110, yPos);
-
-        // Table Data
-        const tableColumn = ["Product", "Condition", "Price", "Quantity", "Total"];
-        const tableRows = [];
-
-        products.forEach(product => {
-            if (product.name) {
-                const productData = [
-                    product.name,
-                    product.condition || 'Brand New',
-                    `Php ${product.price ? product.price.toFixed(2) : '0.00'}`,
-                    product.quantity || 1,
-                    `Php ${((product.price || 0) * (product.quantity || 1)).toFixed(2)}`
-                ];
-                tableRows.push(productData);
-            }
-        });
-
-        // Generate Table
-        autoTable(doc, {
-            head: [tableColumn],
-            body: tableRows,
-            startY: yPos + 15,
-            theme: 'grid',
-            headStyles: { fillColor: [59, 130, 246] }, // Primary blue color
-        });
-
-        // Grand Total
-        const finalY = doc.lastAutoTable?.finalY || (yPos + 15);
-        doc.text(`Grand Total: Php ${calculateGrandTotal()}`, 14, finalY + 10);
-
-        // Save PDF with caseId filename
-        doc.save(`${caseId}.pdf`);
+        if (typeHelper === 'invoice') {
+            generateInvoice(caseId, clientDetails, orderDetails, products, calculateGrandTotal);
+        } else {
+            generateQuotation(caseId, clientDetails, orderDetails, products, calculateGrandTotal);
+        }
 
         // Save to backend API ONLY if NOT Read-Only
         if (!isReadOnly) {
@@ -318,7 +280,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
         if (isManualClient) {
             setIsLoading(true);
             try {
-                const response = await fetch('http://localhost:3000/client/v1/create', {
+                const response = await fetch(endpoints.clientCreate, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -478,13 +440,30 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded }) => {
 
             <div className="controls-area">
                 <div className="controls-wrapper">
-                    <button
-                        className="glass-btn generate-btn"
-                        onClick={generatePDF}
-                    >
-                        <FontAwesomeIcon icon={faFilePdf} />
-                        {isReadOnly ? 'Download PDF' : (isEditMode ? 'Update & Generate PDF' : 'Generate PDF')}
-                    </button>
+                    {caseStatus === 'delivery' ? (
+                        <>
+                            <button
+                                className="glass-btn generate-btn"
+                                onClick={() => generatePDF('quotation')}
+                            >
+                                <FontAwesomeIcon icon={faFilePdf} /> Download Quotation
+                            </button>
+                            <button
+                                className="glass-btn generate-btn"
+                                onClick={() => generatePDF('invoice')}
+                            >
+                                <FontAwesomeIcon icon={faPrint} /> Download Invoice
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            className="glass-btn generate-btn"
+                            onClick={() => generatePDF()}
+                        >
+                            <FontAwesomeIcon icon={caseStatus === 'invoicing' ? faPrint : faFilePdf} />
+                            {caseStatus === 'invoicing' ? 'Print Invoice' : (isReadOnly ? 'Download PDF' : (isEditMode ? 'Update & Generate PDF' : 'Generate PDF'))}
+                        </button>
+                    )}
 
                     <div className="grand-total-card">
                         <span className="label">Total Value</span>
