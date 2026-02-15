@@ -366,6 +366,7 @@ const CaseList = ({ onSelectCase }) => {
                 <h2 className="page-title">Board</h2>
             </div>
 
+
             {isLoading ? (
                 <div className="loading-container">
                     <div className="loading-spinner"></div>

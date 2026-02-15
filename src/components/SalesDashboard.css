@@ -1,0 +1,139 @@
+.dashboard-layout {
+    display: flex;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.dashboard-widget {
+    flex: 1;
+    background: white;
+    border-radius: 0;
+    /* No rounded corners */
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    border: 1px solid #e2e8f0;
+    min-height: 500px;
+    /* Ensure height matches for now */
+}
+
+/* Specific widget styling if needed */
+.sales-widget {
+    /* Takes 50% by default due to flex: 1 and gap */
+}
+
+.products-widget {
+    /* Takes 50% by default */
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-header {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dashboard-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.dashboard-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    border-radius: 0;
+    /* No rounded corners */
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0;
+    /* No rounded corners */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-right: 1rem;
+}
+
+.metric-card.sales .metric-icon {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.metric-card.orders .metric-icon {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.metric-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.dashboard-chart {
+    height: 300px;
+    width: 100%;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.loading-spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
