@@ -429,6 +429,18 @@
 .card-user-footer {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     margin-top: 0.5rem;
     width: 100%;
+    gap: 8px;
+}
+
+.compact-status-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    /* background: #e2e8f0; Removed to let status classes apply */
+    /* color: #475569; Removed to let status classes apply */
+    letter-spacing: 0.05em;
 }

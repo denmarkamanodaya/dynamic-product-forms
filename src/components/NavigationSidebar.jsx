@@ -4,6 +4,10 @@ import './NavigationSidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt, faUserCircle, faTachometerAlt, faBriefcase, faList, faPlus, faUserPlus, faUserTie, faCog, faFire } from '@fortawesome/free-solid-svg-icons';
 
+const getInitials = (firstName, lastName) => {
+    return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
+};
+
 const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, onLogout }) => {
     return (
         <nav className="navigation-sidebar">
@@ -38,13 +42,13 @@ const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, o
                     <FontAwesomeIcon icon={faList} />
                     Kanban Board
                 </a>
-                <a
+                {/* <a
                     className={`nav-item ${currentView === 'form' ? 'active' : ''}`}
                     onClick={() => onNavigate('form')}
                 >
                     <FontAwesomeIcon icon={faPlus} />
                     New Case
-                </a>
+                </a> */}
                 {['superadmin', 'admin'].includes(currentUser?.role) && (
                     <a
                         className={`nav-item ${currentView === 'user-create' ? 'active' : ''}`}
@@ -76,7 +80,33 @@ const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, o
                 {currentUser && (
                     <>
                         <div className="user-profile">
-                            <FontAwesomeIcon icon={faUserCircle} className="user-avatar" />
+                            {(() => {
+                                // Dynamic Avatar Logic
+                                if (currentUser.avatarUrl) {
+                                    return <img src={currentUser.avatarUrl} alt="User" className="user-avatar-circle image" />;
+                                }
+
+                                let customStyle = {};
+                                if (currentUser.metadata) {
+                                    try {
+                                        const meta = typeof currentUser.metadata === 'string' ? JSON.parse(currentUser.metadata) : currentUser.metadata;
+                                        if (meta && meta.avatarColor) {
+                                            customStyle = { background: meta.avatarColor };
+                                        }
+                                    } catch (e) {
+                                        console.error("Failed to parse user metadata", e);
+                                    }
+                                }
+
+                                return (
+                                    <div
+                                        className="user-avatar-circle"
+                                        style={customStyle}
+                                    >
+                                        {getInitials(currentUser.firstName, currentUser.lastName)}
+                                    </div>
+                                );
+                            })()}
                             <div className="user-details">
                                 <span className="user-name">{currentUser.firstName} {currentUser.lastName}</span>
                                 <span className="user-role">{currentUser.role}</span>

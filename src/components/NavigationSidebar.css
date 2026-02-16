@@ -79,9 +79,22 @@
     gap: var(--space-sm);
 }
 
-.user-avatar {
-    color: var(--text-tertiary);
-    font-size: 2rem;
+.user-avatar-circle {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.user-avatar-circle.image {
+    object-fit: cover;
 }
 
 .user-details {
