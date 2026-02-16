@@ -3,9 +3,10 @@ import { v4 as uuidv4 } from 'uuid';
 import ProductForm from './ProductForm';
 import ClientInfoStep from './ClientInfoStep';
 import ClientSelectStep from './ClientSelectStep';
+import CaseJourney from './CaseJourney';
 import './ProductList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faFilePdf, faArrowLeft, faPrint } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faFilePdf, faArrowLeft, faPrint, faRoute } from '@fortawesome/free-solid-svg-icons';
 import endpoints, { PRODUCT_API_URL, currencyConfig, taxConfig } from '../config';
 import generateQuotation from '../utils/pdf/generateQuotation';
 import generateInvoice from '../utils/pdf/generateInvoice';
@@ -22,6 +23,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
     const [isManualClient, setIsManualClient] = useState(false);
     const [caseStatus, setCaseStatus] = useState('quotation');
     const [includeVat, setIncludeVat] = useState(false);
+    const [showJourney, setShowJourney] = useState(false);
     const { showNotification } = useNotification();
 
     const [products, setProducts] = useState([
@@ -69,8 +71,8 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
                 const status = result.data.status; // Get status from API
                 setCaseStatus(status);
 
-                // Check if case is in read-only state (including Invoicing and Delivery)
-                if (['approved', 'invoicing', 'delivery'].includes(status)) {
+                // Check if case is in read-only state (including Invoicing, Delivery, and Completed)
+                if (['approved', 'invoicing', 'delivery', 'completed'].includes(status)) {
                     setIsReadOnly(true);
                 }
 
@@ -411,11 +413,27 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
             </div>
 
             <div className="step-header">
-                <h2 className="step-title">Order Details</h2>
-                {isEditMode && (
-                    <p className="case-id-label">Case ID: {activeCaseId}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+                    <h2 className="step-title" style={{ margin: 0 }}>Order Details</h2>
+                    {isEditMode && <span className="case-id-label" style={{ margin: 0 }}>Case ID: {activeCaseId}</span>}
+                </div>
+                {caseStatus === 'completed' && (
+                    <button
+                        className="glass-btn primary-gradient"
+                        onClick={() => setShowJourney(true)}
+                        title="View Case Journey"
+                    >
+                        <FontAwesomeIcon icon={faRoute} /> View Journey
+                    </button>
                 )}
             </div>
+
+            {showJourney && (
+                <CaseJourney
+                    caseId={activeCaseId}
+                    onClose={() => setShowJourney(false)}
+                />
+            )}
 
             {/* Order Details Section */}
             <div className="client-details-section" style={{ marginBottom: '2rem' }}>
