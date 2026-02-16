@@ -6,7 +6,7 @@ import ClientSelectStep from './ClientSelectStep';
 import './ProductList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faFilePdf, faArrowLeft, faPrint } from '@fortawesome/free-solid-svg-icons';
-import endpoints, { PRODUCT_API_URL, currencyConfig } from '../config';
+import endpoints, { PRODUCT_API_URL, currencyConfig, taxConfig } from '../config';
 import generateQuotation from '../utils/pdf/generateQuotation';
 import generateInvoice from '../utils/pdf/generateInvoice';
 import generateDeliveryReceipt from '../utils/pdf/generateDeliveryReceipt';
@@ -14,18 +14,21 @@ import { useNotification } from '../context/NotificationContext';
 import { getLocalDateString } from '../utils/dateHelpers';
 
 const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, currentUser }) => {
-    const [currentStep, setCurrentStep] = useState(0); // Step 0: Client Select, Step 1: Client Info, Step 2: Products
+    const [currentStep, setCurrentStep] = useState(0); // Step 0: Client Select, Step 1: Client Info, Step 2: Products, Step 3: Calculation
     const [isEditMode, setIsEditMode] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(false); // New State for Read-Only Mode
     const [isLoading, setIsLoading] = useState(false);
     const [activeCaseId, setActiveCaseId] = useState(initialCaseId || null);
     const [isManualClient, setIsManualClient] = useState(false);
     const [caseStatus, setCaseStatus] = useState('quotation');
+    const [includeVat, setIncludeVat] = useState(false);
     const { showNotification } = useNotification();
 
     const [products, setProducts] = useState([
         { id: 1, productId: '', name: '', price: 0, quantity: 1, thumbnail: '', condition: 'Brand New' }
     ]);
+
+    // ... (existing state for clientDetails, orderDetails, availableProducts) ...
 
     const [clientDetails, setClientDetails] = useState({
         clientName: '',
@@ -41,6 +44,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
 
     const [availableProducts, setAvailableProducts] = useState([]);
 
+    // ... (useEffect for products/case data fetching remains same) ...
     // Fetch product catalog from dummyjson
     useEffect(() => {
         fetch(PRODUCT_API_URL)
@@ -106,6 +110,11 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
                     setProducts(hydratedProducts);
                 }
 
+                // Hydrate VAT setting
+                if (caseData.vatDetails && typeof caseData.vatDetails.included !== 'undefined') {
+                    setIncludeVat(caseData.vatDetails.included);
+                }
+
                 // Enter edit mode and skip to Step 2
                 setIsEditMode(true);
                 setActiveCaseId(initialCaseId);
@@ -159,8 +168,17 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
         setProducts(products.filter((_, index) => index !== indexToRemove));
     };
 
+    const calculateSubtotal = () => {
+        return products.reduce((acc, curr) => acc + ((curr.price || 0) * (curr.quantity || 1)), 0);
+    };
+
+    const calculateVatAmount = () => {
+        if (!includeVat) return 0;
+        return calculateSubtotal() * taxConfig.vatRate;
+    };
+
     const calculateGrandTotal = () => {
-        return products.reduce((acc, curr) => acc + ((curr.price || 0) * (curr.quantity || 1)), 0).toFixed(2);
+        return (calculateSubtotal() + calculateVatAmount()).toFixed(2);
     };
 
     const saveToDatabase = async (caseId, timestamp) => {
@@ -185,6 +203,11 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
                         condition: p.condition,
                         total: (p.price || 0) * (p.quantity || 1)
                     })),
+                    vatDetails: {
+                        included: includeVat,
+                        rate: taxConfig.vatRate,
+                        amount: calculateVatAmount()
+                    },
                     grandTotal: parseFloat(calculateGrandTotal())
                 },
                 createdBy: {
@@ -358,7 +381,11 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
         );
     }
 
-    // Step 2: Product Management
+    // Step 3: Calculation & Confirmation (Merged into Step 2)
+    // if (currentStep === 3) { ... } removed
+
+
+    // Step 2: Product Management (Updated UI)
     return (
         <div className="product-list-page">
             <br />
@@ -414,6 +441,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
                             disabled={isReadOnly}
                         />
                     </div>
+                    {/* VAT Checkbox removed as per user request */}
                 </div>
             </div>
 
@@ -456,23 +484,24 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
                 <div className="controls-wrapper">
                     {caseStatus === 'delivery' ? (
                         <button
-                            className="glass-btn generate-btn"
+                            className="glass-btn"
                             onClick={() => generatePDF('delivery_receipt')}
                         >
                             <FontAwesomeIcon icon={faPrint} /> Download Delivery Receipt
                         </button>
                     ) : (
                         <button
-                            className="glass-btn generate-btn"
+                            className="glass-btn"
                             onClick={() => generatePDF()}
+                            disabled={products.length === 0}
                         >
                             <FontAwesomeIcon icon={caseStatus === 'invoicing' ? faPrint : faFilePdf} />
-                            {caseStatus === 'invoicing' ? 'Print Invoice' : (isReadOnly ? 'Download PDF' : (isEditMode ? 'Update & Generate PDF' : 'Generate PDF'))}
+                            {caseStatus === 'invoicing' ? 'Print Invoice' : (isReadOnly ? 'Download PDF' : (isEditMode ? 'Update & Confirm Order' : 'Confirm & Generate PDF'))}
                         </button>
                     )}
 
                     <div className="grand-total-card">
-                        <span className="label">Total Value</span>
+                        <span className="label">Grand Total {includeVat ? '(Inc. VAT)' : ''}</span>
                         <span className="value">{currencyConfig.code} {calculateGrandTotal()}</span>
                     </div>
                 </div>

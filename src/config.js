@@ -14,6 +14,8 @@ const endpoints = {
     historyList: `${API_BASE_URL}/history/v1/list`,
     userCreate: `${API_BASE_URL}/user/v1/create`,
     userLogin: `${API_BASE_URL}/user/v1/login`,
+    createPost: `${API_BASE_URL}/post/v1/create`,
+    listPosts: `${API_BASE_URL}/post/v1/list`,
 };
 
 const LOGIN_BACKGROUND_URL = 'https://firetron.ph/wp-content/uploads/2017/11/Firetron-banner_01.jpg';

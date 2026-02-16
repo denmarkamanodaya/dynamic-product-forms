@@ -22,6 +22,8 @@
 
   /* Brand Colors - Flat & Muted */
   --accent-color: #3b82f6;
+  --primary-color: var(--accent-color);
+  --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
   /* Flat Blue - Professional */
   --accent-hover: #2563eb;
   /* Darker Blue */
@@ -98,7 +100,7 @@ body {
   border-radius: var(--radius-md);
   box-shadow: none;
   /* Flat style uses borders mostly */
-  border: 1px solid var(--border-color);
+  /* border: 1px solid var(--border-color); */
   padding: var(--space-md);
   transition: transform 0.2s ease;
 }
@@ -131,7 +133,7 @@ body {
 
 /* Buttons */
 .glass-btn {
-  background: var(--accent-color);
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
   border: none;
   border-radius: var(--radius-md);
   padding: var(--space-xs) var(--space-md);
@@ -139,20 +141,37 @@ body {
   font-weight: 500;
   font-size: var(--font-sm);
   cursor: pointer;
-  transition: all 0.1s ease;
+  transition: all 0.2s ease;
   font-family: inherit;
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
   justify-content: center;
   height: 36px;
-  box-shadow: none;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
 
 .glass-btn:hover {
-  background: var(--accent-hover);
+  background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%);
+  /* Slightly darker gradient for hover */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.4);
+  filter: brightness(1.1);
+}
+
+.glass-btn:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+
+.glass-btn.small {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  height: 28px;
 }
 
 .glass-btn.secondary {
@@ -224,7 +243,17 @@ body {
   margin-bottom: var(--space-md);
 }
 
-/* Custom Select Styles */
+/* Specific Button Overrides if needed, but glass-btn handles most */
+.add-btn {
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  color: white;
+}
+
+.add-btn:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.4);
+}
+
 /* Custom Select Styles */
 select.glass-input {
   appearance: none;

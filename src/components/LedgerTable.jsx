@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faFilter, faFileInvoiceDollar, faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faFilter, faFileInvoiceDollar, faSort, faSortUp, faSortDown, faEye } from '@fortawesome/free-solid-svg-icons';
 import endpoints, { currencyConfig } from '../config';
 import './LedgerTable.css';
 
-const LedgerTable = () => {
+const LedgerTable = ({ data: externalData, title = "Recent Transactions" }) => {
     const [cases, setCases] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -15,8 +15,13 @@ const LedgerTable = () => {
     const itemsPerPage = 10;
 
     useEffect(() => {
-        fetchCases();
-    }, []);
+        if (externalData) {
+            setCases(externalData);
+            setIsLoading(false);
+        } else {
+            fetchCases();
+        }
+    }, [externalData]);
 
     // Reset page when filters change
     useEffect(() => {
@@ -146,11 +151,15 @@ const LedgerTable = () => {
         return new Intl.NumberFormat(currencyConfig.locale, { style: 'currency', currency: currencyConfig.code }).format(amount || 0);
     };
 
+    const handleActionClick = (caseId) => {
+        window.location.href = `?caseId=${caseId}`;
+    };
+
     return (
         <div className="ledger-container dashboard-widget">
             <div className="dashboard-header">
                 <h3 className="dashboard-title">
-                    <FontAwesomeIcon icon={faFileInvoiceDollar} /> Recent Transactions
+                    <FontAwesomeIcon icon={faFileInvoiceDollar} /> {title}
                 </h3>
             </div>
 
@@ -204,16 +213,17 @@ const LedgerTable = () => {
                             <th onClick={() => handleSort('leadTime')}>
                                 Lead Time <FontAwesomeIcon icon={getSortIcon('leadTime')} className="sort-icon" />
                             </th>
+                            <th className="text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {isLoading ? (
                             <tr>
-                                <td colSpan="6" className="text-center">Loading ledger...</td>
+                                <td colSpan="7" className="text-center">Loading...</td>
                             </tr>
                         ) : paginatedCases.length === 0 ? (
                             <tr>
-                                <td colSpan="6" className="text-center">No transactions found</td>
+                                <td colSpan="7" className="text-center">No transactions found</td>
                             </tr>
                         ) : (
                             paginatedCases.map((c) => (
@@ -224,6 +234,11 @@ const LedgerTable = () => {
                                     </td>
                                     <td className="font-medium">
                                         {c.data?.clientDetails?.clientName || c.data?.clientDetails?.businessName || 'Unknown'}
+                                        {c.data?.clientDetails?.businessName && c.data.clientDetails.clientName && (
+                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                                                {c.data.clientDetails.businessName}
+                                            </div>
+                                        )}
                                     </td>
                                     <td>
                                         <span className={`status-badge status-${(c.status || 'unknown').toLowerCase()}`}>
@@ -234,6 +249,14 @@ const LedgerTable = () => {
                                         {formatCurrency(c.data?.grandTotal)}
                                     </td>
                                     <td>{c.data?.orderDetails?.leadTime || 'N/A'}</td>
+                                    <td className="text-right">
+                                        <button
+                                            className="glass-btn small"
+                                            onClick={() => handleActionClick(c.caseId || c._id)}
+                                        >
+                                            <FontAwesomeIcon icon={faEye} /> View
+                                        </button>
+                                    </td>
                                 </tr>
                             ))
                         )}
@@ -245,7 +268,7 @@ const LedgerTable = () => {
             {!isLoading && totalPages > 1 && (
                 <div className="pagination-controls">
                     <button
-                        className="pagination-btn"
+                        className="glass-btn small"
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
                     >
@@ -255,7 +278,7 @@ const LedgerTable = () => {
                         Page {currentPage} of {totalPages}
                     </span>
                     <button
-                        className="pagination-btn"
+                        className="glass-btn small"
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
                     >

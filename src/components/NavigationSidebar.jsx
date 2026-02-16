@@ -2,7 +2,7 @@ import React from 'react';
 import firetronLogo from '../assets/firetron-logo.png';
 import './NavigationSidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOutAlt, faUserCircle, faTachometerAlt, faBriefcase, faList, faPlus, faUserPlus, faUserTie, faCog } from '@fortawesome/free-solid-svg-icons';
+import { faSignOutAlt, faUserCircle, faTachometerAlt, faBriefcase, faList, faPlus, faUserPlus, faUserTie, faCog, faFire } from '@fortawesome/free-solid-svg-icons';
 
 const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, onLogout }) => {
     return (

@@ -48,9 +48,8 @@ const TopNavbar = ({ currentView, onNavigate, clientName, currentUser, onLogout 
                             <FontAwesomeIcon icon={faUserCircle} size="2x" style={{ color: '#cbd5e1' }} />
                         </div>
                         <button
-                            className="glass-btn secondary"
+                            className="glass-btn"
                             onClick={onLogout}
-                            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
                         >
                             <FontAwesomeIcon icon={faSignOutAlt} /> Logout
                         </button>

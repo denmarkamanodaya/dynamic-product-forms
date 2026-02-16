@@ -5,7 +5,7 @@ import LeftSidebar from './components/LeftSidebar';
 import Login from './components/Login';
 import CaseList from './components/CaseList';
 import MyCases from './components/MyCases';
-import ChatWidget from './components/ChatWidget';
+import AIChat from './components/AIChat';
 import CalendarWidget from './components/CalendarWidget';
 import HistoryWidget from './components/HistoryWidget';
 import SalesDashboard from './components/SalesDashboard';
@@ -14,6 +14,7 @@ import ClientCreate from './components/ClientCreate';
 import Settings from './components/Settings';
 import { NotificationProvider } from './context/NotificationContext';
 import Notification from './components/Notification';
+import FireTwitPage from './components/FireTwitPage';
 import './App.css';
 
 function App() {
@@ -88,28 +89,25 @@ function App() {
     window.history.pushState({}, '', newUrl);
   };
 
-  const toggleChat = (status) => {
-    const newStatus = status !== undefined ? status : !isChatOpen;
-    setIsChatOpen(newStatus);
-    if (newStatus) {
+  const toggleChat = () => {
+    setIsChatOpen(!isChatOpen);
+    if (!isChatOpen) {
       setIsCalendarOpen(false);
       setIsHistoryOpen(false);
     }
   };
 
-  const toggleCalendar = (status) => {
-    const newStatus = status !== undefined ? status : !isCalendarOpen;
-    setIsCalendarOpen(newStatus);
-    if (newStatus) {
+  const toggleCalendar = () => {
+    setIsCalendarOpen(!isCalendarOpen);
+    if (!isCalendarOpen) {
       setIsChatOpen(false);
       setIsHistoryOpen(false);
     }
   };
 
-  const toggleHistory = (status) => {
-    const newStatus = status !== undefined ? status : !isHistoryOpen;
-    setIsHistoryOpen(newStatus);
-    if (newStatus) {
+  const toggleHistory = () => {
+    setIsHistoryOpen(!isHistoryOpen);
+    if (!isHistoryOpen) {
       setIsChatOpen(false);
       setIsCalendarOpen(false);
     }
@@ -130,6 +128,7 @@ function App() {
           isHistoryOpen={isHistoryOpen}
           onToggleHistory={() => toggleHistory()}
           onNewCase={() => handleNavigate('form')}
+          onNavigate={handleNavigate}
         />
 
         <NavigationSidebar
@@ -155,6 +154,12 @@ function App() {
               <ClientCreate onNavigate={handleNavigate} />
             ) : view === 'settings' ? (
               <Settings />
+            ) : view === 'firetwit' ? (
+              <FireTwitPage
+                onNavigate={handleNavigate}
+                currentUser={currentUser}
+                onSelectCase={handleCaseSelect}
+              />
             ) : (
               <ProductList
                 caseId={selectedCaseId}
@@ -165,7 +170,7 @@ function App() {
           </div>
         </div>
 
-        <ChatWidget currentUser={currentUser} isOpen={isChatOpen} onToggle={toggleChat} />
+        <AIChat currentUser={currentUser} isOpen={isChatOpen} onToggle={toggleChat} />
         <CalendarWidget isOpen={isCalendarOpen} onToggle={toggleCalendar} />
         <HistoryWidget isOpen={isHistoryOpen} onToggle={toggleHistory} />
         <Notification />

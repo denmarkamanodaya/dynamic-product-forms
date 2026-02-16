@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './ClientInfoStep.css';
 
-const ClientInfoStep = ({ clientDetails, onChange, onNext, submitLabel = 'Continue to Products →' }) => {
+const ClientInfoStep = ({ clientDetails, onChange, onNext, onCancel, submitLabel = 'Continue to Products →' }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (field, value) => {
@@ -80,8 +80,18 @@ const ClientInfoStep = ({ clientDetails, onChange, onNext, submitLabel = 'Contin
                 </div>
 
                 <div className="step-actions">
+                    {onCancel && (
+                        <button
+                            className="glass-btn secondary"
+                            onClick={onCancel}
+                            disabled={isSubmitting}
+                            style={{ marginRight: '1rem' }}
+                        >
+                            Cancel
+                        </button>
+                    )}
                     <button
-                        className="continue-btn"
+                        className="glass-btn"
                         onClick={validateAndProceed}
                         disabled={isSubmitting}
                         style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'wait' : 'pointer' }}

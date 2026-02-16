@@ -1,4 +1,4 @@
-.chat-widget {
+.ai-chat-widget {
     position: fixed;
     bottom: var(--space-xl);
     right: var(--space-xl);
@@ -34,7 +34,7 @@
 }
 
 /* Chat Window */
-.chat-window {
+.ai-chat-window {
     position: absolute;
     bottom: 20px;
     right: 0;
@@ -63,7 +63,7 @@
 }
 
 /* Header */
-.chat-header {
+.ai-chat-header {
     background: var(--accent-color);
     color: white;
     padding: var(--space-md);
@@ -72,7 +72,7 @@
     align-items: center;
 }
 
-.chat-title {
+.ai-chat-title {
     font-weight: 700;
     font-size: var(--font-md);
 }
@@ -88,7 +88,7 @@
 }
 
 /* Messages Area */
-.chat-messages {
+.ai-chat-messages {
     flex: 1;
     padding: var(--space-md);
     overflow-y: auto;
@@ -139,7 +139,7 @@
 }
 
 /* Input Area */
-.chat-input-area {
+.ai-chat-input-area {
     padding: var(--space-md);
     background: #ffffff;
     border-top: 1px solid var(--border-color);
@@ -147,7 +147,7 @@
     gap: var(--space-xs);
 }
 
-.chat-input {
+.ai-chat-input {
     flex: 1;
     padding: var(--space-sm);
     border: 1px solid var(--border-light);
@@ -156,7 +156,7 @@
     font-size: var(--font-base);
 }
 
-.chat-input:focus {
+.ai-chat-input:focus {
     border-color: var(--accent-color);
 }
 
