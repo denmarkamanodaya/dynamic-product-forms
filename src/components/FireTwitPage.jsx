@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { PostService, CaseService } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faFire, faComment, faSmile } from '@fortawesome/free-solid-svg-icons';
-import config from '../config';
+import { faFire, faPaperPlane, faSmile, faComment } from '@fortawesome/free-solid-svg-icons';
 import './FireTwitPage.css';
 
 const FireTwitPage = ({ onNavigate, currentUser, onSelectCase }) => {
@@ -18,19 +17,20 @@ const FireTwitPage = ({ onNavigate, currentUser, onSelectCase }) => {
 
     const fetchCases = async () => {
         try {
-            console.log("Fetching cases from:", config.caseList);
-            const response = await axios.get(config.caseList);
-            console.log("Cases response:", response.data);
+            const response = await CaseService.list();
+            console.log("Cases response:", response);
 
-            if (response.data && Array.isArray(response.data)) {
-                setCases(response.data);
+            let caseList = [];
+            if (Array.isArray(response)) {
+                caseList = response;
+            } else if (response.data && Array.isArray(response.data)) {
+                caseList = response.data;
             } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
-                // Handle wrapped data structure if applicable
-                setCases(response.data.data);
+                caseList = response.data.data;
             } else {
-                console.warn("Unexpected cases data format:", response.data);
-                setCases([]);
+                console.warn("Unexpected cases data format:", response);
             }
+            setCases(caseList);
         } catch (error) {
             console.error("Error fetching cases for tagging", error);
             setCases([]); // Fallback to empty to prevent crash
@@ -40,14 +40,16 @@ const FireTwitPage = ({ onNavigate, currentUser, onSelectCase }) => {
     const fetchPosts = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(config.listPosts);
+            const response = await PostService.list();
             // If API returns empty or error, fallback to mock for demo if needed, 
             // but primarily trust API.
-            if (response.data && Array.isArray(response.data)) {
-                setPosts(response.data);
-            } else {
-                setPosts([]);
+            let postList = [];
+            if (Array.isArray(response)) {
+                postList = response;
+            } else if (response.data && Array.isArray(response.data)) {
+                postList = response.data;
             }
+            setPosts(postList);
         } catch (error) {
             console.error("Error fetching posts", error);
             // Fallback mock data for demo if API fails
@@ -92,9 +94,10 @@ const FireTwitPage = ({ onNavigate, currentUser, onSelectCase }) => {
         setNewPost('');
 
         try {
-            await axios.post(config.createPost, {
-                content: optimisticPost.content,
-                createdBy: optimisticPost.createdBy
+            await PostService.create({
+                content: newPost,
+                createdBy: createdBy, // Pass the full createdBy object
+                caseId: undefined
             });
             // Optionally refetch to get server-side timestamp/ID if needed
             // fetchPosts(); 

@@ -15,7 +15,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faShoppingCart, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 import './SalesDashboard.css';
-import endpoints, { currencyConfig } from '../config';
+import { CaseService, ReportService } from '../services/api';
+import { currencyConfig } from '../config';
 import LedgerTable from './LedgerTable';
 
 const SalesDashboard = () => {
@@ -28,28 +29,30 @@ const SalesDashboard = () => {
             setIsLoading(true);
             try {
                 const [casesRes, productsRes] = await Promise.all([
-                    fetch(endpoints.caseCompleted),
-                    fetch(endpoints.topProducts)
+                    CaseService.list({ status: 'completed' }),
+                    ReportService.topProducts()
                 ]);
 
-                if (casesRes.ok) {
-                    const result = await casesRes.json();
+                if (Array.isArray(casesRes)) {
+                    setCases(casesRes);
+                } else if (casesRes.data) {
                     let data = [];
-                    if (Array.isArray(result)) {
-                        data = result;
-                    } else if (result.data && Array.isArray(result.data)) {
-                        data = result.data;
+                    if (Array.isArray(casesRes.data)) {
+                        data = casesRes.data;
+                    } else if (casesRes.data.data && Array.isArray(casesRes.data.data)) {
+                        data = casesRes.data.data;
                     }
                     setCases(data);
                 }
 
-                if (productsRes.ok) {
-                    const result = await productsRes.json();
+                if (Array.isArray(productsRes)) {
+                    setTopProducts(productsRes);
+                } else if (productsRes.data) {
                     let data = [];
-                    if (Array.isArray(result)) {
-                        data = result;
-                    } else if (result.data && Array.isArray(result.data)) {
-                        data = result.data;
+                    if (Array.isArray(productsRes.data)) {
+                        data = productsRes.data;
+                    } else if (productsRes.data.data && Array.isArray(productsRes.data.data)) {
+                        data = productsRes.data.data;
                     }
                     setTopProducts(data);
                 }

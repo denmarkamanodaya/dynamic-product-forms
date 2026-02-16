@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 import firetronLogo from '../assets/firetron-logo.png';
-import { endpoints } from '../config'; // Added endpoints import
+import { UserService } from '../services/api';
 import './Login.css';
 
 // Mock User Database - This will be removed as we are using an API
@@ -14,7 +14,7 @@ import './Login.css';
 // };
 
 const Login = ({ onLogin }) => {
-    const [username, setUsername] = useState(''); // This acts as email/username
+    const [emailAddress, setEmailAddress] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -25,27 +25,20 @@ const Login = ({ onLogin }) => {
         setIsLoading(true);
 
         try {
-            const response = await fetch(endpoints.userLogin, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    data: {
-                        emailAddress: username, // Mapping username field to emailAddress for backend
-                        password: password
-                    }
-                }),
+            // Backend expects { data: { emailAddress, password } }
+            const response = await UserService.login({
+                data: {
+                    emailAddress: emailAddress,
+                    password: password
+                }
             });
 
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.message || 'Login failed');
+            if (response.data) {
+                // Success
+                onLogin(response.data);
+            } else {
+                throw new Error('Login failed');
             }
-
-            // Success
-            onLogin(result.data);
 
         } catch (err) {
             setError(err.message || 'An error occurred during login');
@@ -63,17 +56,17 @@ const Login = ({ onLogin }) => {
 
                 <form className="login-form" onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="username">Username</label>
+                        <label htmlFor="emailAddress">Email Address</label>
                         <div className="input-wrapper">
                             <FontAwesomeIcon icon={faUser} className="input-icon" />
                             <input
-                                type="text"
-                                id="username"
+                                type="email"
+                                id="emailAddress"
                                 className="glass-input with-icon"
-                                placeholder="Enter username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                autoComplete="username"
+                                placeholder="Enter email address"
+                                value={emailAddress}
+                                onChange={(e) => setEmailAddress(e.target.value)}
+                                autoComplete="email"
                                 required
                             />
                         </div>

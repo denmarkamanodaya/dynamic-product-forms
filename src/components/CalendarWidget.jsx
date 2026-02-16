@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CalendarWidget.css';
-import endpoints, { currencyConfig } from '../config';
+import { CaseService } from '../services/api';
 import { getLocalDateString } from '../utils/dateHelpers';
+import { currencyConfig } from '../config';
 
 const CalendarWidget = ({ isOpen, onToggle }) => {
     const [date, setDate] = useState(new Date());
@@ -15,15 +16,14 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
         const fetchCases = async () => {
             try {
                 // Fetch ALL cases in one go
-                const response = await fetch(endpoints.caseList);
-                if (!response.ok) throw new Error('Failed to fetch cases');
-
-                const result = await response.json();
+                const response = await CaseService.list();
                 let allCases = [];
-                if (Array.isArray(result)) {
-                    allCases = result;
-                } else if (result.data && Array.isArray(result.data)) {
-                    allCases = result.data;
+                if (Array.isArray(response)) {
+                    allCases = response;
+                } else if (response.data && Array.isArray(response.data)) {
+                    allCases = response.data;
+                } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
+                    allCases = response.data.data;
                 }
 
                 // Filter out completed cases
