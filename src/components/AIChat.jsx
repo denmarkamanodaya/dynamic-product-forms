@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './ChatWidget.css';
+import './AIChat.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
-const ChatWidget = ({ currentUser, isOpen, onToggle }) => {
+const AIChat = ({ currentUser, isOpen, onToggle }) => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef(null);
@@ -54,18 +54,18 @@ const ChatWidget = ({ currentUser, isOpen, onToggle }) => {
     };
 
     return (
-        <div className={`chat-widget ${isOpen ? 'open' : ''}`}>
+        <div className={`ai-chat-widget ${isOpen ? 'open' : ''}`}>
             {isOpen && (
-                <div className="chat-window">
-                    <div className="chat-header">
-                        <span className="chat-title">Team Chat</span>
+                <div className="ai-chat-window">
+                    <div className="ai-chat-header">
+                        <span className="ai-chat-title">FireBot</span>
                         <button className="close-btn" onClick={() => onToggle(false)}>×</button>
                     </div>
 
-                    <div className="chat-messages">
+                    <div className="ai-chat-messages">
                         {messages.length === 0 && (
                             <div style={{ textAlign: 'center', color: '#94a3b8', marginTop: '2rem' }}>
-                                No messages yet. Say hi!
+                                No messages yet. Ask FireBrain!
                             </div>
                         )}
                         {messages.map((msg) => {
@@ -86,15 +86,15 @@ const ChatWidget = ({ currentUser, isOpen, onToggle }) => {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    <form className="chat-input-area" onSubmit={handleSendMessage}>
+                    <form className="ai-chat-input-area" onSubmit={handleSendMessage}>
                         <input
                             type="text"
-                            className="chat-input"
+                            className="ai-chat-input"
                             placeholder="Type a message..."
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                         />
-                        <button type="submit" className="send-btn">
+                        <button type="submit" className="glass-btn" style={{ marginLeft: '0.5rem' }}>
                             <FontAwesomeIcon icon={faPaperPlane} />
                         </button>
                     </form>
@@ -104,4 +104,4 @@ const ChatWidget = ({ currentUser, isOpen, onToggle }) => {
     );
 };
 
-export default ChatWidget;
+export default AIChat;

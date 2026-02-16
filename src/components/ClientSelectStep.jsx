@@ -100,24 +100,24 @@ const ClientSelectStep = ({ onClientSelect, onManualInput }) => {
                     )}
 
                     {!isLoading && (
-                        <>
+                        <div className="button-group">
                             <button
-                                className="action-btn"
+                                className="glass-btn"
                                 onClick={handleContinue}
                                 disabled={!selectedClient}
                             >
                                 Use Selected Client
                             </button>
 
-                            <div className="divider">OR</div>
+                            <span className="divider-text">- OR -</span>
 
                             <button
-                                className="manual-btn"
+                                className="glass-btn secondary"
                                 onClick={onManualInput}
                             >
                                 <FontAwesomeIcon icon={faUserPlus} /> Enter Details Manually
                             </button>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>

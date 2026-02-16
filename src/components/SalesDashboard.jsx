@@ -190,7 +190,7 @@ const SalesDashboard = () => {
                 <div className="dashboard-widget products-widget">
                     <div className="dashboard-header">
                         <h3 className="dashboard-title">
-                            <FontAwesomeIcon icon={faShoppingCart} /> Product Monitoring
+                            <FontAwesomeIcon icon={faShoppingCart} /> Sales by Product
                         </h3>
                     </div>
                     {/* ... chart content ... */}

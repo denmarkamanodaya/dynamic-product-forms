@@ -14,6 +14,18 @@
     width: 100%;
 }
 
+@media (max-width: 1200px) {
+    .dashboard-layout {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
 .dashboard-widget {
     background: var(--surface-color);
     border-radius: var(--radius-md);
@@ -29,9 +41,7 @@
 }
 
 /* Specific widget styling if needed */
-.sales-widget {
-    /* Takes 50% by default due to flex: 1 and gap */
-}
+/* .sales-widget styling removed as it was empty */
 
 .products-widget {
     /* Takes 50% by default */

@@ -82,6 +82,7 @@ const ClientCreate = ({ onNavigate }) => {
                 clientDetails={clientDetails}
                 onChange={setClientDetails}
                 onNext={handleCreate}
+                onCancel={() => onNavigate('list')}
                 submitLabel="Create Client"
             />
         </div>

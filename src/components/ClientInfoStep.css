@@ -71,29 +71,7 @@
     padding-top: 1rem;
 }
 
-.continue-btn {
-    background: var(--accent-color);
-    color: white;
-    padding: 1rem 3rem;
-    border-radius: var(--radius-md);
-    border: none;
-    font-weight: 700;
-    font-size: 1rem;
-    box-shadow: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    letter-spacing: 0.02em;
-}
-
-.continue-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(204, 120, 46, 0.4);
-    background: #b16524;
-}
-
-.continue-btn:active {
-    transform: translateY(0);
-}
+/* Cleaned up unused button styles */
 
 @media (max-width: 768px) {
     .step-card {

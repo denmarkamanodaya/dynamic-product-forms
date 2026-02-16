@@ -208,11 +208,11 @@ const UserCreate = ({ onNavigate }) => {
                 </div>
 
                 <div className="user-create-actions">
-                    <button className="cancel-btn" onClick={() => onNavigate('dashboard')}>
+                    <button className="glass-btn secondary" onClick={() => onNavigate('dashboard')}>
                         Cancel
                     </button>
                     <button
-                        className="create-btn"
+                        className="glass-btn"
                         onClick={handleSubmit}
                         disabled={loading}
                     >

@@ -1,11 +1,21 @@
 import React from 'react';
 import './LeftSidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCommentDots, faCalendarAlt, faPlus, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faCommentDots, faCalendarAlt, faPlus, faEye, faFire, faBrain } from '@fortawesome/free-solid-svg-icons';
 
-const LeftSidebar = ({ isChatOpen, onToggleChat, isCalendarOpen, onToggleCalendar, isHistoryOpen, onToggleHistory, onNewCase }) => {
+const LeftSidebar = ({ onNavigate, onToggleChat, isChatOpen, onToggleCalendar, isCalendarOpen, onToggleHistory, isHistoryOpen, onNewCase, onNavigate: handleNavigate }) => {
     return (
         <aside className="left-sidebar">
+            <button
+                className="sidebar-icon-btn"
+                onClick={() => handleNavigate('firetwit')}
+                title="FireTwit & Notifications"
+            >
+                <div className="notification-badge-container">
+                    <FontAwesomeIcon icon={faFire} />
+                </div>
+            </button>
+
             <button
                 className="sidebar-icon-btn"
                 onClick={onNewCase}
@@ -17,9 +27,8 @@ const LeftSidebar = ({ isChatOpen, onToggleChat, isCalendarOpen, onToggleCalenda
             <button
                 className={`sidebar-icon-btn ${isChatOpen ? 'active' : ''}`}
                 onClick={onToggleChat}
-                title="Toggle Chat"
             >
-                <FontAwesomeIcon icon={faCommentDots} />
+                <FontAwesomeIcon icon={faBrain} />
             </button>
 
             <button
