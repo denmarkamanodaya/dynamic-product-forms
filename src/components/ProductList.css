@@ -19,6 +19,7 @@
     flex-direction: column;
     gap: var(--space-sm);
     border: 1px solid var(--border-color);
+    background-color: var(--surface-color);
     /* Tighter space for table feel */
     margin-bottom: var(--space-lg);
 }

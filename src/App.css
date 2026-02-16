@@ -7,10 +7,10 @@
 
 .App {
   min-height: 100vh;
-  background-color: #ffffff;
   color: var(--text-heading);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: var(--font-base);
+  background-color: var(--accent-subtle);
 }
 
 .main-content {

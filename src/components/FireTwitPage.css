@@ -1,7 +1,8 @@
 .firetwit-page {
     padding: var(--space-lg);
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
+    background-color: var(--surface-color);
 }
 
 .firetwit-header {
@@ -26,9 +27,7 @@
     background: var(--surface-color);
     border-radius: var(--radius-lg);
     padding: var(--space-lg);
-    box-shadow: var(--shadow-md);
     margin-bottom: var(--space-xl);
-    border: 1px solid var(--border-color);
 }
 
 .post-input {
@@ -61,7 +60,7 @@
     color: white;
     border: none;
     padding: 8px 20px;
-    border-radius: 20px;
+    border-radius: var(--radius-sm);
     font-weight: 600;
     cursor: pointer;
     display: flex;

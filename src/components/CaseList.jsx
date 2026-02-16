@@ -19,7 +19,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import './CaseList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faMoneyBillWave, faTrash, faClipboardCheck, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faMoneyBillWave, faTrash, faClipboardCheck, faUser, faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
 import endpoints, { currencyConfig } from '../config';
 import { useNotification } from '../context/NotificationContext';
 
@@ -40,6 +40,53 @@ const COLUMN_TO_STATUS = {
     [COLUMNS.DELIVERY]: 'delivery',
 };
 
+// Helper functions (moved outside components)
+const getInitials = (firstName, lastName) => {
+    const first = firstName ? firstName.charAt(0).toUpperCase() : '';
+    const last = lastName ? lastName.charAt(0).toUpperCase() : '';
+    return `${first}${last}`;
+};
+
+const renderUserAvatar = (user) => {
+    if (!user) return <div className="user-avatar-circle unknown">?</div>;
+
+    // Handle legacy string data
+    if (typeof user === 'string') {
+        return (
+            <div className="user-avatar-circle legacy" title={user}>
+                <FontAwesomeIcon icon={faUser} />
+            </div>
+        );
+    }
+
+    if (user.avatarUrl) {
+        return <img src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} className="user-avatar-circle image" />;
+    }
+
+    let customStyle = {};
+    if (user.metadata) {
+        try {
+            const meta = typeof user.metadata === 'string' ? JSON.parse(user.metadata) : user.metadata;
+            if (meta && meta.avatarColor) {
+                customStyle = { background: meta.avatarColor }; // Override gradient
+            }
+        } catch (e) {
+            // Ignore parse error
+        }
+    }
+
+    const initials = getInitials(user.firstName, user.lastName);
+    return (
+        <div
+            className="user-avatar-circle initials"
+            title={`${user.firstName} ${user.lastName}`}
+            style={customStyle}
+        >
+            {initials}
+        </div>
+    );
+};
+
 // Sortable Item Component (The Card)
 const SortableItem = ({ id, caseItem, onClick, columnName }) => {
     const {
@@ -57,52 +104,6 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
         opacity: isDragging ? 0.5 : 1,
     };
 
-    const getInitials = (firstName, lastName) => {
-        const first = firstName ? firstName.charAt(0).toUpperCase() : '';
-        const last = lastName ? lastName.charAt(0).toUpperCase() : '';
-        return `${first}${last}`;
-    };
-
-    const renderUserAvatar = (user) => {
-        if (!user) return <div className="user-avatar-circle unknown">?</div>;
-
-        // Handle legacy string data
-        if (typeof user === 'string') {
-            return (
-                <div className="user-avatar-circle legacy" title={user}>
-                    <FontAwesomeIcon icon={faUser} />
-                </div>
-            );
-        }
-
-        if (user.avatarUrl) {
-            return <img src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} className="user-avatar-circle image" />;
-        }
-
-        let customStyle = {};
-        if (user.metadata) {
-            try {
-                const meta = JSON.parse(user.metadata);
-                if (meta.avatarColor) {
-                    customStyle = { background: meta.avatarColor }; // Override gradient
-                }
-            } catch (e) {
-                // Ignore parse error
-            }
-        }
-
-        const initials = getInitials(user.firstName, user.lastName);
-        return (
-            <div
-                className="user-avatar-circle initials"
-                title={`${user.firstName} ${user.lastName}`}
-                style={customStyle}
-            >
-                {initials}
-            </div>
-        );
-    };
-
     return (
         <div
             ref={setNodeRef}
@@ -115,9 +116,14 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
             <div className="card-content">
                 <div className="card-header-row">
                     <div className="card-client">
-                        {caseItem.data?.clientDetails?.clientName ||
-                            caseItem.data?.clientDetails?.businessName ||
-                            'Unknown Client'}
+                        <div className="client-name">
+                            {caseItem.data?.clientDetails?.clientName || 'Unknown Client'}
+                        </div>
+                        {caseItem.data?.clientDetails?.businessName && (
+                            <div className="business-name">
+                                {caseItem.data?.clientDetails?.businessName}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -153,7 +159,7 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
 };
 
 // Droppable Column Component
-const DroppableColumn = ({ id, title, count, children }) => {
+const DroppableColumn = ({ id, title, count, children, onAdd }) => {
     const { setNodeRef } = useDroppable({
         id: id,
     });
@@ -161,12 +167,22 @@ const DroppableColumn = ({ id, title, count, children }) => {
     return (
         <div className="kanban-column">
             <div className="column-header">
-                <h3 className="column-title">{title}</h3>
-                <span className="column-count">{count}</span>
+                <div className="header-title-row">
+                    <h3 className="column-title">{title}</h3>
+                    <span className="column-count">{count}</span>
+                </div>
             </div>
             <div ref={setNodeRef} className="column-droppable">
                 {children}
             </div>
+            {onAdd && (
+                <button
+                    className="column-footer-add-btn"
+                    onClick={() => onAdd('client-select')}
+                >
+                    <FontAwesomeIcon icon={faPlus} /> Add New Case
+                </button>
+            )}
         </div>
     );
 };
@@ -187,7 +203,7 @@ const TrashDropZone = ({ isDelivery }) => {
     );
 };
 
-const CaseList = ({ onSelectCase, currentUser }) => {
+const CaseList = ({ onSelectCase, currentUser, onNavigate }) => {
     const [items, setItems] = useState({
         [COLUMNS.QUOTATION]: [],
         [COLUMNS.APPROVAL]: [],
@@ -465,15 +481,30 @@ const CaseList = ({ onSelectCase, currentUser }) => {
             <br />
             <div className="kanban-header">
                 <h2 className="page-title">Board</h2>
-                <div className="kanban-search">
-                    <i className="search-icon">🔍</i>
-                    <input
-                        type="text"
-                        placeholder="Search Case ID or Client..."
-                        className="glass-input search-input"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+                <div className="kanban-controls">
+                    <div className="kanban-search-wrapper">
+                        <div className="kanban-search">
+                            <FontAwesomeIcon icon={faSearch} className="search-icon" />
+                            <input
+                                type="text"
+                                placeholder="Search Case ID or Client..."
+                                className="search-input"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div className="kanban-users-monitor">
+                        {Array.from(new Set(Object.values(items).flat().map(i => i.createdBy?.email || i.createdBy))).map(userRef => {
+                            // Find the full user object from the first item that matches
+                            const item = Object.values(items).flat().find(i => (i.createdBy?.email || i.createdBy) === userRef);
+                            return (
+                                <div key={userRef} className="monitor-avatar" title={typeof item.createdBy === 'object' ? `${item.createdBy.firstName} ${item.createdBy.lastName}` : item.createdBy}>
+                                    {renderUserAvatar(item.createdBy)}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
@@ -501,8 +532,9 @@ const CaseList = ({ onSelectCase, currentUser }) => {
                                 <DroppableColumn
                                     key={columnId}
                                     id={columnId}
-                                    title={columnId}
+                                    title={key}
                                     count={filteredItems.length}
+                                    onAdd={key === 'QUOTATION' ? onNavigate : null}
                                 >
                                     <div className="card-list">
                                         <SortableContext
