@@ -1,7 +1,7 @@
 .ledger-container {
     background: white;
     padding: 1rem;
-    border-radius: 0;
+    border-radius: var(--radius-md);
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     border: 1px solid var(--border-color);
 }
@@ -19,7 +19,7 @@
     align-items: center;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 0;
+    border-radius: var(--radius-md);
     padding: 0.4rem 0.75rem;
     flex: 1;
     min-width: 200px;
@@ -196,7 +196,7 @@
     padding: 0.5rem 1rem;
     border: 1px solid #e2e8f0;
     background: white;
-    border-radius: 0;
+    border-radius: var(--radius-md);
     color: #475569;
     font-size: 0.875rem;
     font-weight: 500;

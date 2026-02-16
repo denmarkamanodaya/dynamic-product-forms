@@ -51,7 +51,7 @@
     max-width: 1200px;
     height: 85vh;
     background: #ffffff;
-    border-radius: 4px;
+    border-radius: var(--radius-md);
     /* Square container */
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     display: flex;
@@ -104,7 +104,7 @@
     border: 1px solid #cbd5e1;
     color: #64748b;
     padding: 0.5rem 1rem;
-    border-radius: 2px;
+    border-radius: var(--radius-md);
     /* Square button */
     cursor: pointer;
     font-size: 0.9rem;
@@ -182,7 +182,7 @@
     align-items: center;
     padding: 0.5rem;
     border: 1px solid transparent;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     font-size: 1.1rem;
     position: relative;
     transition: all 0.2s;
@@ -228,7 +228,7 @@
     color: white;
     font-size: 0.75rem;
     padding: 2px 6px;
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     font-weight: 700;
 }
 
@@ -258,7 +258,7 @@
 .event-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 4px;
+    border-radius: var(--radius-md);
     padding: 1rem;
     transition: all 0.2s;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -286,7 +286,7 @@
 .status-badge-full {
     font-size: 0.75rem;
     padding: 4px 10px;
-    border-radius: 2px;
+    border-radius: var(--radius-md);
     text-transform: uppercase;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -334,7 +334,7 @@
     font-family: monospace;
     background: #f1f5f9;
     padding: 2px 6px;
-    border-radius: 4px;
+    border-radius: var(--radius-md);
 }
 
 .total-val {

@@ -14,7 +14,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faShoppingCart, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 import './SalesDashboard.css';
-import endpoints from '../config';
+import endpoints, { currencyConfig } from '../config';
 import LedgerTable from './LedgerTable';
 
 const SalesDashboard = () => {
@@ -115,7 +115,7 @@ const SalesDashboard = () => {
                             </div>
                             <div className="metric-content">
                                 <span className="metric-label">Total Sales</span>
-                                <span className="metric-value">Php {totalSales.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                <span className="metric-value">{currencyConfig.code} {totalSales.toLocaleString(currencyConfig.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                         </div>
 
@@ -158,7 +158,7 @@ const SalesDashboard = () => {
                                         axisLine={false}
                                         tickLine={false}
                                         tick={{ fill: '#64748b', fontSize: 12 }}
-                                        tickFormatter={(value) => `₱${value.toLocaleString()}`}
+                                        tickFormatter={(value) => `${currencyConfig.symbol}${value.toLocaleString()}`}
                                     />
                                     <Tooltip
                                         cursor={{ stroke: '#94a3b8', strokeWidth: 1 }}
@@ -168,7 +168,7 @@ const SalesDashboard = () => {
                                             border: 'none',
                                             boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
                                         }}
-                                        formatter={(value) => [`Php ${value.toLocaleString()}`, 'Sales']}
+                                        formatter={(value) => [`${currencyConfig.code} ${value.toLocaleString()}`, 'Sales']}
                                     />
                                     <Legend />
                                     <Line

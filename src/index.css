@@ -6,7 +6,7 @@
   color-scheme: light;
 
   /* Colors - Flat Professional Palette */
-  --bg-color: #f8fafc;
+  --bg-color: #ffffff;
   /* Slate 50 - Very clean flat background */
   --surface-color: #ffffff;
 
@@ -31,6 +31,8 @@
   /* UI Elements - Borders & Dividers */
   --border-color: #e2e8f0;
   /* Slate 200 */
+  --input-border: #cbd5e1;
+  /* Configurable Input Border */
   --border-light: #f1f5f9;
   /* Slate 100 */
   --divider-color: #cbd5e1;
@@ -54,11 +56,11 @@
   --space-xl: 2rem;
   --space-xxl: 3rem;
 
-  /* Radius - STRICTLY SQUARE */
-  --radius-sm: 0px;
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-full: 0px !important;
+  /* Radius - Subtle Rounding */
+  --radius-sm: 3px;
+  --radius-md: 3px;
+  --radius-lg: 3px;
+  --radius-full: 9999px !important;
 
   /* Shadows - Flat / Subtle */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -93,7 +95,7 @@ body {
 /* Premium Panel Style (Square & Flat) */
 .glass-panel {
   background: var(--surface-color);
-  border-radius: 0;
+  border-radius: var(--radius-md);
   box-shadow: none;
   /* Flat style uses borders mostly */
   border: 1px solid var(--border-color);
@@ -108,8 +110,8 @@ body {
 /* Premium Inputs (Square & Flat) */
 .glass-input {
   background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-md);
   padding: var(--space-xs) var(--space-sm);
   color: var(--text-heading);
   width: 100% !important;
@@ -131,7 +133,7 @@ body {
 .glass-btn {
   background: var(--accent-color);
   border: none;
-  border-radius: 0;
+  border-radius: var(--radius-md);
   padding: var(--space-xs) var(--space-md);
   color: white;
   font-weight: 500;

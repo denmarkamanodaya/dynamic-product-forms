@@ -1,48 +1,50 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faFilter, faFileInvoiceDollar, faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import endpoints, { currencyConfig } from '../config';
-import './LedgerTable.css';
+import './LedgerTable.css'; // Reusing LedgerTable styles for consistency
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faSearch,
+    faBriefcase,
+    faEye,
+    faSort,
+    faSortUp,
+    faSortDown
+} from '@fortawesome/free-solid-svg-icons';
 
-const LedgerTable = () => {
+const MyCases = ({ currentUser }) => {
     const [cases, setCases] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
-
     useEffect(() => {
-        fetchCases();
-    }, []);
-
-    // Reset page when filters change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchTerm, statusFilter]);
-
-    const fetchCases = async () => {
-        setIsLoading(true);
-        try {
-            const response = await fetch(endpoints.caseList);
-            if (response.ok) {
-                const result = await response.json();
-                let data = [];
-                if (Array.isArray(result)) {
-                    data = result;
-                } else if (result.data && Array.isArray(result.data)) {
-                    data = result.data;
+        const fetchMyCases = async () => {
+            setIsLoading(true);
+            try {
+                const response = await fetch(endpoints.caseList);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch cases');
                 }
-                setCases(data);
+                const result = await response.json();
+
+                // Filter for cases created by current user
+                const myCases = result.data.filter(c =>
+                    c.createdBy && c.createdBy.email === currentUser?.emailAddress
+                );
+
+                setCases(myCases);
+            } catch (error) {
+                console.error("Error fetching my cases:", error);
+            } finally {
+                setIsLoading(false);
             }
-        } catch (error) {
-            console.error("Failed to fetch ledger data", error);
-        } finally {
-            setIsLoading(false);
+        };
+
+        if (currentUser) {
+            fetchMyCases();
         }
-    };
+    }, [currentUser]);
 
     const handleSort = (key) => {
         let direction = 'asc';
@@ -52,22 +54,30 @@ const LedgerTable = () => {
         setSortConfig({ key, direction });
     };
 
+    const getSortIcon = (key) => {
+        if (sortConfig.key !== key) return faSort;
+        return sortConfig.direction === 'asc' ? faSortUp : faSortDown;
+    };
+
     const sortedAndFilteredCases = useMemo(() => {
         let filtered = [...cases];
 
+        // Search Filter
         if (searchTerm) {
-            const lowerTerm = searchTerm.toLowerCase();
-            filtered = filtered.filter(c => {
-                const clientName = (c.data?.clientDetails?.clientName || c.data?.clientDetails?.businessName || '').toLowerCase();
-                const caseId = (c.caseId || c._id || '').toLowerCase();
-                return clientName.includes(lowerTerm) || caseId.includes(lowerTerm);
-            });
+            const term = searchTerm.toLowerCase();
+            filtered = filtered.filter(c =>
+                c.caseId.toLowerCase().includes(term) ||
+                (c.data?.clientDetails?.clientName || '').toLowerCase().includes(term) ||
+                (c.data?.clientDetails?.businessName || '').toLowerCase().includes(term)
+            );
         }
 
+        // Status Filter
         if (statusFilter !== 'all') {
-            filtered = filtered.filter(c => (c.status || '').toLowerCase() === statusFilter.toLowerCase());
+            filtered = filtered.filter(c => c.status === statusFilter);
         }
 
+        // Sorting
         if (sortConfig.key) {
             filtered.sort((a, b) => {
                 let aValue, bValue;
@@ -78,8 +88,8 @@ const LedgerTable = () => {
                         bValue = new Date(b.createdAt || 0);
                         break;
                     case 'caseId':
-                        aValue = (a.caseId || a._id || '').slice(-4);
-                        bValue = (b.caseId || b._id || '').slice(-4);
+                        aValue = (a.caseId || '').slice(-4);
+                        bValue = (b.caseId || '').slice(-4);
                         break;
                     case 'clientName':
                         aValue = (a.data?.clientDetails?.clientName || a.data?.clientDetails?.businessName || '').toLowerCase();
@@ -115,22 +125,28 @@ const LedgerTable = () => {
         return filtered;
     }, [cases, searchTerm, statusFilter, sortConfig]);
 
-    // Pagination Logic
-    const totalPages = Math.ceil(sortedAndFilteredCases.length / itemsPerPage);
-    const paginatedCases = sortedAndFilteredCases.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
-
-    const handlePageChange = (newPage) => {
-        if (newPage >= 1 && newPage <= totalPages) {
-            setCurrentPage(newPage);
+    const getStatusClass = (status) => {
+        // Updated to match LedgerTable status classes more closely if needed, 
+        // or strictly follow existing MyCases logic if it was already correct.
+        // LedgerTable uses `status-${status.toLowerCase()}` which maps to CSS.
+        // MyCases had a switch. Let's stick to the switch for safety or ensure css matches.
+        // LedgerTable CSS has specific classes like .status-quotation.
+        switch (status) {
+            case 'quotation': return 'status-quotation';
+            case 'approved': return 'status-approved';
+            case 'invoicing': return 'status-invoicing';
+            case 'delivery': return 'status-delivery';
+            case 'completed': return 'status-completed';
+            case 'deleted': return 'status-deleted';
+            default: return 'status-unknown';
         }
     };
 
-    const getSortIcon = (key) => {
-        if (sortConfig.key !== key) return faSort;
-        return sortConfig.direction === 'asc' ? faSortUp : faSortDown;
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat(currencyConfig.locale, {
+            style: 'currency',
+            currency: currencyConfig.code
+        }).format(amount);
     };
 
     const formatDate = (dateString) => {
@@ -142,15 +158,16 @@ const LedgerTable = () => {
         });
     };
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat(currencyConfig.locale, { style: 'currency', currency: currencyConfig.code }).format(amount || 0);
+    const handleActionClick = (caseId) => {
+        window.location.href = `?caseId=${caseId}`;
     };
 
     return (
-        <div className="ledger-container dashboard-widget">
+        <div className="ledger-container dashboard-widget" style={{ margin: '0 auto', maxWidth: '100%', width: '100%' }}>
+
             <div className="dashboard-header">
                 <h3 className="dashboard-title">
-                    <FontAwesomeIcon icon={faFileInvoiceDollar} /> Recent Transactions
+                    <FontAwesomeIcon icon={faBriefcase} /> My Cases
                 </h3>
             </div>
 
@@ -159,14 +176,13 @@ const LedgerTable = () => {
                     <FontAwesomeIcon icon={faSearch} className="search-icon" />
                     <input
                         type="text"
-                        placeholder="Search Client or Case ID..."
+                        placeholder="Search by Case ID or Client..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
 
                 <div className="filter-box">
-                    <FontAwesomeIcon icon={faFilter} className="filter-icon" />
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
@@ -177,7 +193,6 @@ const LedgerTable = () => {
                         <option value="invoicing">Invoicing</option>
                         <option value="delivery">Delivery</option>
                         <option value="completed">Completed</option>
-                        <option value="deleted">Deleted</option>
                     </select>
                 </div>
             </div>
@@ -204,36 +219,61 @@ const LedgerTable = () => {
                             <th onClick={() => handleSort('leadTime')}>
                                 Lead Time <FontAwesomeIcon icon={getSortIcon('leadTime')} className="sort-icon" />
                             </th>
+                            <th className="text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {isLoading ? (
                             <tr>
-                                <td colSpan="6" className="text-center">Loading ledger...</td>
+                                <td colSpan="7" className="text-center" style={{ padding: '3rem' }}>
+                                    Loading cases...
+                                </td>
                             </tr>
-                        ) : paginatedCases.length === 0 ? (
+                        ) : sortedAndFilteredCases.length === 0 ? (
                             <tr>
-                                <td colSpan="6" className="text-center">No transactions found</td>
+                                <td colSpan="7" className="text-center" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
+                                    No cases found.
+                                </td>
                             </tr>
                         ) : (
-                            paginatedCases.map((c) => (
-                                <tr key={c.caseId || c._id}>
+                            sortedAndFilteredCases.map(c => (
+                                <tr key={c.caseId}>
                                     <td>{formatDate(c.createdAt)}</td>
                                     <td className="font-mono">
-                                        {(c.caseId || c._id || '').slice(-4).toUpperCase()}
-                                    </td>
-                                    <td className="font-medium">
-                                        {c.data?.clientDetails?.clientName || c.data?.clientDetails?.businessName || 'Unknown'}
-                                    </td>
-                                    <td>
-                                        <span className={`status-badge status-${(c.status || 'unknown').toLowerCase()}`}>
-                                            {c.status || 'Unknown'}
+                                        <span style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: 'var(--radius-sm)' }}>
+                                            {(c.caseId || '').slice(-4).toUpperCase()}
                                         </span>
                                     </td>
-                                    <td className="text-right font-mono text-money">
-                                        {formatCurrency(c.data?.grandTotal)}
+                                    <td>
+                                        <div className="font-medium">
+                                            {c.data?.clientDetails?.clientName || c.data?.clientDetails?.businessName || 'Unknown'}
+                                        </div>
+                                        {c.data?.clientDetails?.businessName && c.data.clientDetails.clientName && (
+                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                                                {c.data.clientDetails.businessName}
+                                            </div>
+                                        )}
                                     </td>
-                                    <td>{c.data?.orderDetails?.leadTime || 'N/A'}</td>
+                                    <td>
+                                        <span className={`status-badge ${getStatusClass(c.status)}`}>
+                                            {c.status}
+                                        </span>
+                                    </td>
+                                    <td className="text-right text-money">
+                                        {formatCurrency(c.data?.grandTotal || 0)}
+                                    </td>
+                                    <td>
+                                        {c.data?.orderDetails?.leadTime || 'N/A'}
+                                    </td>
+                                    <td className="text-right">
+                                        <button
+                                            className="glass-btn secondary"
+                                            style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem' }}
+                                            onClick={() => handleActionClick(c.caseId)}
+                                        >
+                                            <FontAwesomeIcon icon={faEye} /> View
+                                        </button>
+                                    </td>
                                 </tr>
                             ))
                         )}
@@ -241,30 +281,11 @@ const LedgerTable = () => {
                 </table>
             </div>
 
-            {/* Pagination Controls */}
-            {!isLoading && totalPages > 1 && (
-                <div className="pagination-controls">
-                    <button
-                        className="pagination-btn"
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        Previous
-                    </button>
-                    <span className="pagination-info">
-                        Page {currentPage} of {totalPages}
-                    </span>
-                    <button
-                        className="pagination-btn"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                    >
-                        Next
-                    </button>
-                </div>
-            )}
+            <div className="pagination-info" style={{ marginTop: '1rem', textAlign: 'center' }}>
+                Showing {sortedAndFilteredCases.length} records
+            </div>
         </div>
     );
 };
 
-export default LedgerTable;
+export default MyCases;

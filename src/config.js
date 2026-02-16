@@ -18,5 +18,17 @@ const endpoints = {
 
 const LOGIN_BACKGROUND_URL = 'https://firetron.ph/wp-content/uploads/2017/11/Firetron-banner_01.jpg';
 
-export { API_BASE_URL, PRODUCT_API_URL, LOGIN_BACKGROUND_URL, endpoints };
+const currencyConfig = {
+    code: 'PHP',
+    symbol: '₱',
+    name: 'Philippine Peso',
+    locale: 'en-PH'
+};
+
+const taxConfig = {
+    vatRate: 0.12,
+    vatLabel: 'VAT (12%)'
+};
+
+export { API_BASE_URL, PRODUCT_API_URL, LOGIN_BACKGROUND_URL, endpoints, currencyConfig, taxConfig };
 export default endpoints;

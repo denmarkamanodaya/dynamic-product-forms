@@ -4,12 +4,14 @@ import NavigationSidebar from './components/NavigationSidebar';
 import LeftSidebar from './components/LeftSidebar';
 import Login from './components/Login';
 import CaseList from './components/CaseList';
+import MyCases from './components/MyCases';
 import ChatWidget from './components/ChatWidget';
 import CalendarWidget from './components/CalendarWidget';
 import HistoryWidget from './components/HistoryWidget';
 import SalesDashboard from './components/SalesDashboard';
 import UserCreate from './components/UserCreate';
 import ClientCreate from './components/ClientCreate';
+import Settings from './components/Settings';
 import { NotificationProvider } from './context/NotificationContext';
 import Notification from './components/Notification';
 import './App.css';
@@ -53,6 +55,20 @@ function App() {
   };
 
   const handleNavigate = (newView) => {
+    // Role-based access control
+    if (['dashboard', 'user-create'].includes(newView)) {
+      const isAdmin = ['superadmin', 'admin'].includes(currentUser?.role);
+      if (!isAdmin) {
+        console.warn("Unauthorized access attempt to", newView);
+        return; // Prevent navigation
+      }
+    }
+
+    if (newView === 'settings' && !['superadmin', 'admin'].includes(currentUser?.role)) {
+      console.warn("Unauthorized access attempt to settings");
+      return;
+    }
+
     setView(newView);
     if (newView === 'list') {
       setSelectedCaseId(null);
@@ -123,16 +139,22 @@ function App() {
           onLogout={handleLogout}
         />
 
-        <div className="main-layout" style={{ marginLeft: '340px', width: 'calc(100% - 340px)' }}>
+        <div className="main-layout" style={{ marginLeft: '300px', width: 'calc(100% - 330px)' }}>
           <div className="main-content">
             {view === 'list' ? (
               <CaseList onSelectCase={handleCaseSelect} currentUser={currentUser} />
             ) : view === 'dashboard' ? (
               <SalesDashboard />
+            ) : view === 'my-cases' ? (
+              <MyCases currentUser={currentUser} onNavigate={handleNavigate} />
             ) : view === 'user-create' ? (
               <UserCreate onNavigate={handleNavigate} />
             ) : view === 'client-create' ? (
               <ClientCreate onNavigate={handleNavigate} />
+            ) : view === 'client-create' ? (
+              <ClientCreate onNavigate={handleNavigate} />
+            ) : view === 'settings' ? (
+              <Settings />
             ) : (
               <ProductList
                 caseId={selectedCaseId}
