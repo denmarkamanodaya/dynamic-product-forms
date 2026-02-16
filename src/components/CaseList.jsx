@@ -16,11 +16,13 @@ import {
     verticalListSortingStrategy,
     useSortable,
 } from '@dnd-kit/sortable';
+import { CaseService } from '../services/api';
+import { currencyConfig } from '../config';
 import { CSS } from '@dnd-kit/utilities';
 import './CaseList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faMoneyBillWave, faTrash, faClipboardCheck, faUser, faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
-import endpoints, { currencyConfig } from '../config';
+
 import { useNotification } from '../context/NotificationContext';
 
 const TRASH_ID = 'trash-zone';
@@ -231,16 +233,18 @@ const CaseList = ({ onSelectCase, currentUser, onNavigate }) => {
     const fetchAllCases = async () => {
         setIsLoading(true);
         try {
-            // Fetch ALL cases in one go
-            const response = await fetch(endpoints.caseList);
-            if (!response.ok) throw new Error('Failed to fetch cases');
-
-            const result = await response.json();
+            const response = await CaseService.list();
             let allCases = [];
-            if (Array.isArray(result)) {
-                allCases = result;
-            } else if (result.data && Array.isArray(result.data)) {
-                allCases = result.data;
+            if (Array.isArray(response)) {
+                allCases = response;
+            } else if (response.data && Array.isArray(response.data)) {
+                allCases = response.data;
+            } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
+                allCases = response.data.data;
+            } else if (!response.data) {
+                // If response is not an array and has no data property, and we didn't match above matches
+                // It might be empty or invalid, but let's not throw immediately if it's just empty
+                console.warn('Empty or unexpected format', response);
             }
 
             // Distribute into columns
@@ -283,29 +287,24 @@ const CaseList = ({ onSelectCase, currentUser, onNavigate }) => {
     const updateCaseStatus = async (caseId, newStatus) => {
         try {
             console.log(`Updating case ${caseId} to ${newStatus}`);
-            const response = await fetch(endpoints.caseStatusUpdate, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    caseId: caseId,
-                    status: newStatus,
-                    user: {
-                        email: currentUser?.emailAddress,
-                        firstName: currentUser?.firstName,
-                        lastName: currentUser?.lastName,
-                        avatarUrl: currentUser?.avatarUrl
-                    }
-                }),
-            });
-            console.log("Status Update Payload User:", currentUser);
+            const payload = {
+                caseId: caseId,
+                status: newStatus,
+                user: {
+                    email: currentUser?.emailAddress,
+                    firstName: currentUser?.firstName,
+                    lastName: currentUser?.lastName,
+                    avatarUrl: currentUser?.avatarUrl
+                }
+            };
+            const response = await CaseService.updateStatus(payload);
 
-            if (!response.ok) {
-                const errorData = await response.json();
+            if (response.data && response.data.message === 'Status updated successfully') {
+                console.log('Status updated successfully');
+            } else {
+                const errorData = response.data || {};
                 throw new Error(errorData.message || 'Failed to update status');
             }
-            console.log('Status updated successfully');
         } catch (error) {
             console.error("Error updating case status:", error);
             // Re-fetch on error to ensure UI is in sync

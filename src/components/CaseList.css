@@ -149,7 +149,7 @@
 .column-title {
     font-size: 0.9rem;
     font-weight: 700;
-    color: var(--text-heading);
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin: 0;
@@ -160,6 +160,7 @@
     font-weight: 600;
     padding: 2px 8px;
     border-radius: var(--radius-full);
+    color: var(--text-secondary);
 }
 
 .column-droppable {

@@ -7,12 +7,13 @@ import CaseJourney from './CaseJourney';
 import './ProductList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faFilePdf, faArrowLeft, faPrint, faRoute } from '@fortawesome/free-solid-svg-icons';
-import endpoints, { PRODUCT_API_URL, currencyConfig, taxConfig } from '../config';
+import { PRODUCT_API_URL, currencyConfig, taxConfig } from '../config';
 import generateQuotation from '../utils/pdf/generateQuotation';
 import generateInvoice from '../utils/pdf/generateInvoice';
 import generateDeliveryReceipt from '../utils/pdf/generateDeliveryReceipt';
 import { useNotification } from '../context/NotificationContext';
 import { getLocalDateString } from '../utils/dateHelpers';
+import { CaseService, ClientService } from '../services/api';
 
 const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, currentUser }) => {
     const [currentStep, setCurrentStep] = useState(0); // Step 0: Client Select, Step 1: Client Info, Step 2: Products, Step 3: Calculation
@@ -62,13 +63,12 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
         const fetchCaseData = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(`${endpoints.caseGet}?id=${initialCaseId}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                const response = await CaseService.get(initialCaseId);
+                if (!response.data) {
+                    throw new Error(`API error! No data returned.`);
                 }
-                const result = await response.json();
-                const caseData = result.data.data;
-                const status = result.data.status; // Get status from API
+                const caseData = response.data.data;
+                const status = response.data.status; // Get status from API
                 setCaseStatus(status);
 
                 // Check if case is in read-only state (including Invoicing, Delivery, and Completed)
@@ -213,33 +213,37 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
                     grandTotal: parseFloat(calculateGrandTotal())
                 },
                 createdBy: {
-                    email: currentUser?.emailAddress,
-                    firstName: currentUser?.firstName,
-                    lastName: currentUser?.lastName,
-                    avatarUrl: currentUser?.avatarUrl,
-                    metadata: currentUser?.metadata
+                    email: currentUser?.emailAddress || currentUser?.email || 'unknown',
+                    firstName: currentUser?.firstName || 'Unknown',
+                    lastName: currentUser?.lastName || 'User',
+                    avatarUrl: currentUser?.avatarUrl || '',
+                    metadata: currentUser?.metadata || ''
                 } // Tag the creator with full details
             };
 
             console.log('Saving case with payload:', payload);
 
-            const response = await fetch(endpoints.caseCreate, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            });
+            const response = await CaseService.create(payload);
+            console.log('Save response:', response);
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            // Check for success (either "Success" string or just presence of response)
+            if (response && (response.data === 'Success' || response.caseId)) {
+                showNotification('Case saved successfully!', 'success');
+                return true;
+            } else {
+                console.warn('Unexpected save response:', response);
+                // Don't throw if we got a caseId back, assume success
+                if (!response.caseId) {
+                    throw new Error('Failed to save case: invalid response');
+                }
+                showNotification('Case saved successfully!', 'success');
+                return true;
             }
-
-            const result = await response.json();
-            showNotification(`Order ${isEditMode ? 'updated' : 'saved'} successfully! Case ID: ${caseId}`, 'info');
         } catch (error) {
             console.error('Error saving to database:', error);
-            showNotification(`Failed to save order to database: ${error.message}`, 'error');
+            const errMsg = error.response?.data?.message || error.message || 'Unknown error';
+            showNotification(`Failed to save order: ${errMsg}`, 'error');
+            return false;
         }
     };
 
@@ -263,7 +267,8 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
 
         // Save to backend API ONLY if NOT Read-Only
         if (!isReadOnly) {
-            await saveToDatabase(caseId, timestamp);
+            const success = await saveToDatabase(caseId, timestamp);
+            if (!success) return; // Stop if save failed
 
             // If this was a new order, update state to edit mode
             if (!isEditMode) {
@@ -415,7 +420,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
             <div className="step-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
                     <h2 className="step-title" style={{ margin: 0 }}>Order Details</h2>
-                    {isEditMode && <span className="case-id-label" style={{ margin: 0 }}>Case ID: {activeCaseId}</span>}
+                    {isEditMode && <span className="case-id-label" style={{ margin: 0 }}>#{activeCaseId.slice(-4).toUpperCase()}</span>}
                 </div>
                 {caseStatus === 'completed' && (
                     <button

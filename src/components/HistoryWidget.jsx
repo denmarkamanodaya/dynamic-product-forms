@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './HistoryWidget.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHistory, faClock, faEye, faUser } from '@fortawesome/free-solid-svg-icons';
-import endpoints from '../config';
+import { HistoryService } from '../services/api';
 
 const HistoryWidget = ({ isOpen, onToggle }) => {
     const [logs, setLogs] = useState([]);
@@ -18,11 +18,14 @@ const HistoryWidget = ({ isOpen, onToggle }) => {
     const fetchHistory = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(endpoints.historyList);
-            if (!response.ok) throw new Error('Failed to fetch history');
-            const result = await response.json();
-            console.log("History Logs:", result.data);
-            setLogs(result.data || []);
+            const response = await HistoryService.list();
+            // Normalized response check
+            if (response.data) {
+                setLogs(response.data || []);
+            } else if (Array.isArray(response)) {
+                setLogs(response);
+            }
+            console.log("History Logs:", response.data || response);
         } catch (error) {
             console.error("Error loading history:", error);
         } finally {

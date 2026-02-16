@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './CaseJourney.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
-import endpoints from '../config';
+import { HistoryService } from '../services/api';
 
 const CaseJourney = ({ caseId, onClose }) => {
     const [history, setHistory] = useState([]);
@@ -11,10 +11,9 @@ const CaseJourney = ({ caseId, onClose }) => {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const response = await fetch(endpoints.historyByCase(caseId));
-                if (response.ok) {
-                    const result = await response.json();
-                    setHistory(result.data || []);
+                const response = await HistoryService.getByCaseId(caseId);
+                if (response.data) {
+                    setHistory(response.data || []);
                 }
             } catch (error) {
                 console.error("Failed to fetch case history", error);

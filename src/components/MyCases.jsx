@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import endpoints from '../config';
+import { CaseService } from '../services/api';
 import LedgerTable from './LedgerTable';
 
 const MyCases = ({ currentUser }) => {
@@ -10,17 +10,42 @@ const MyCases = ({ currentUser }) => {
         const fetchMyCases = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(endpoints.caseList);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch cases');
+                const response = await CaseService.list();
+                let allCases = [];
+                if (Array.isArray(response)) {
+                    allCases = response;
+                } else if (response.data && Array.isArray(response.data)) {
+                    allCases = response.data;
+                } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
+                    allCases = response.data.data;
                 }
-                const result = await response.json();
+
+                console.log('MyCases: currentUser:', currentUser);
+                console.log('MyCases: allCases count:', allCases.length);
 
                 // Filter for cases created by current user
-                const myCases = result.data.filter(c =>
-                    c.createdBy && c.createdBy.email === currentUser?.emailAddress
-                );
+                const myCases = allCases.filter(c => {
+                    if (!c.createdBy) return false;
 
+                    let creatorEmail = '';
+                    if (typeof c.createdBy === 'string') {
+                        creatorEmail = c.createdBy;
+                    } else {
+                        // Check both email and emailAddress to be safe
+                        creatorEmail = c.createdBy.email || c.createdBy.emailAddress;
+                    }
+
+                    const userEmail = currentUser?.emailAddress || currentUser?.email;
+
+                    const match = creatorEmail === userEmail;
+                    if (!match && c.createdBy.email === 'admin') {
+                        // Debug log for failed matches to see why
+                        // console.log(`Mismatch: Case ${c.caseId} creator ${creatorEmail} vs user ${userEmail}`);
+                    }
+                    return match;
+                });
+
+                console.log('MyCases: filtered count:', myCases.length);
                 setCases(myCases);
             } catch (error) {
                 console.error("Error fetching my cases:", error);
@@ -45,6 +70,7 @@ const MyCases = ({ currentUser }) => {
 
     return (
         <div style={{ maxWidth: '100%', width: '100%', margin: '0 auto' }}>
+
             <LedgerTable data={cases} title="My Cases" />
         </div>
     );

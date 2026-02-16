@@ -3,6 +3,7 @@ import './ClientSelectStep.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import endpoints from '../config';
+import { ClientService } from '../services/api';
 
 const ClientSelectStep = ({ onClientSelect, onManualInput }) => {
     const [clients, setClients] = useState([]);
@@ -14,21 +15,16 @@ const ClientSelectStep = ({ onClientSelect, onManualInput }) => {
         const fetchClients = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(endpoints.clientList);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch clients');
+                const response = await ClientService.list();
+                if (response.data) {
+                    // Normalize data structure
+                    const clientList = Array.isArray(response.data) ? response.data :
+                        (response.data.data && Array.isArray(response.data.data)) ? response.data.data : [];
+
+                    setClients(clientList);
+                } else {
+                    throw new Error('Invalid data');
                 }
-                const result = await response.json();
-
-                // Assuming the API returns { data: [...] } or just [...]
-                // Adjusting based on common patterns, but will log to be sure
-                console.log('Client list API result:', result);
-
-                // Handle different response structures gracefully
-                const clientList = Array.isArray(result) ? result :
-                    (result.data && Array.isArray(result.data)) ? result.data : [];
-
-                setClients(clientList);
             } catch (err) {
                 console.error('Error fetching clients:', err);
                 setError('Could not load client list. Please enter details manually.');

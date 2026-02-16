@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './UserCreate.css';
-import { endpoints } from '../config';
+import { UserService } from '../services/api';
 
 const UserCreate = ({ onNavigate }) => {
     const [formData, setFormData] = useState({
@@ -70,30 +70,22 @@ const UserCreate = ({ onNavigate }) => {
         };
 
         try {
-            const response = await fetch(endpoints.userCreate, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ data: payload }),
-            });
+            const response = await UserService.create({ data: payload });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to create user');
+            if (response.data) {
+                setSuccess(true);
+                setFormData({
+                    firstName: '',
+                    lastName: '',
+                    emailAddress: '',
+                    password: '',
+                    confirmPassword: '',
+                    role: 'member',
+                    avatarUrl: ''
+                });
+            } else {
+                throw new Error('Failed to create user');
             }
-
-            setSuccess(true);
-            setFormData({
-                firstName: '',
-                lastName: '',
-                emailAddress: '',
-                password: '',
-                confirmPassword: '',
-                role: 'member',
-                avatarUrl: ''
-            });
 
         } catch (err) {
             setError(err.message);

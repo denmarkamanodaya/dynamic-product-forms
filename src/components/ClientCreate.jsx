@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ClientInfoStep from './ClientInfoStep';
-import { endpoints } from '../config';
+import { ClientService } from '../services/api';
 
 const ClientCreate = ({ onNavigate }) => {
     const [clientDetails, setClientDetails] = useState({
@@ -13,15 +13,12 @@ const ClientCreate = ({ onNavigate }) => {
 
     const handleCreate = async () => {
         try {
-            const response = await fetch(endpoints.clientCreate, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(clientDetails)
-            });
+            const response = await ClientService.create(clientDetails);
 
-            if (!response.ok) {
+            if (response.data) {
+                // Success
+                setNotification({ type: 'success', message: 'Client created successfully!' });
+            } else {
                 throw new Error('Failed to create client');
             }
 

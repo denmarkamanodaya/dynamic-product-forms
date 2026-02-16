@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faFilter, faFileInvoiceDollar, faSort, faSortUp, faSortDown, faEye } from '@fortawesome/free-solid-svg-icons';
-import endpoints, { currencyConfig } from '../config';
+import { CaseService } from '../services/api';
+import { currencyConfig } from '../config';
 import './LedgerTable.css';
 
 const LedgerTable = ({ data: externalData, title = "Recent Transactions" }) => {
@@ -31,15 +32,11 @@ const LedgerTable = ({ data: externalData, title = "Recent Transactions" }) => {
     const fetchCases = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(endpoints.caseList);
-            if (response.ok) {
-                const result = await response.json();
-                let data = [];
-                if (Array.isArray(result)) {
-                    data = result;
-                } else if (result.data && Array.isArray(result.data)) {
-                    data = result.data;
-                }
+            const response = await CaseService.list();
+            if (response.data) {
+                // Normalize data structure
+                const data = Array.isArray(response.data) ? response.data :
+                    (response.data.data && Array.isArray(response.data.data)) ? response.data.data : [];
                 setCases(data);
             }
         } catch (error) {
