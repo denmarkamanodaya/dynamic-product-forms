@@ -13,7 +13,7 @@
     background: #ffffff;
     max-width: 400px;
     width: 100%;
-    border-radius: 0;
+    border-radius: var(--radius-md);
     /* STRICTLY SQUARE */
     padding: 3rem 2.5rem;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.02);
@@ -93,9 +93,9 @@
 .glass-input {
     width: 100%;
     padding: 0.85rem 1rem;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--input-border);
     background: #ffffff;
-    border-radius: 0 !important;
+    border-radius: var(--radius-md) !important;
     /* STRICTLY SQUARE */
     font-size: 0.95rem;
     color: #1e293b;
@@ -126,7 +126,7 @@
     font-weight: 700;
     font-size: 1rem;
     border: none;
-    border-radius: 0;
+    border-radius: var(--radius-md);
     /* STRICTLY SQUARE */
     cursor: pointer;
     transition: all 0.3s ease;

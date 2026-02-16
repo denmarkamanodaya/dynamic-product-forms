@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CalendarWidget.css';
-import endpoints from '../config';
+import endpoints, { currencyConfig } from '../config';
 import { getLocalDateString } from '../utils/dateHelpers';
 
 const CalendarWidget = ({ isOpen, onToggle }) => {
@@ -152,7 +152,7 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
                                                     {c.data?.products && (
                                                         <p className="product-count">
                                                             {c.data.products.length} Item{c.data.products.length !== 1 ? 's' : ''}
-                                                            <span className="total-val">Php {c.data?.grandTotal}</span>
+                                                            <span className="total-val">{currencyConfig.code} {c.data?.grandTotal}</span>
                                                         </p>
                                                     )}
                                                 </div>

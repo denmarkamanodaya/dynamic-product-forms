@@ -54,6 +54,9 @@ const UserCreate = ({ onNavigate }) => {
         setError(null);
         setSuccess(false);
 
+        // Generate random hex color for avatar background
+        const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+
         // Prepare payload: remove confirmPassword and add default status
         const payload = {
             firstName: formData.firstName.toUpperCase(),
@@ -62,7 +65,8 @@ const UserCreate = ({ onNavigate }) => {
             password: formData.password,
             role: formData.role,
             avatarUrl: formData.avatarUrl,
-            status: 'active'
+            status: 'active',
+            metadata: JSON.stringify({ avatarColor: randomColor })
         };
 
         try {

@@ -1,0 +1,7 @@
+@import './ClientInfoStep.css';
+
+/* Additional overrides if needed */
+.client-info-step {
+    /* Ensure it takes full height/width in the main content area if needed */
+    width: 100%;
+}

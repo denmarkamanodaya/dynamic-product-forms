@@ -1,5 +1,6 @@
 import React from 'react';
 import './ProductForm.css';
+import { currencyConfig } from '../config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
@@ -78,7 +79,7 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts, readO
             {/* 2. Price */}
             <div className="field-group price-group">
                 <div className="input-wrapper symbol-input">
-                    <span className="currency-symbol">Php</span>
+                    <span className="currency-symbol">{currencyConfig.symbol}</span>
                     <input
                         type="number"
                         className="glass-input"
@@ -106,7 +107,7 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts, readO
             {/* 4. Total */}
             <div className="field-group total-group">
                 <span className="row-total">
-                    Php {((data.price || 0) * (data.quantity || 1)).toFixed(2)}
+                    {currencyConfig.code} {((data.price || 0) * (data.quantity || 1)).toFixed(2)}
                 </span>
             </div>
 

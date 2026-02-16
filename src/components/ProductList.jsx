@@ -6,7 +6,7 @@ import ClientSelectStep from './ClientSelectStep';
 import './ProductList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faFilePdf, faArrowLeft, faPrint } from '@fortawesome/free-solid-svg-icons';
-import endpoints, { PRODUCT_API_URL } from '../config';
+import endpoints, { PRODUCT_API_URL, currencyConfig } from '../config';
 import generateQuotation from '../utils/pdf/generateQuotation';
 import generateInvoice from '../utils/pdf/generateInvoice';
 import generateDeliveryReceipt from '../utils/pdf/generateDeliveryReceipt';
@@ -191,7 +191,8 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
                     email: currentUser?.emailAddress,
                     firstName: currentUser?.firstName,
                     lastName: currentUser?.lastName,
-                    avatarUrl: currentUser?.avatarUrl
+                    avatarUrl: currentUser?.avatarUrl,
+                    metadata: currentUser?.metadata
                 } // Tag the creator with full details
             };
 
@@ -327,7 +328,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
     // Loading state
     if (isLoading) {
         return (
-            <div className="app-container">
+            <div className="product-list-page">
                 <div className="loading-container">
                     <div className="loading-spinner"></div>
                     <p className="loading-text">Loading case data...</p>
@@ -359,7 +360,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
 
     // Step 2: Product Management
     return (
-        <div className="app-container">
+        <div className="product-list-page">
             <br />
 
             {/* Step Indicator & Client Summary */}
@@ -472,7 +473,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
 
                     <div className="grand-total-card">
                         <span className="label">Total Value</span>
-                        <span className="value">Php {calculateGrandTotal()}</span>
+                        <span className="value">{currencyConfig.code} {calculateGrandTotal()}</span>
                     </div>
                 </div>
             </div>

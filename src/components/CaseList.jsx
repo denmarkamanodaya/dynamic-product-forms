@@ -19,8 +19,8 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import './CaseList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faPesoSign, faMoneyBillWave, faTrash, faClipboardCheck, faUser } from '@fortawesome/free-solid-svg-icons';
-import endpoints from '../config';
+import { faCalendarAlt, faMoneyBillWave, faTrash, faClipboardCheck, faUser } from '@fortawesome/free-solid-svg-icons';
+import endpoints, { currencyConfig } from '../config';
 import { useNotification } from '../context/NotificationContext';
 
 const TRASH_ID = 'trash-zone';
@@ -79,9 +79,25 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
             return <img src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} className="user-avatar-circle image" />;
         }
 
+        let customStyle = {};
+        if (user.metadata) {
+            try {
+                const meta = JSON.parse(user.metadata);
+                if (meta.avatarColor) {
+                    customStyle = { background: meta.avatarColor }; // Override gradient
+                }
+            } catch (e) {
+                // Ignore parse error
+            }
+        }
+
         const initials = getInitials(user.firstName, user.lastName);
         return (
-            <div className="user-avatar-circle initials" title={`${user.firstName} ${user.lastName}`}>
+            <div
+                className="user-avatar-circle initials"
+                title={`${user.firstName} ${user.lastName}`}
+                style={customStyle}
+            >
                 {initials}
             </div>
         );
@@ -122,9 +138,8 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
                     </div>
 
                     <div className="card-info-item total-item">
-                        <span className="icon"><FontAwesomeIcon icon={faPesoSign} /></span>
-                        <span className="text">
-                            {caseItem.data?.grandTotal || '0.00'}
+                        <span className="text" style={{ fontWeight: 'bold' }}>
+                            {currencyConfig.code} {caseItem.data?.grandTotal ? parseFloat(caseItem.data.grandTotal).toLocaleString(currencyConfig.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
                         </span>
                     </div>
 
@@ -446,7 +461,7 @@ const CaseList = ({ onSelectCase, currentUser }) => {
     };
 
     return (
-        <div className="kanban-board">
+        <div className="case-list-page">
             <br />
             <div className="kanban-header">
                 <h2 className="page-title">Board</h2>

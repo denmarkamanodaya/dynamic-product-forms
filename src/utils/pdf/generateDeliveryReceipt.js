@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { currencyConfig } from '../../config';
 
 const generateDeliveryReceipt = (caseId, clientDetails, orderDetails, products, calculateGrandTotal) => {
     const doc = new jsPDF();
@@ -65,9 +66,9 @@ const generateDeliveryReceipt = (caseId, clientDetails, orderDetails, products, 
             const productData = [
                 product.name,
                 product.condition || 'Brand New',
-                `Php ${product.price ? product.price.toFixed(2) : '0.00'}`,
+                `${currencyConfig.code} ${product.price ? product.price.toFixed(2) : '0.00'}`,
                 product.quantity || 1,
-                `Php ${((product.price || 0) * (product.quantity || 1)).toFixed(2)}`
+                `${currencyConfig.code} ${((product.price || 0) * (product.quantity || 1)).toFixed(2)}`
             ];
             tableRows.push(productData);
         }
@@ -104,7 +105,7 @@ const generateDeliveryReceipt = (caseId, clientDetails, orderDetails, products, 
     doc.setFont("helvetica", "bold");
     doc.setTextColor(0);
     doc.text(`Total Amount:`, 130, finalY + 12);
-    doc.text(`Php ${calculateGrandTotal()}`, 195, finalY + 12, { align: 'right' });
+    doc.text(`${currencyConfig.code} ${calculateGrandTotal()}`, 195, finalY + 12, { align: 'right' });
 
     // Footer signature section for DR
     doc.setFontSize(10);

@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { currencyConfig } from '../../config';
 
 const generateQuotation = (caseId, clientDetails, orderDetails, products, calculateGrandTotal) => {
     const doc = new jsPDF();
@@ -33,9 +34,9 @@ const generateQuotation = (caseId, clientDetails, orderDetails, products, calcul
             const productData = [
                 product.name,
                 product.condition || 'Brand New',
-                `Php ${product.price ? product.price.toFixed(2) : '0.00'}`,
+                `${currencyConfig.code} ${product.price ? product.price.toFixed(2) : '0.00'}`,
                 product.quantity || 1,
-                `Php ${((product.price || 0) * (product.quantity || 1)).toFixed(2)}`
+                `${currencyConfig.code} ${((product.price || 0) * (product.quantity || 1)).toFixed(2)}`
             ];
             tableRows.push(productData);
         }
@@ -52,7 +53,7 @@ const generateQuotation = (caseId, clientDetails, orderDetails, products, calcul
 
     // Grand Total
     const finalY = doc.lastAutoTable?.finalY || (yPos + 15);
-    doc.text(`Grand Total: Php ${calculateGrandTotal()}`, 14, finalY + 10);
+    doc.text(`Grand Total: ${currencyConfig.code} ${calculateGrandTotal()}`, 14, finalY + 10);
 
     // Save PDF with caseId filename
     doc.save(`${caseId}.pdf`);
