@@ -127,14 +127,6 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
                     </div>
                 </div>
 
-                <div className="card-badge-row">
-                    <span className={`card-id status-badge status-${COLUMN_TO_STATUS[columnName]}`}>
-                        {columnName
-                            ? `${columnName.slice(0, 3).toUpperCase()}-${String(caseItem.caseId || caseItem._id).slice(-4).toUpperCase()}`
-                            : (caseItem.caseId || caseItem._id)}
-                    </span>
-                </div>
-
                 <div className="card-footer-row">
                     <div className="card-info-item date-item">
                         <span className="icon"><FontAwesomeIcon icon={faCalendarAlt} /></span>
@@ -148,10 +140,15 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
                             {currencyConfig.code} {caseItem.data?.grandTotal ? parseFloat(caseItem.data.grandTotal).toLocaleString(currencyConfig.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
                         </span>
                     </div>
+                </div>
 
-                    <div className="card-user-footer">
-                        {renderUserAvatar(caseItem.createdBy)}
-                    </div>
+                <div className="card-user-footer">
+                    <span className={`compact-status-badge status-${COLUMN_TO_STATUS[columnName]}`}>
+                        {columnName
+                            ? `${columnName.slice(0, 3).toUpperCase()}-${String(caseItem.caseId || caseItem._id).slice(-4).toUpperCase()}`
+                            : (caseItem.caseId || caseItem._id)}
+                    </span>
+                    {renderUserAvatar(caseItem.createdBy)}
                 </div>
             </div>
         </div >

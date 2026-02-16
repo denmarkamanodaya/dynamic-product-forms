@@ -10,7 +10,7 @@
   color: var(--text-heading);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: var(--font-base);
-  background-color: var(--accent-subtle);
+  background-color: var(--bg-color);
 }
 
 .main-content {

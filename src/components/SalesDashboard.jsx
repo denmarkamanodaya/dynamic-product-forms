@@ -9,7 +9,8 @@ import {
     Legend,
     ResponsiveContainer,
     BarChart,
-    Bar
+    Bar,
+    ComposedChart
 } from 'recharts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faShoppingCart, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
@@ -90,6 +91,37 @@ const SalesDashboard = () => {
         return Object.values(monthlyData).sort((a, b) => {
             return new Date(a.name) - new Date(b.name);
         });
+    }, [cases]);
+
+    // Process data for Client Performance (New)
+    const clientPerformanceData = useMemo(() => {
+        if (!cases || cases.length === 0) return [];
+
+        const clientData = {};
+
+        cases.forEach(c => {
+            const clientName = c.data?.clientDetails?.clientName || c.data?.clientDetails?.businessName || 'Unknown';
+            if (!clientData[clientName]) {
+                clientData[clientName] = {
+                    name: clientName,
+                    sales: 0,
+                    items: 0,
+                    cases: 0
+                };
+            }
+
+            const total = parseFloat(c.data?.grandTotal || 0);
+            const items = (c.data?.products || []).reduce((sum, p) => sum + (parseInt(p.quantity) || 0), 0);
+
+            clientData[clientName].sales += total;
+            clientData[clientName].items += items;
+            clientData[clientName].cases += 1;
+        });
+
+        // Convert to array, sort by sales desc, take top 10
+        return Object.values(clientData)
+            .sort((a, b) => b.sales - a.sales)
+            .slice(0, 10);
     }, [cases]);
 
     const totalSales = useMemo(() => {
@@ -236,15 +268,100 @@ const SalesDashboard = () => {
                     </div>
                 </div>
 
-                {/* Temp Box Widget */}
-                <div className="dashboard-widget temp-widget">
+                {/* Client Performance Widget */}
+                <div className="dashboard-widget client-performance-widget">
                     <div className="dashboard-header">
                         <h3 className="dashboard-title">
-                            Temp Box
+                            <FontAwesomeIcon icon={faChartLine} /> Top Clients Performance
                         </h3>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}>
-                        Placeholder Content
+                    <div className="dashboard-chart">
+                        {isLoading ? (
+                            <div className="loading-container" style={{ height: '300px' }}>
+                                <div className="loading-spinner"></div>
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height={300}>
+                                <ComposedChart
+                                    data={clientPerformanceData}
+                                    margin={{
+                                        top: 5,
+                                        right: 30,
+                                        left: 20,
+                                        bottom: 5,
+                                    }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                    <XAxis
+                                        dataKey="name"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: '#64748b', fontSize: 10 }}
+                                        dy={10}
+                                        interval={0}
+                                        angle={-15}
+                                        textAnchor="end"
+                                        height={60}
+                                    />
+                                    <YAxis
+                                        yAxisId="left"
+                                        orientation="left"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: '#64748b', fontSize: 12 }}
+                                        tickFormatter={(value) => `${currencyConfig.symbol}${value.toLocaleString()}`}
+                                    />
+                                    <YAxis
+                                        yAxisId="right"
+                                        orientation="right"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: '#64748b', fontSize: 12 }}
+                                    />
+                                    <Tooltip
+                                        cursor={{ stroke: '#94a3b8', strokeWidth: 1 }}
+                                        contentStyle={{
+                                            backgroundColor: '#fff',
+                                            borderRadius: '0px',
+                                            border: 'none',
+                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                        }}
+                                        formatter={(value, name) => {
+                                            if (name === 'Total Sales') return [`${currencyConfig.code} ${value.toLocaleString()}`, name];
+                                            return [value, name];
+                                        }}
+                                    />
+                                    <Legend />
+                                    <Bar
+                                        yAxisId="left"
+                                        dataKey="sales"
+                                        name="Total Sales"
+                                        fill="#3b82f6"
+                                        barSize={20}
+                                        radius={[4, 4, 0, 0]}
+                                        fillOpacity={0.6}
+                                    />
+                                    <Line
+                                        yAxisId="right"
+                                        type="monotone"
+                                        dataKey="items"
+                                        name="Total Items"
+                                        stroke="#10b981"
+                                        strokeWidth={2}
+                                        dot={{ fill: '#10b981', r: 3 }}
+                                    />
+                                    <Line
+                                        yAxisId="right"
+                                        type="monotone"
+                                        dataKey="cases"
+                                        name="Total Cases"
+                                        stroke="#f59e0b"
+                                        strokeWidth={2}
+                                        dot={{ fill: '#f59e0b', r: 3 }}
+                                    />
+                                </ComposedChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
             </div>
