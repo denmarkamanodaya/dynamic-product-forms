@@ -466,3 +466,58 @@
     /* color: #475569; Removed to let status classes apply */
     letter-spacing: 0.05em;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .kanban-header {
+        gap: var(--space-xs);
+    }
+
+    .kanban-controls {
+        flex-wrap: wrap;
+    }
+
+    .kanban-search-wrapper {
+        max-width: 100%;
+        flex-basis: 100%;
+    }
+
+    .kanban-users-monitor {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .case-list-page {
+        padding: var(--space-xs);
+        height: calc(100vh - 60px);
+    }
+
+    .kanban-columns-container {
+        height: calc(100vh - 180px);
+    }
+
+    .kanban-column {
+        min-width: 260px;
+    }
+
+    .kanban-card {
+        padding: var(--space-sm);
+        overflow: visible;
+    }
+
+    .card-user-footer {
+        display: flex;
+    }
+
+    .user-avatar-circle {
+        width: 28px;
+        height: 28px;
+        font-size: 0.6rem;
+    }
+
+    .trash-drop-zone {
+        bottom: 70px;
+        right: 16px;
+    }
+}

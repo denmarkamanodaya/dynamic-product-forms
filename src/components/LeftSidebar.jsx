@@ -1,12 +1,12 @@
 import React from 'react';
 import './LeftSidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCommentDots, faCalendarAlt, faPlus, faEye, faFire, faBrain, faBoxArchive } from '@fortawesome/free-solid-svg-icons';
+import { faCommentDots, faCalendarAlt, faPlus, faEye, faFire, faBrain, faBoxArchive, faBars } from '@fortawesome/free-solid-svg-icons';
 import { ArchiverService } from '../services/api';
 import { getDataAgeLimit } from '../utils/license';
 import { useNotification } from '../context/NotificationContext';
 
-const LeftSidebar = ({ onNavigate, onToggleChat, isChatOpen, onToggleCalendar, isCalendarOpen, onToggleHistory, isHistoryOpen, onNewCase, onNavigate: handleNavigate, currentUser }) => {
+const LeftSidebar = ({ onNavigate, onToggleChat, isChatOpen, onToggleCalendar, isCalendarOpen, onToggleHistory, isHistoryOpen, onNewCase, onNavigate: handleNavigate, currentUser, onToggleNav }) => {
     const { showNotification } = useNotification();
 
     const handleArchive = async () => {
@@ -75,6 +75,15 @@ const LeftSidebar = ({ onNavigate, onToggleChat, isChatOpen, onToggleCalendar, i
                     <FontAwesomeIcon icon={faBoxArchive} />
                 </button>
             )}
+
+            {/* Hamburger - mobile only */}
+            <button
+                className="sidebar-icon-btn mobile-only"
+                onClick={onToggleNav}
+                title="Menu"
+            >
+                <FontAwesomeIcon icon={faBars} />
+            </button>
         </aside>
     );
 };

@@ -114,7 +114,7 @@ body {
   background: #ffffff;
   border: 1px solid var(--input-border);
   border-radius: var(--radius-md);
-  padding: var(--space-xs) var(--space-sm);
+  padding: 0.4rem 0.6rem;
   color: var(--text-heading);
   width: 100% !important;
   font-size: var(--font-base);
@@ -398,4 +398,40 @@ select.glass-input option {
 
 .text-money {
   font-variant-numeric: tabular-nums;
+}
+
+/* ===========================================
+   MOBILE RESPONSIVE GLOBALS
+   =========================================== */
+
+@media (max-width: 768px) {
+  #root {
+    padding: var(--space-sm);
+  }
+
+  .glass-input,
+  .glass-btn,
+  select.glass-input {
+    min-height: 34px;
+    padding: 0.35rem 0.6rem;
+    font-size: var(--font-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  #root {
+    padding: var(--space-xs);
+  }
+
+  .heading {
+    font-size: var(--font-xl);
+  }
+
+  .page-title {
+    font-size: var(--font-xl);
+  }
+
+  .section-header {
+    font-size: var(--font-lg);
+  }
 }
