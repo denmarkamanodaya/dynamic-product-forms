@@ -1,9 +1,28 @@
 import React from 'react';
 import './LeftSidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCommentDots, faCalendarAlt, faPlus, faEye, faFire, faBrain } from '@fortawesome/free-solid-svg-icons';
+import { faCommentDots, faCalendarAlt, faPlus, faEye, faFire, faBrain, faBoxArchive } from '@fortawesome/free-solid-svg-icons';
+import { ArchiverService } from '../services/api';
+import { getDataAgeLimit } from '../utils/license';
+import { useNotification } from '../context/NotificationContext';
 
-const LeftSidebar = ({ onNavigate, onToggleChat, isChatOpen, onToggleCalendar, isCalendarOpen, onToggleHistory, isHistoryOpen, onNewCase, onNavigate: handleNavigate }) => {
+const LeftSidebar = ({ onNavigate, onToggleChat, isChatOpen, onToggleCalendar, isCalendarOpen, onToggleHistory, isHistoryOpen, onNewCase, onNavigate: handleNavigate, currentUser }) => {
+    const { showNotification } = useNotification();
+
+    const handleArchive = async () => {
+        try {
+            showNotification('Running archiver...', 'info');
+            const age = getDataAgeLimit();
+            console.log(`Running archiver for data older than ${age} days...`);
+            const results = await ArchiverService.archiveAll(age);
+            console.log("Archiver results:", results);
+            showNotification(`Archiver completed! Data older than ${age} days archived.`, 'success');
+        } catch (error) {
+            console.error("Archiver failed:", error);
+            showNotification("Failed to run archiver.", 'error');
+        }
+    };
+
     return (
         <aside className="left-sidebar">
             <button
@@ -46,6 +65,16 @@ const LeftSidebar = ({ onNavigate, onToggleChat, isChatOpen, onToggleCalendar, i
             >
                 <FontAwesomeIcon icon={faEye} />
             </button>
+
+            {['superadmin', 'admin'].includes(currentUser?.role) && (
+                <button
+                    className="sidebar-icon-btn"
+                    onClick={handleArchive}
+                    title="Archive Data"
+                >
+                    <FontAwesomeIcon icon={faBoxArchive} />
+                </button>
+            )}
         </aside>
     );
 };

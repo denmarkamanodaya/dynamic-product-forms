@@ -17,6 +17,7 @@ const endpoints = {
     createPost: `${API_BASE_URL}/post/v1/create`,
     listPosts: `${API_BASE_URL}/post/v1/list`,
     historyByCase: (caseId) => `${API_BASE_URL}/history/v1/${caseId}`,
+    automationArchiver: `${API_BASE_URL}/automation/v1/archiver`,
 };
 
 const LOGIN_BACKGROUND_URL = 'https://firetron.ph/wp-content/uploads/2017/11/Firetron-banner_01.jpg';
@@ -33,5 +34,8 @@ const taxConfig = {
     vatLabel: 'VAT (12%)'
 };
 
-export { API_BASE_URL, PRODUCT_API_URL, LOGIN_BACKGROUND_URL, endpoints, currencyConfig, taxConfig };
+const LICENSE_KEY = "ewogICJuYW1lIjogIkZpcmV0cm9uIiwKICAidHlwZSI6ICJ0ZXN0IiwKICAibGltaXQiOiB7CiAgICAiY2FzZSI6IDUwLAogICAgInVzZXIiOiAzCiAgfSwKICAiYWN0aXZlIjogdHJ1ZSwKICAiZXhwaXJhdGlvbiI6ICIyMDI2LTAyLTE3VDExOjQ4OjAwKzA4OjAwIgp9";
+const API_KEY = "apikey1234abcdefghij0123456789";
+
+export { API_BASE_URL, PRODUCT_API_URL, LOGIN_BACKGROUND_URL, endpoints, currencyConfig, taxConfig, LICENSE_KEY, API_KEY };
 export default endpoints;

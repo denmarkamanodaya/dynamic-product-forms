@@ -49,22 +49,24 @@ const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, o
                     <FontAwesomeIcon icon={faPlus} />
                     New Case
                 </a> */}
+
                 {['superadmin', 'admin'].includes(currentUser?.role) && (
                     <a
-                        className={`nav-item ${currentView === 'user-create' ? 'active' : ''}`}
-                        onClick={() => onNavigate('user-create')}
+                        className={`nav-item ${currentView === 'user-list' ? 'active' : ''}`}
+                        onClick={() => onNavigate('user-list')}
                     >
-                        <FontAwesomeIcon icon={faUserPlus} />
-                        New User
+                        <FontAwesomeIcon icon={faUserCircle} />
+                        Users
                     </a>
                 )}
                 <a
-                    className={`nav-item ${currentView === 'client-create' ? 'active' : ''}`}
-                    onClick={() => onNavigate('client-create')}
+                    className={`nav-item ${currentView === 'client-list' ? 'active' : ''}`}
+                    onClick={() => onNavigate('client-list')}
                 >
                     <FontAwesomeIcon icon={faUserTie} />
-                    New Client
+                    Clients
                 </a>
+
                 {['superadmin', 'admin'].includes(currentUser?.role) && (
                     <a
                         className={`nav-item ${currentView === 'settings' ? 'active' : ''}`}

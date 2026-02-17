@@ -225,7 +225,7 @@ const SalesDashboard = () => {
                 <div className="dashboard-widget products-widget">
                     <div className="dashboard-header">
                         <h3 className="dashboard-title">
-                            <FontAwesomeIcon icon={faShoppingCart} /> Sales by Product
+                            <FontAwesomeIcon icon={faShoppingCart} /> Top 10 Sales by Product (Quantity)
                         </h3>
                     </div>
                     {/* ... chart content ... */}

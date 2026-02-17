@@ -55,7 +55,7 @@ const LedgerTable = ({ data: externalData, title = "Recent Transactions" }) => {
     };
 
     const sortedAndFilteredCases = useMemo(() => {
-        let filtered = [...cases];
+        let filtered = cases.filter(c => (c.status || '').toUpperCase() !== 'ARCHIVED');
 
         if (searchTerm) {
             const lowerTerm = searchTerm.toLowerCase();
