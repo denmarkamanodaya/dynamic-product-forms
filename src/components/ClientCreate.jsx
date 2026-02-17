@@ -1,35 +1,77 @@
+import { useNotification } from '../context/NotificationContext';
 import React, { useState } from 'react';
 import ClientInfoStep from './ClientInfoStep';
 import { ClientService } from '../services/api';
 
 const ClientCreate = ({ onNavigate }) => {
+    const { showNotification } = useNotification();
     const [clientDetails, setClientDetails] = useState({
         clientName: '',
         businessName: '',
         taxId: '',
-        businessAddress: '',
+        email: '',
+        mobile: '',
+        address1: '',
+        address2: '',
+        city: '',
+        province: '',
+        zip: '',
+        businessAddress: '', // Keeping for backward compatibility or display fallback
     });
-    const [notification, setNotification] = useState(null);
 
     const handleCreate = async () => {
         try {
-            const response = await ClientService.create(clientDetails);
+            // Construct composite address
+            const compositeAddress = [
+                clientDetails.address1,
+                clientDetails.address2,
+                clientDetails.city,
+                clientDetails.province,
+                clientDetails.zip
+            ].filter(Boolean).join(', ');
+
+            // Prepare payload with metadata
+            const payload = {
+                ...clientDetails,
+                businessAddress: compositeAddress, // Overwrite with composite
+                metadata: JSON.stringify({
+                    address_information: {
+                        address1: clientDetails.address1,
+                        address2: clientDetails.address2,
+                        city: clientDetails.city,
+                        province: clientDetails.province,
+                        zip: clientDetails.zip
+                    },
+                    contact_information: {
+                        email: clientDetails.email,
+                        mobile: clientDetails.mobile
+                    }
+                })
+            };
+
+            const response = await ClientService.create(payload);
 
             if (response.data) {
                 // Success
-                setNotification({ type: 'success', message: 'Client created successfully!' });
+                showNotification('Client created successfully!', 'success');
             } else {
                 throw new Error('Failed to create client');
             }
 
-            // Success
-            setNotification({ type: 'success', message: 'Client created successfully!' });
+            // Success (redundant logic in original, cleaned up here)
 
             // Reset form
             setClientDetails({
                 clientName: '',
                 businessName: '',
                 taxId: '',
+                email: '',
+                mobile: '',
+                address1: '',
+                address2: '',
+                city: '',
+                province: '',
+                zip: '',
                 businessAddress: '',
             });
 
@@ -37,35 +79,14 @@ const ClientCreate = ({ onNavigate }) => {
             // For now, let's just show success and stay here or let user navigate.
 
         } catch (error) {
+
             console.error('Error creating client:', error);
-            setNotification({ type: 'error', message: 'Failed to create client. Please try again.' });
+            showNotification('Failed to create client. Please try again.', 'error');
         }
     };
 
     return (
         <div style={{ position: 'relative' }}>
-            {notification && (
-                <div className={`notification ${notification.type}`} style={{
-                    position: 'absolute',
-                    top: '1rem',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    zIndex: 1000,
-                    padding: '1rem 2rem',
-                    borderRadius: '8px',
-                    backgroundColor: notification.type === 'success' ? '#def7ec' : '#fde8e8',
-                    color: notification.type === 'success' ? '#03543f' : '#9b1c1c',
-                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                }}>
-                    {notification.message}
-                    <button
-                        onClick={() => setNotification(null)}
-                        style={{ marginLeft: '1rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', lineHeight: 1 }}
-                    >
-                        &times;
-                    </button>
-                </div>
-            )}
 
             {/* Reuse ClientInfoStep but hijack onNext to be our submit handler */}
             {/* We also need to hide the "Continue to Products" text if possible, or override the button text? 

@@ -15,5 +15,5 @@ export const getLicenseData = () => {
 export const getDataAgeLimit = () => {
     const data = getLicenseData();
     // Default to 90 days if not specified or error
-    return data?.limit?.data_age || 90;
+    return data?.limit?.data_age || 10;
 };

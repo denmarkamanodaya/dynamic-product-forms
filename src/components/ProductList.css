@@ -37,7 +37,7 @@
     font-size: var(--font-xs);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #94a3b8;
+    color: var(--text-tertiary);
     font-weight: 700;
 }
 
@@ -142,17 +142,17 @@
 }
 
 .grand-total-card .label {
-    font-size: 0.85rem;
+    font-size: var(--font-sm);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #64748b;
+    color: var(--text-secondary);
     font-weight: 600;
 }
 
 .grand-total-card .value {
-    font-size: 1.75rem;
+    font-size: var(--font-xxl);
     font-weight: 800;
-    color: #0f172a;
+    color: var(--text-heading);
     /* Dark text for high contrast */
     font-feature-settings: "tnum";
     letter-spacing: -0.02em;
@@ -199,14 +199,14 @@
     font-size: var(--font-xs);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #94a3b8;
+    color: var(--text-tertiary);
     font-weight: 600;
 }
 
 .summary-value {
     font-size: var(--font-base);
     font-weight: 700;
-    color: #0f172a;
+    color: var(--text-heading);
 }
 
 /* Client Details Section */
@@ -222,10 +222,10 @@
 .section-title {
     font-size: var(--font-lg);
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-heading);
     margin-bottom: var(--space-lg);
     padding-bottom: var(--space-md);
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-light);
     letter-spacing: -0.01em;
 }
 
@@ -247,7 +247,7 @@
     font-size: var(--font-xs);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #94a3b8;
+    color: var(--text-tertiary);
     font-weight: 600;
 }
 
@@ -302,8 +302,8 @@
 }
 
 .loading-text {
-    color: #64748b;
-    font-size: 1rem;
+    color: var(--text-secondary);
+    font-size: var(--font-base);
     font-weight: 500;
 }
 
@@ -320,7 +320,7 @@
 }
 
 .case-id-label {
-    font-size: 0.8rem;
+    font-size: var(--font-xs);
     font-weight: 500;
     margin-top: 0.25rem;
     font-family: monospace;

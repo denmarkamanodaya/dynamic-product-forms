@@ -26,7 +26,6 @@
 .firetwit-composer {
     background: var(--surface-color);
     border-radius: var(--radius-lg);
-    padding: var(--space-lg);
     margin-bottom: var(--space-xl);
 }
 
@@ -78,6 +77,68 @@
     background: #ccc;
     cursor: not-allowed;
 }
+
+/* Autocomplete Dropdown */
+.firetwit-composer {
+    position: relative;
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: var(--space-xs);
+}
+
+.autocomplete-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-item:hover {
+    background: #f8fafc;
+}
+
+.autocomplete-case-id {
+    font-family: monospace;
+    font-size: var(--font-sm);
+    font-weight: 700;
+    color: var(--text-heading);
+    min-width: 80px;
+}
+
+.autocomplete-client-name {
+    flex: 1;
+    font-size: var(--font-sm);
+    color: var(--text-primary);
+}
+
+.autocomplete-status {
+    font-size: var(--font-xs);
+}
+
+.autocomplete-status .status-badge {
+    font-size: var(--font-xs);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+}
+
 
 .post-card {
     background: var(--surface-color);
@@ -170,8 +231,136 @@
     font-size: 1rem;
     padding: 5px;
     transition: color 0.2s;
+    position: relative;
 }
 
 .action-btn:hover {
     color: var(--primary-color);
+}
+.action-btn.active {
+    color: var(--primary-color);
+}
+
+.comment-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--primary-color);
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 5px;
+    border-radius: 10px;
+    font-weight: 700;
+    min-width: 16px;
+    text-align: center;
+}
+
+/* Comment Section */
+.comment-section {
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border-color);
+}
+
+.loading-comments {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: var(--font-sm);
+    padding: var(--space-md);
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.comment-item {
+    display: flex;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    background: #f8fafc;
+}
+
+.comment-item .post-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.6rem;
+}
+
+.comment-body {
+    flex: 1;
+}
+
+.comment-meta {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+    align-items: center;
+}
+
+.comment-author {
+    font-weight: 600;
+    color: var(--text-heading);
+    font-size: 0.85rem;
+}
+
+.comment-time {
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+}
+
+.comment-text {
+    font-size: var(--font-sm);
+    color: var(--text-body);
+    line-height: 1.4;
+}
+
+/* Comment Input Form */
+.comment-input-form {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+}
+
+.comment-input {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.comment-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.comment-submit-btn {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.comment-submit-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+.comment-submit-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
 }

@@ -1,10 +1,13 @@
 import React from 'react';
 import { currencyConfig, taxConfig } from '../config';
+import { getLicenseData } from '../utils/license';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import './Settings.css'; // We'll reuse existing styles or create a simple one
 
 const Settings = () => {
+    const licenseData = getLicenseData();
+
     return (
         <div className="client-info-step">
             <div className="client-info-card">
@@ -84,6 +87,63 @@ const Settings = () => {
                             type="text"
                             className="glass-input"
                             value={taxConfig.vatLabel}
+                            readOnly
+                        />
+                    </div>
+
+                    <div className="form-field full-width">
+                        <h4 style={{ marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem', color: '#64748b', marginTop: '1rem' }}>
+                            License Information
+                        </h4>
+                    </div>
+
+                    <div className="form-field">
+                        <label>Licensed To</label>
+                        <input
+                            type="text"
+                            className="glass-input"
+                            value={licenseData?.name || 'Unknown'}
+                            readOnly
+                        />
+                    </div>
+
+                    <div className="form-field">
+                        <label>License Type</label>
+                        <input
+                            type="text"
+                            className="glass-input"
+                            value={licenseData?.type || 'Unknown'}
+                            readOnly
+                        />
+                    </div>
+
+                    <div className="form-field">
+                        <label>Status</label>
+                        <input
+                            type="text"
+                            className="glass-input"
+                            value={licenseData?.active ? 'Active' : 'Inactive'}
+                            style={{ color: licenseData?.active ? '#10b981' : '#ef4444', fontWeight: 500 }}
+                            readOnly
+                        />
+                    </div>
+
+                    <div className="form-field">
+                        <label>Case Limit</label>
+                        <input
+                            type="text"
+                            className="glass-input"
+                            value={licenseData?.limit?.case || 'Unlimited'}
+                            readOnly
+                        />
+                    </div>
+
+                    <div className="form-field">
+                        <label>Case/History/Twit Age</label>
+                        <input
+                            type="text"
+                            className="glass-input"
+                            value={licenseData?.limit?.data_age + ' days' || '10 days'}
                             readOnly
                         />
                     </div>
