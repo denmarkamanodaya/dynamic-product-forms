@@ -35,6 +35,7 @@ function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false);
   const [licenseStatus, setLicenseStatus] = useState({ isValid: true });
 
   useEffect(() => {
@@ -160,16 +161,19 @@ function App() {
           onNewCase={() => handleNavigate('form')}
           onNavigate={handleNavigate}
           currentUser={currentUser}
+          onToggleNav={() => setIsNavOpen(!isNavOpen)}
         />
 
         <NavigationSidebar
           currentView={view}
-          onNavigate={handleNavigate}
+          onNavigate={(v) => { handleNavigate(v); setIsNavOpen(false); }}
           currentUser={currentUser}
           onLogout={handleLogout}
+          isOpen={isNavOpen}
+          onClose={() => setIsNavOpen(false)}
         />
 
-        <div className="main-layout" style={{ marginLeft: '300px', width: 'calc(100% - 330px)' }}>
+        <div className="main-layout">
           <div className="main-content">
             {view === 'list' ? (
               <CaseList

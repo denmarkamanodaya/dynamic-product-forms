@@ -135,3 +135,47 @@
     color: #ef4444;
     border-color: #fee2e2;
 }
+
+/* Tablet & Mobile: Overlay drawer */
+@media (max-width: 768px) {
+    .navigation-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1100;
+        box-shadow: none;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .navigation-sidebar.nav-open {
+        transform: translateX(0);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .nav-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1099;
+    }
+
+    .nav-menu {
+        overflow-y: auto;
+        flex: 1;
+        min-height: 0;
+    }
+
+    .nav-footer {
+        flex-shrink: 0;
+        padding-top: var(--space-md);
+        border-top: 1px solid var(--border-color);
+        margin-top: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .navigation-sidebar {
+        left: 0;
+        width: 280px;
+    }
+}

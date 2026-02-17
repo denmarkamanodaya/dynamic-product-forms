@@ -210,10 +210,12 @@ const UserList = ({ onNavigate }) => {
                     border-radius: var(--radius-sm);
                     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
                     border: 1px solid #e2e8f0;
-                    overflow: hidden;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
                 }
                 .ledger-table {
                     width: 100%;
+                    min-width: 600px;
                     border-collapse: collapse;
                 }
                 .ledger-table th {
