@@ -273,3 +273,129 @@ select.glass-input option {
   color: var(--text-heading);
   padding: var(--space-xs);
 }
+
+/* ===========================================
+   UTILITY CLASSES - Typography
+   =========================================== */
+
+/* Page Titles - for main page headings */
+.page-title {
+  font-size: var(--font-xxl);
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-xs);
+}
+
+/* Section Headers - for major sections */
+.section-header {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: var(--space-sm);
+}
+
+/* Subsection Headers */
+.subsection-header {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--text-heading);
+  margin-bottom: var(--space-xs);
+}
+
+/* Step Title - for wizard steps */
+.step-title {
+  font-size: var(--font-xl);
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* Step Subtitle */
+.step-subtitle {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Body text sizes */
+.text-base {
+  font-size: var(--font-base);
+}
+
+.text-sm {
+  font-size: var(--font-sm);
+}
+
+.text-xs {
+  font-size: var(--font-xs);
+}
+
+.text-lg {
+  font-size: var(--font-lg);
+}
+
+/* ===========================================
+   UTILITY CLASSES - Text Colors
+   =========================================== */
+
+.text-heading {
+  color: var(--text-heading);
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-tertiary {
+  color: var(--text-tertiary);
+}
+
+/* ===========================================
+   UTILITY CLASSES - Font Weights
+   =========================================== */
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-extrabold {
+  font-weight: 800;
+}
+
+/* ===========================================
+   UTILITY CLASSES - Other
+   =========================================== */
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.font-mono {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.text-money {
+  font-variant-numeric: tabular-nums;
+}

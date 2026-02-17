@@ -45,6 +45,8 @@ export const UserService = {
 export const PostService = {
     list: () => apiClient.get('/post/v1/list'),
     create: (data) => apiClient.post('/post/v1/create', data),
+    createComment: (data) => apiClient.post('/post/v1/comment/create', data),
+    listComments: (postId) => apiClient.get('/post/v1/comment/list', { params: { postId } }),
 };
 
 export const ReportService = {

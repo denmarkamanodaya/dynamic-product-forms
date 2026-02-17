@@ -45,6 +45,24 @@ const ClientList = ({ onNavigate }) => {
         return name ? name.charAt(0).toUpperCase() : '?';
     };
 
+    const getContactInfo = (client) => {
+        let email = client.email;
+        let mobile = client.phone || client.mobile; // existing top-level fallback
+
+        if (client.metadata) {
+            try {
+                const meta = typeof client.metadata === 'string' ? JSON.parse(client.metadata) : client.metadata;
+                if (meta.contact_information) {
+                    email = meta.contact_information.email || email;
+                    mobile = meta.contact_information.mobile || mobile;
+                }
+            } catch (e) {
+                console.error("Failed to parse client metadata", e);
+            }
+        }
+        return { email, mobile };
+    };
+
     return (
         <div className="ledger-container client-list-container">
             <div className="ledger-header">
@@ -94,18 +112,25 @@ const ClientList = ({ onNavigate }) => {
                                     </td>
                                     <td>
                                         <div className="contact-stack">
-                                            {client.email && (
-                                                <a href={`mailto:${client.email}`} className="email-link" onClick={e => e.stopPropagation()}>
-                                                    <FontAwesomeIcon icon={faEnvelope} className="icon-mr" />
-                                                    {client.email}
-                                                </a>
-                                            )}
-                                            {client.phone && (
-                                                <span className="phone-text">
-                                                    <FontAwesomeIcon icon={faPhone} className="icon-mr" />
-                                                    {client.phone}
-                                                </span>
-                                            )}
+                                            {(() => {
+                                                const { email, mobile } = getContactInfo(client);
+                                                return (
+                                                    <>
+                                                        {email && (
+                                                            <a href={`mailto:${email}`} className="email-link" onClick={e => e.stopPropagation()}>
+                                                                <FontAwesomeIcon icon={faEnvelope} className="icon-mr" />
+                                                                {email}
+                                                            </a>
+                                                        )}
+                                                        {mobile && (
+                                                            <span className="phone-text">
+                                                                <FontAwesomeIcon icon={faPhone} className="icon-mr" />
+                                                                {mobile}
+                                                            </span>
+                                                        )}
+                                                    </>
+                                                );
+                                            })()}
                                         </div>
                                     </td>
                                     <td>

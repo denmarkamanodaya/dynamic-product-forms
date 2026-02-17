@@ -38,6 +38,13 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
         businessName: '',
         taxId: '',
         businessAddress: '',
+        email: '',
+        mobile: '',
+        address1: '',
+        address2: '',
+        city: '',
+        province: '',
+        zip: '',
     });
 
     const [orderDetails, setOrderDetails] = useState({
@@ -296,11 +303,34 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
     const handleClientSelect = (selectedClient) => {
         // ... implementation ...
         console.log("handleClientSelect called with:", selectedClient);
+
+        // Extract metadata if available
+        let metadata = {};
+        if (selectedClient.metadata) {
+            try {
+                metadata = typeof selectedClient.metadata === 'string'
+                    ? JSON.parse(selectedClient.metadata)
+                    : selectedClient.metadata;
+            } catch (e) {
+                console.error("Failed to parse client metadata", e);
+            }
+        }
+
+        const addressInfo = metadata.address_information || {};
+        const contactInfo = metadata.contact_information || {};
+
         const newClientDetails = {
             clientName: selectedClient.clientName || '',
             businessName: selectedClient.businessName || '',
             taxId: selectedClient.taxId || '',
             businessAddress: selectedClient.businessAddress || '',
+            email: contactInfo.email || selectedClient.email || '',
+            mobile: contactInfo.mobile || selectedClient.mobile || selectedClient.phone || '',
+            address1: addressInfo.address1 || '',
+            address2: addressInfo.address2 || '',
+            city: addressInfo.city || '',
+            province: addressInfo.province || '',
+            zip: addressInfo.zip || '',
         };
         // Update terms if available in selected client, otherwise keep current input
         if (selectedClient.terms) {

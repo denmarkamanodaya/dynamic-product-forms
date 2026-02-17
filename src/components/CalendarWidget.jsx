@@ -11,7 +11,7 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
     const [cases, setCases] = useState([]);
     const [selectedDateCases, setSelectedDateCases] = useState([]);
 
-    // Fetch cases on mount
+    // Fetch cases on mount only (no polling to reduce API costs)
     useEffect(() => {
         const fetchCases = async () => {
             try {
@@ -34,7 +34,7 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
             }
         };
         fetchCases();
-    }, []);
+    }, []); // Fetch only once on mount
 
     // Update selected cases when date changes or cases load
     useEffect(() => {
@@ -140,27 +140,95 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
                                     </div>
                                 ) : (
                                     <ul className="events-list-full">
-                                        {selectedDateCases.map(c => (
-                                            <li key={c.caseId} className="event-card">
-                                                <div className="event-card-header">
-                                                    <span className="client-name">
-                                                        {c.data?.clientDetails?.clientName || c.data?.clientDetails?.businessName || 'Unknown Client'}
-                                                    </span>
-                                                    <span className={`status-badge-full status-${c.status?.toLowerCase() || 'default'}`}>
-                                                        {c.status}
-                                                    </span>
-                                                </div>
-                                                <div className="event-card-body">
-                                                    <p className="case-id">#{c.status.slice(0, 3).toUpperCase()}-{c.caseId.slice(-4).toUpperCase()}</p>
-                                                    {c.data?.products && (
-                                                        <p className="product-count">
-                                                            {c.data.products.length} Item{c.data.products.length !== 1 ? 's' : ''}
-                                                            <span className="total-val">{currencyConfig.code} {c.data?.grandTotal}</span>
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            </li>
-                                        ))}
+                                        {selectedDateCases.map(c => {
+                                            // Get user avatar data
+                                            const renderUserAvatar = (createdBy) => {
+                                                if (!createdBy) return null;
+
+                                                let name = 'Unknown';
+                                                let initials = 'U';
+                                                let avatarColor = 'var(--accent-color, #3b82f6)';
+
+
+                                                if (createdBy.firstName || createdBy.lastName) {
+                                                    const first = createdBy.firstName ? createdBy.firstName.charAt(0) : '';
+                                                    const last = createdBy.lastName ? createdBy.lastName.charAt(0) : '';
+                                                    initials = first && last ? `${first}${last}` : (first || last || 'U');
+                                                } else if (createdBy.name) {
+                                                    name = createdBy.name;
+                                                    const nameParts = name.split(' ');
+                                                    initials = nameParts.length > 1
+                                                        ? `${nameParts[0][0]}${nameParts[1][0]}`
+                                                        : `${nameParts[0][0]}${nameParts[0][1] || ''}`;
+                                                }
+
+
+                                                if (createdBy.metadata) {
+                                                    try {
+                                                        const meta = typeof createdBy.metadata === 'string'
+                                                            ? JSON.parse(createdBy.metadata)
+                                                            : createdBy.metadata;
+                                                        initials = meta.initials || initials;
+                                                        avatarColor = meta.avatarColor || avatarColor;
+                                                    } catch (e) {
+                                                        // Use defaults
+                                                    }
+                                                }
+
+
+                                                return (
+                                                    <div
+                                                        className="user-avatar-circle"
+                                                        style={{
+                                                            background: avatarColor,
+                                                            backgroundColor: avatarColor
+                                                        }}
+                                                    >
+                                                        {initials.toUpperCase()}
+                                                    </div>
+                                                );
+                                            };
+
+                                            return (
+                                                <li key={c.caseId} className="event-card kanban-card-style">
+                                                    <div className="card-header-row">
+                                                        <div className="card-client">
+                                                            <div className="client-name">
+                                                                {c.data?.clientDetails?.clientName || c.data?.clientDetails?.businessName || 'Unknown Client'}
+                                                            </div>
+                                                            {c.data?.clientDetails?.businessName && c.data?.clientDetails?.clientName && (
+                                                                <div className="business-name">
+                                                                    {c.data?.clientDetails?.businessName}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="card-footer-row">
+                                                        <div className="card-info-item total-item">
+                                                            <span className="text" style={{ fontWeight: 'bold' }}>
+                                                                {currencyConfig.code} {c.data?.grandTotal ? parseFloat(c.data.grandTotal).toLocaleString(currencyConfig.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="card-info-item">
+                                                            <span className="text">
+                                                                {c.data?.products?.length || 0} Item{(c.data?.products?.length || 0) !== 1 ? 's' : ''}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="card-user-footer">
+                                                        <span className={`compact-status-badge status-${c.status?.toLowerCase() || 'default'}`}>
+                                                            {c.status
+                                                                ? `${c.status.slice(0, 3).toUpperCase()}-${String(c.caseId).slice(-4).toUpperCase()}`
+                                                                : String(c.caseId).slice(-4).toUpperCase()}
+                                                        </span>
+                                                        {renderUserAvatar(c.createdBy)}
+                                                    </div>
+                                                </li>
+                                            );
+                                        })}
                                     </ul>
                                 )}
                             </div>

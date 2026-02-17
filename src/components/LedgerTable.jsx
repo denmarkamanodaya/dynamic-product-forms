@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faFilter, faFileInvoiceDollar, faSort, faSortUp, faSortDown, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faFilter, faFileInvoiceDollar, faSort, faSortUp, faSortDown, faEye, faEnvelope, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { CaseService } from '../services/api';
 import { currencyConfig } from '../config';
 import './LedgerTable.css';
@@ -152,6 +152,52 @@ const LedgerTable = ({ data: externalData, title = "Recent Transactions" }) => {
         window.location.href = `?caseId=${caseId}`;
     };
 
+    const getContactInfo = (clientDetails) => {
+        let email = clientDetails?.email || '';
+        let mobile = clientDetails?.mobile || clientDetails?.phone || '';
+
+        if (clientDetails?.metadata) {
+            try {
+                const meta = typeof clientDetails.metadata === 'string'
+                    ? JSON.parse(clientDetails.metadata)
+                    : clientDetails.metadata;
+                if (meta.contact_information) {
+                    email = meta.contact_information.email || email;
+                    mobile = meta.contact_information.mobile || mobile;
+                }
+            } catch (e) {
+                console.error("Failed to parse client metadata", e);
+            }
+        }
+        return { email, mobile };
+    };
+
+    const getCreatorInfo = (createdBy) => {
+        if (!createdBy) return null;
+
+        const name = `${createdBy.firstName || ''} ${createdBy.lastName || ''}`.trim();
+        const initials = [
+            createdBy.firstName?.charAt(0),
+            createdBy.lastName?.charAt(0)
+        ].filter(Boolean).join('').toUpperCase() || '?';
+
+        let avatarColor = '#3b82f6'; // default
+        if (createdBy.metadata) {
+            try {
+                const meta = typeof createdBy.metadata === 'string'
+                    ? JSON.parse(createdBy.metadata)
+                    : createdBy.metadata;
+                avatarColor = meta.avatarColor || avatarColor;
+            } catch (e) {
+                console.error("Failed to parse user metadata", e);
+            }
+        }
+
+        return { name, initials, avatarColor };
+    };
+
+    const showCreatorColumn = title === "Recent Transactions";
+
     return (
         <div className="ledger-container dashboard-widget">
             <div className="dashboard-header">
@@ -192,6 +238,7 @@ const LedgerTable = ({ data: externalData, title = "Recent Transactions" }) => {
                 <table className="ledger-table">
                     <thead>
                         <tr>
+                            {showCreatorColumn && <th>Created By</th>}
                             <th onClick={() => handleSort('createdAt')}>
                                 Date <FontAwesomeIcon icon={getSortIcon('createdAt')} className="sort-icon" />
                             </th>
@@ -201,6 +248,8 @@ const LedgerTable = ({ data: externalData, title = "Recent Transactions" }) => {
                             <th onClick={() => handleSort('clientName')}>
                                 Client <FontAwesomeIcon icon={getSortIcon('clientName')} className="sort-icon" />
                             </th>
+                            <th>Contact Info</th>
+                            <th className="text-center">Items</th>
                             <th onClick={() => handleSort('status')}>
                                 Status <FontAwesomeIcon icon={getSortIcon('status')} className="sort-icon" />
                             </th>
@@ -216,46 +265,116 @@ const LedgerTable = ({ data: externalData, title = "Recent Transactions" }) => {
                     <tbody>
                         {isLoading ? (
                             <tr>
-                                <td colSpan="7" className="text-center">Loading...</td>
+                                <td colSpan={showCreatorColumn ? "10" : "9"} className="text-center">Loading...</td>
                             </tr>
                         ) : paginatedCases.length === 0 ? (
                             <tr>
-                                <td colSpan="7" className="text-center">No transactions found</td>
+                                <td colSpan={showCreatorColumn ? "10" : "9"} className="text-center">No transactions found</td>
                             </tr>
                         ) : (
-                            paginatedCases.map((c) => (
-                                <tr key={c.caseId || c._id}>
-                                    <td>{formatDate(c.createdAt)}</td>
-                                    <td className="font-mono">
-                                        {(c.caseId || c._id || '').slice(-4).toUpperCase()}
-                                    </td>
-                                    <td className="font-medium">
-                                        {c.data?.clientDetails?.clientName || c.data?.clientDetails?.businessName || 'Unknown'}
-                                        {c.data?.clientDetails?.businessName && c.data.clientDetails.clientName && (
-                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                                                {c.data.clientDetails.businessName}
-                                            </div>
+                            paginatedCases.map((c) => {
+                                const { email, mobile } = getContactInfo(c.data?.clientDetails);
+                                const creatorInfo = showCreatorColumn ? getCreatorInfo(c.createdBy) : null;
+
+                                return (
+                                    <tr key={c.caseId || c._id}>
+                                        {showCreatorColumn && (
+                                            <td>
+                                                {creatorInfo ? (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                        <div
+                                                            style={{
+                                                                width: '32px',
+                                                                height: '32px',
+                                                                borderRadius: '50%',
+                                                                background: creatorInfo.avatarColor,
+                                                                color: 'white',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontWeight: 600,
+                                                                fontSize: '0.75rem'
+                                                            }}
+                                                        >
+                                                            {creatorInfo.initials}
+                                                        </div>
+                                                        <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                                                            {creatorInfo.name}
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>N/A</span>
+                                                )}
+                                            </td>
                                         )}
-                                    </td>
-                                    <td>
-                                        <span className={`status-badge status-${(c.status || 'unknown').toLowerCase()}`}>
-                                            {c.status || 'Unknown'}
-                                        </span>
-                                    </td>
-                                    <td className="text-right font-mono text-money">
-                                        {formatCurrency(c.data?.grandTotal)}
-                                    </td>
-                                    <td>{c.data?.orderDetails?.leadTime || 'N/A'}</td>
-                                    <td className="text-right">
-                                        <button
-                                            className="glass-btn small"
-                                            onClick={() => handleActionClick(c.caseId || c._id)}
-                                        >
-                                            <FontAwesomeIcon icon={faEye} /> View
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
+                                        <td>{formatDate(c.createdAt)}</td>
+                                        <td className="font-mono">
+                                            {(c.caseId || c._id || '').slice(-4).toUpperCase()}
+                                        </td>
+                                        <td className="font-medium">
+                                            {c.data?.clientDetails?.clientName || c.data?.clientDetails?.businessName || 'Unknown'}
+                                            {c.data?.clientDetails?.businessName && c.data.clientDetails.clientName && (
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                                                    {c.data.clientDetails.businessName}
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                                                {email && (
+                                                    <a
+                                                        href={`mailto:${email}`}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        style={{
+                                                            color: '#3b82f6',
+                                                            textDecoration: 'none',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '0.5rem',
+                                                            fontSize: '0.85rem'
+                                                        }}
+                                                    >
+                                                        <FontAwesomeIcon icon={faEnvelope} style={{ opacity: 0.7, width: '14px' }} />
+                                                        {email}
+                                                    </a>
+                                                )}
+                                                {mobile && (
+                                                    <span style={{
+                                                        color: '#64748b',
+                                                        fontSize: '0.85rem',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '0.5rem'
+                                                    }}>
+                                                        <FontAwesomeIcon icon={faPhone} style={{ opacity: 0.7, width: '14px' }} />
+                                                        {mobile}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="text-center">
+                                            {c.data?.products?.length || 0}
+                                        </td>
+                                        <td>
+                                            <span className={`status-badge status-${(c.status || 'unknown').toLowerCase()}`}>
+                                                {c.status || 'Unknown'}
+                                            </span>
+                                        </td>
+                                        <td className="text-right font-mono text-money">
+                                            {formatCurrency(c.data?.grandTotal)}
+                                        </td>
+                                        <td>{c.data?.orderDetails?.leadTime || 'N/A'}</td>
+                                        <td className="text-right">
+                                            <button
+                                                className="glass-btn small"
+                                                onClick={() => handleActionClick(c.caseId || c._id)}
+                                            >
+                                                <FontAwesomeIcon icon={faEye} /> View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })
                         )}
                     </tbody>
                 </table>

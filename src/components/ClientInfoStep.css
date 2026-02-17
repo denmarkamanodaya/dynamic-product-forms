@@ -22,16 +22,16 @@
 }
 
 .client-info-title {
-    font-size: 1.75rem;
+    font-size: var(--font-xl);
     font-weight: 800;
-    color: #0f172a;
-    margin-bottom: 0.5rem;
+    color: var(--text-heading);
+    margin-bottom: var(--space-xs);
     letter-spacing: -0.02em;
 }
 
 .client-info-subtitle {
-    font-size: 0.95rem;
-    color: #64748b;
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
     font-weight: 400;
 }
 
@@ -53,16 +53,16 @@
 }
 
 .form-field label {
-    font-size: 0.75rem;
+    font-size: var(--font-xs);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #94a3b8;
+    color: var(--text-tertiary);
     font-weight: 600;
 }
 
 .form-field input::placeholder {
-    color: #cbd5e1;
-    font-size: 0.9rem;
+    color: var(--border-light);
+    font-size: var(--font-sm);
 }
 
 .step-actions {
@@ -84,6 +84,6 @@
     }
 
     .step-title {
-        font-size: 1.5rem;
+        font-size: var(--font-lg);
     }
 }

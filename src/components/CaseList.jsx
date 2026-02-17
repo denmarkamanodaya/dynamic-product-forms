@@ -21,7 +21,7 @@ import { currencyConfig } from '../config';
 import { CSS } from '@dnd-kit/utilities';
 import './CaseList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faMoneyBillWave, faTrash, faClipboardCheck, faUser, faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faMoneyBillWave, faTrash, faClipboardCheck, faUser, faPlus, faSearch, faBox } from '@fortawesome/free-solid-svg-icons';
 
 import { useNotification } from '../context/NotificationContext';
 
@@ -140,6 +140,13 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
                     <div className="card-info-item total-item">
                         <span className="text" style={{ fontWeight: 'bold' }}>
                             {currencyConfig.code} {caseItem.data?.grandTotal ? parseFloat(caseItem.data.grandTotal).toLocaleString(currencyConfig.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+                        </span>
+                    </div>
+
+                    <div className="card-info-item">
+                        <span className="icon"><FontAwesomeIcon icon={faBox} /></span>
+                        <span className="text">
+                            {caseItem.data?.products?.length || 0} Item{(caseItem.data?.products?.length || 0) !== 1 ? 's' : ''}
                         </span>
                     </div>
                 </div>

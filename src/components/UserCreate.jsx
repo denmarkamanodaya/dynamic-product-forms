@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './UserCreate.css';
+import { useNotification } from '../context/NotificationContext';
 import { UserService } from '../services/api';
 
 const UserCreate = ({ onNavigate }) => {
+    const { showNotification } = useNotification();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -13,8 +15,6 @@ const UserCreate = ({ onNavigate }) => {
         avatarUrl: ''
     });
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -26,12 +26,12 @@ const UserCreate = ({ onNavigate }) => {
 
     const validateForm = () => {
         if (formData.password !== formData.confirmPassword) {
-            setError("Passwords do not match");
+            showNotification("Passwords do not match", 'error');
             return false;
         }
 
         if (formData.password.length < 8) {
-            setError("Password must be at least 8 characters long");
+            showNotification("Password must be at least 8 characters long", 'error');
             return false;
         }
 
@@ -40,7 +40,7 @@ const UserCreate = ({ onNavigate }) => {
         const hasNumber = /\d/.test(formData.password);
 
         if (!hasLetter || !hasNumber) {
-            setError("Password must contain at least one letter and one number");
+            showNotification("Password must contain at least one letter and one number", 'error');
             return false;
         }
 
@@ -51,8 +51,6 @@ const UserCreate = ({ onNavigate }) => {
         if (!validateForm()) return;
 
         setLoading(true);
-        setError(null);
-        setSuccess(false);
 
         // Generate random hex color for avatar background
         const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
@@ -73,7 +71,7 @@ const UserCreate = ({ onNavigate }) => {
             const response = await UserService.create({ data: payload });
 
             if (response.data) {
-                setSuccess(true);
+                showNotification("User created successfully!", 'success');
                 setFormData({
                     firstName: '',
                     lastName: '',
@@ -88,7 +86,7 @@ const UserCreate = ({ onNavigate }) => {
             }
 
         } catch (err) {
-            setError(err.message);
+            showNotification(err.message, 'error');
         } finally {
             setLoading(false);
         }
@@ -101,14 +99,6 @@ const UserCreate = ({ onNavigate }) => {
                     <h2 className="user-create-title">Create New User</h2>
                     <p className="user-create-subtitle">Enter the details for the new user account</p>
                 </div>
-
-                {error && <div className="validation-error">{error}</div>}
-                {success && (
-                    <div className="success-message">
-                        User created successfully!
-                        <button onClick={() => setSuccess(false)} className="close-msg">Dismiss</button>
-                    </div>
-                )}
 
                 <div className="user-create-grid">
                     <div className="form-field">

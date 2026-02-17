@@ -22,16 +22,16 @@
 }
 
 .step-title {
-    font-size: 1.75rem;
+    font-size: var(--font-xl);
     font-weight: 800;
-    color: #0f172a;
-    margin-bottom: 0.5rem;
+    color: var(--text-heading);
+    margin-bottom: var(--space-xs);
     letter-spacing: -0.02em;
 }
 
 .step-subtitle {
-    font-size: 0.95rem;
-    color: #64748b;
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
     font-weight: 400;
 }
 
