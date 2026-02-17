@@ -10,11 +10,16 @@ import CalendarWidget from './components/CalendarWidget';
 import HistoryWidget from './components/HistoryWidget';
 import SalesDashboard from './components/SalesDashboard';
 import UserCreate from './components/UserCreate';
+import UserList from './components/UserList';
 import ClientCreate from './components/ClientCreate';
+import ClientList from './components/ClientList';
 import Settings from './components/Settings';
 import { NotificationProvider } from './context/NotificationContext';
 import Notification from './components/Notification';
 import FireTwitPage from './components/FireTwitPage';
+import { LICENSE_KEY } from './config';
+import { checkLicenseStatus } from './utils/licenseManager';
+import { CaseService } from './services/api';
 import './App.css';
 
 function App() {
@@ -30,6 +35,7 @@ function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [licenseStatus, setLicenseStatus] = useState({ isValid: true });
 
   useEffect(() => {
     // Check for existing session
@@ -44,6 +50,30 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    const validateLicense = async () => {
+      if (currentUser) {
+        let caseCount = 0;
+        try {
+          // Fetch all cases to count them. 
+          // Optimization: In a real app, an API endpoint returning just the count would be better.
+          const response = await CaseService.list();
+          const cases = Array.isArray(response) ? response : (response.data || []);
+          caseCount = cases.length;
+        } catch (error) {
+          console.error("Failed to fetch case count for license check:", error);
+          // We might want to handle this gracefully or default to 0 to avoid blocking if API fails?
+          // For now, proceeding with 0 case count if fetch fails.
+        }
+
+        const status = checkLicenseStatus(LICENSE_KEY, { caseCount });
+        setLicenseStatus(status);
+      }
+    };
+
+    validateLicense();
+  }, [currentUser]);
+
   const handleLogin = (user) => {
     setCurrentUser(user);
     localStorage.setItem('currentUser', JSON.stringify(user));
@@ -57,7 +87,7 @@ function App() {
 
   const handleNavigate = (newView) => {
     // Role-based access control
-    if (['dashboard', 'user-create'].includes(newView)) {
+    if (['dashboard', 'user-create', 'user-list'].includes(newView)) {
       const isAdmin = ['superadmin', 'admin'].includes(currentUser?.role);
       if (!isAdmin) {
         console.warn("Unauthorized access attempt to", newView);
@@ -129,6 +159,7 @@ function App() {
           onToggleHistory={() => toggleHistory()}
           onNewCase={() => handleNavigate('form')}
           onNavigate={handleNavigate}
+          currentUser={currentUser}
         />
 
         <NavigationSidebar
@@ -152,6 +183,10 @@ function App() {
               <MyCases currentUser={currentUser} onNavigate={handleNavigate} />
             ) : view === 'user-create' ? (
               <UserCreate onNavigate={handleNavigate} />
+            ) : view === 'user-list' ? (
+              <UserList onNavigate={handleNavigate} />
+            ) : view === 'client-list' ? (
+              <ClientList onNavigate={handleNavigate} />
             ) : view === 'client-create' ? (
               <ClientCreate onNavigate={handleNavigate} />
             ) : view === 'client-create' ? (
@@ -178,6 +213,43 @@ function App() {
         <CalendarWidget isOpen={isCalendarOpen} onToggle={toggleCalendar} />
         <HistoryWidget isOpen={isHistoryOpen} onToggle={toggleHistory} />
         <Notification />
+
+        {/* License Overlay */}
+        {!licenseStatus.isValid && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            zIndex: 9999,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: 'white'
+          }}>
+            <div style={{
+              backgroundColor: '#1e293b',
+              padding: '2rem',
+              borderRadius: '8px',
+              textAlign: 'center',
+              border: '1px solid #ef4444',
+              maxWidth: '500px'
+            }}>
+              <h2 style={{ color: '#ef4444', marginTop: 0 }}>License Inactive</h2>
+              <p>{licenseStatus.message || "Your license is no longer active. Please contact support."}</p>
+
+              <button
+                onClick={handleLogout}
+                className="glass-btn secondary"
+                style={{ marginTop: '1.5rem', fontSize: '0.9rem', padding: '0.5rem 1rem' }}
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </NotificationProvider>
   );

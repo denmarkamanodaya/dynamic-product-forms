@@ -13,7 +13,8 @@ const CaseJourney = ({ caseId, onClose }) => {
             try {
                 const response = await HistoryService.getByCaseId(caseId);
                 if (response.data) {
-                    setHistory(response.data || []);
+                    const sortedHistory = (response.data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    setHistory(sortedHistory);
                 }
             } catch (error) {
                 console.error("Failed to fetch case history", error);

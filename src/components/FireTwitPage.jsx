@@ -49,7 +49,8 @@ const FireTwitPage = ({ onNavigate, currentUser, onSelectCase }) => {
             } else if (response.data && Array.isArray(response.data)) {
                 postList = response.data;
             }
-            setPosts(postList);
+            // Filter out ARCHIVED posts
+            setPosts(postList.filter(p => (p.status || '').toUpperCase() !== 'ARCHIVED'));
         } catch (error) {
             console.error("Error fetching posts", error);
             // Fallback mock data for demo if API fails

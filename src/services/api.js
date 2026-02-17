@@ -1,10 +1,11 @@
 import axios from 'axios';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, API_KEY } from '../config';
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
+        'X-API-Key': API_KEY,
     },
 });
 
@@ -36,6 +37,7 @@ export const HistoryService = {
 };
 
 export const UserService = {
+    list: () => apiClient.get('/user/v1/list'),
     create: (data) => apiClient.post('/user/v1/create', data),
     login: (data) => apiClient.post('/user/v1/login', data),
 };
@@ -47,6 +49,23 @@ export const PostService = {
 
 export const ReportService = {
     topProducts: () => apiClient.get('/reports/v1/top-products'),
+};
+
+export const ArchiverService = {
+    archive: (type, age) => apiClient.post('/automation/v1/archiver', { type, age }),
+
+    archiveAll: async (age) => {
+        const types = ['CASE', 'HISTORY', 'POST'];
+        const results = await Promise.allSettled(
+            types.map(type => ArchiverService.archive(type, age))
+        );
+
+        return results.map((result, index) => ({
+            type: types[index],
+            status: result.status,
+            value: result.status === 'fulfilled' ? result.value : result.reason
+        }));
+    }
 };
 
 export default apiClient;

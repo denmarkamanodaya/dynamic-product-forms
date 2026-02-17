@@ -26,8 +26,8 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
                     allCases = response.data.data;
                 }
 
-                // Filter out completed cases
-                const activeCases = allCases.filter(c => c.status !== 'completed');
+                // Filter out completed and ARCHIVED cases
+                const activeCases = allCases.filter(c => c.status !== 'completed' && (c.status || '').toUpperCase() !== 'ARCHIVED');
                 setCases(activeCases);
             } catch (error) {
                 console.error("Failed to fetch cases for calendar", error);

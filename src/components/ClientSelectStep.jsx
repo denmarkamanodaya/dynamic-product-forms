@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ClientSelectStep.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
-import endpoints from '../config';
+
 import { ClientService } from '../services/api';
 
 const ClientSelectStep = ({ onClientSelect, onManualInput }) => {

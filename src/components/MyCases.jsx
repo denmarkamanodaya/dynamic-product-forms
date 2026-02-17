@@ -25,6 +25,8 @@ const MyCases = ({ currentUser }) => {
 
                 // Filter for cases created by current user
                 const myCases = allCases.filter(c => {
+                    if ((c.status || '').toUpperCase() === 'ARCHIVED') return false;
+
                     if (!c.createdBy) return false;
 
                     let creatorEmail = '';

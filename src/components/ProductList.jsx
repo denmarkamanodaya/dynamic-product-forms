@@ -328,15 +328,9 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
         if (isManualClient) {
             setIsLoading(true);
             try {
-                const response = await fetch(endpoints.clientCreate, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(clientDetails)
-                });
+                const response = await ClientService.create(clientDetails);
 
-                if (!response.ok) {
+                if (!response.data) {
                     throw new Error('Failed to create client');
                 }
 
@@ -428,7 +422,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
                         onClick={() => setShowJourney(true)}
                         title="View Case Journey"
                     >
-                        <FontAwesomeIcon icon={faRoute} /> View Journey
+                        <FontAwesomeIcon icon={faRoute} /> Case Journey
                     </button>
                 )}
             </div>
@@ -505,12 +499,24 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
 
             <div className="controls-area">
                 <div className="controls-wrapper">
-                    {caseStatus === 'delivery' ? (
+                    {caseStatus === 'completed' ? (
+                        <div className="completed-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button className="glass-btn" onClick={() => generatePDF('quotation')}>
+                                <FontAwesomeIcon icon={faFilePdf} /> Quotation
+                            </button>
+                            <button className="glass-btn" onClick={() => generatePDF('invoice')}>
+                                <FontAwesomeIcon icon={faFilePdf} /> Invoice
+                            </button>
+                            <button className="glass-btn" onClick={() => generatePDF('delivery_receipt')}>
+                                <FontAwesomeIcon icon={faFilePdf} /> DR
+                            </button>
+                        </div>
+                    ) : caseStatus === 'delivery' ? (
                         <button
                             className="glass-btn"
                             onClick={() => generatePDF('delivery_receipt')}
                         >
-                            <FontAwesomeIcon icon={faPrint} /> Download Delivery Receipt
+                            <FontAwesomeIcon icon={faFilePdf} /> Download Delivery Receipt
                         </button>
                     ) : (
                         <button
@@ -518,8 +524,8 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
                             onClick={() => generatePDF()}
                             disabled={products.length === 0}
                         >
-                            <FontAwesomeIcon icon={caseStatus === 'invoicing' ? faPrint : faFilePdf} />
-                            {caseStatus === 'invoicing' ? 'Print Invoice' : (isReadOnly ? 'Download PDF' : (isEditMode ? 'Update & Confirm Order' : 'Confirm & Generate PDF'))}
+                            <FontAwesomeIcon icon={faFilePdf} />
+                            {caseStatus === 'invoicing' ? 'Download Invoice' : (isReadOnly ? 'Download Quotation' : (isEditMode ? 'Update & Confirm Order' : 'Confirm & Generate PDF'))}
                         </button>
                     )}
 
