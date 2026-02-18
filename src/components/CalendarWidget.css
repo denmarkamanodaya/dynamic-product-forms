@@ -46,9 +46,10 @@
 }
 
 .calendar-container {
+    margin-left: 250px;
     width: 90%;
     /* Wide layout */
-    max-width: 1200px;
+    max-width: 1000px;
     height: 85vh;
     background: #ffffff;
     border-radius: var(--radius-md);
