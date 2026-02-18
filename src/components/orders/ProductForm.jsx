@@ -90,7 +90,7 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts, readO
                         min="0"
                         step="0.01"
                         disabled={readOnly}
-                        style={{ fontSize: '0.85rem', padding: '0.5rem 0.6rem' }}
+                        style={{ fontSize: '0.85rem', padding: '0.5rem 1.5rem' }}
                     />
                 </div>
             </div>

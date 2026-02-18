@@ -4,7 +4,7 @@
 
 .mycases-wrapper {
     display: flex;
-    height: calc(100vh - 2rem);
+    height: calc(100vh);
     gap: 0;
     /* padding: 1rem; */
     box-sizing: border-box;
@@ -177,20 +177,14 @@
 
 .col-date {
     width: 100px;
-    color: #94a3b8;
-    font-size: 0.75rem;
 }
 
 .col-lead {
     width: 120px;
-    color: #64748b;
-    font-size: 0.75rem;
 }
 
 .col-meta {
     width: 80px;
-    color: #94a3b8;
-    font-size: 0.75rem;
 }
 
 .col-user {
@@ -205,6 +199,14 @@
     background: #f1f5f9;
     padding: 2px 5px;
     border-radius: 4px;
+}
+
+.mycases-card-items {
+    font-size: 0.75rem;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .mycases-card-client {
