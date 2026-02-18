@@ -1,110 +1,73 @@
-.client-info-step {
-    min-height: 70vh;
+/* Main container styles are handled by .mycases-detail-content */
+
+/* Detail Sections - Adapted from MyCases.css */
+.detail-section {
+    margin-bottom: 2rem;
+}
+
+.detail-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+    margin: 0 0 1rem;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 2rem 1rem;
+    gap: 0.5rem;
 }
 
-.client-info-card {
-    width: 100%;
-    max-width: 1000px;
-    background: #ffffff;
-    border-radius: var(--radius-md);
-    padding: 4rem;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.02);
-    border: 1px solid #dadce0;
+.detail-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #f1f5f9;
 }
 
-.client-info-header {
-    text-align: center;
-    margin-bottom: 4rem;
-}
-
-.client-info-title {
-    font-size: var(--font-xl);
-    font-weight: 800;
-    color: var(--text-heading);
-    margin-bottom: var(--space-xs);
-    letter-spacing: -0.02em;
-}
-
-.client-info-subtitle {
-    font-size: var(--font-sm);
-    color: var(--text-secondary);
-    font-weight: 400;
-}
-
-.client-form-grid {
+.detail-client-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem 2rem;
 }
 
-.form-field {
+.detail-info-item {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.4rem;
 }
 
-.form-field.full-width {
-    grid-column: 1 / -1;
-}
-
-.form-field label {
-    font-size: var(--font-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-tertiary);
+.detail-info-label {
+    font-size: 0.7rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #94a3b8;
 }
 
-.form-field input::placeholder {
-    color: var(--border-light);
-    font-size: var(--font-sm);
+.detail-info-value {
+    font-size: 0.9rem;
+    color: #1e293b;
+    font-weight: 500;
 }
 
-.step-actions {
-    display: flex;
-    justify-content: right;
-    padding-top: 1rem;
-}
+/* Actions are handled by .detail-actions and .btn-edit-case */
 
 /* Cleaned up unused button styles */
 
 @media (max-width: 768px) {
-
-    .step-card,
-    .client-info-card {
-        padding: 1.25rem 1rem;
-    }
-
-    .client-form-grid {
+    .detail-client-grid {
         grid-template-columns: 1fr;
         gap: 0.75rem;
-    }
-
-    .step-title {
-        font-size: var(--font-lg);
     }
 }
 
 @media (max-width: 480px) {
-    .client-info-card {
-        padding: 1rem 0.75rem;
-    }
-
-    .client-info-header {
-        margin-bottom: 1rem;
-    }
-
-    .step-actions {
+    .detail-actions {
         flex-direction: column;
-        gap: var(--space-sm);
+        gap: 0.5rem;
     }
 
-    .step-actions button {
+    .detail-actions .btn-edit-case {
         width: 100%;
     }
 }

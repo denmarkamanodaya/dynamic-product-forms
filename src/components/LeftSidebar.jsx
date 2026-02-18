@@ -1,12 +1,12 @@
 import React from 'react';
 import './LeftSidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCommentDots, faCalendarAlt, faPlus, faEye, faFire, faBrain, faBoxArchive, faBars } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faEye, faBrain, faBoxArchive, faBars } from '@fortawesome/free-solid-svg-icons';
 import { ArchiverService } from '../services/api';
 import { getDataAgeLimit } from '../utils/license';
 import { useNotification } from '../context/NotificationContext';
 
-const LeftSidebar = ({ onNavigate, onToggleChat, isChatOpen, onToggleCalendar, isCalendarOpen, onToggleHistory, isHistoryOpen, onNewCase, onNavigate: handleNavigate, currentUser, onToggleNav }) => {
+const LeftSidebar = ({ onToggleChat, isChatOpen, onToggleCalendar, isCalendarOpen, onToggleHistory, isHistoryOpen, currentUser, onToggleNav }) => {
     const { showNotification } = useNotification();
 
     const handleArchive = async () => {
@@ -25,23 +25,9 @@ const LeftSidebar = ({ onNavigate, onToggleChat, isChatOpen, onToggleCalendar, i
 
     return (
         <aside className="left-sidebar">
-            <button
-                className="sidebar-icon-btn"
-                onClick={() => handleNavigate('firetwit')}
-                title="FireTwit & Notifications"
-            >
-                <div className="notification-badge-container">
-                    <FontAwesomeIcon icon={faFire} />
-                </div>
-            </button>
 
-            <button
-                className="sidebar-icon-btn"
-                onClick={onNewCase}
-                title="New Case"
-            >
-                <FontAwesomeIcon icon={faPlus} />
-            </button>
+
+
 
             <button
                 className={`sidebar-icon-btn ${isChatOpen ? 'active' : ''}`}

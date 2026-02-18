@@ -338,7 +338,10 @@ const FireTwitPage = ({ onNavigate, currentUser, onSelectCase }) => {
                 // Handle both object and string metadata (API might return either depending on serialization)
                 const meta = typeof user.metadata === 'string' ? JSON.parse(user.metadata) : user.metadata;
                 if (meta && meta.avatarColor) {
-                    customStyle = { background: meta.avatarColor }; // Override gradient
+                    customStyle = {
+                        backgroundColor: meta.avatarColor,
+                        backgroundImage: 'none'
+                    };
                 } else {
                     customStyle = { background: stringToColor(user.firstName || 'User') };
                 }

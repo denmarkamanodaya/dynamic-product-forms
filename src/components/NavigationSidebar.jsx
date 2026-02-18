@@ -95,7 +95,10 @@ const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, o
                                         try {
                                             const meta = typeof currentUser.metadata === 'string' ? JSON.parse(currentUser.metadata) : currentUser.metadata;
                                             if (meta && meta.avatarColor) {
-                                                customStyle = { background: meta.avatarColor };
+                                                customStyle = {
+                                                    backgroundColor: meta.avatarColor,
+                                                    backgroundImage: 'none'
+                                                };
                                             }
                                         } catch (e) {
                                             console.error("Failed to parse user metadata", e);

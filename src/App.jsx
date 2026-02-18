@@ -156,8 +156,6 @@ function App() {
           onToggleCalendar={() => toggleCalendar()}
           isHistoryOpen={isHistoryOpen}
           onToggleHistory={() => toggleHistory()}
-          onNewCase={() => handleNavigate('form')}
-          onNavigate={handleNavigate}
           currentUser={currentUser}
           onToggleNav={() => setIsNavOpen(!isNavOpen)}
         />

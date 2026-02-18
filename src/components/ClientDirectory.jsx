@@ -157,6 +157,15 @@ const ClientDirectory = ({ onNavigate }) => {
                     </div>
                 </div>
 
+                {/* Column Headers */}
+                <div className="mycases-table-header">
+                    <div className="mycases-header-col col-id">Init</div>
+                    <div className="mycases-header-col col-client">Client / Business</div>
+                    <div className="mycases-header-col col-email">Email</div>
+                    <div className="mycases-header-col col-phone" style={{ width: 120 }}>Phone</div>
+                    <div className="mycases-header-col col-tax" style={{ width: 100 }}>Tax ID</div>
+                </div>
+
                 <div className="mycases-card-list">
                     {filteredClients.length === 0 ? (
                         <div className="mycases-empty">
@@ -174,37 +183,31 @@ const ClientDirectory = ({ onNavigate }) => {
                                     className={`mycases-card ${isActive ? 'active' : ''}`}
                                     onClick={() => handleSelectClient(client)}
                                 >
-                                    <div className="mycases-card-top">
+                                    <div className="mycases-row-col col-id">
                                         <span className="mycases-card-id">
                                             {(client.clientName || 'U').charAt(0).toUpperCase()}
                                         </span>
-                                        {client.businessName && (
-                                            <span className="mycases-card-items" style={{ marginLeft: '0.5rem', fontStyle: 'italic' }}>
-                                                {client.businessName}
-                                            </span>
-                                        )}
                                     </div>
-                                    <div className="mycases-card-middle">
-                                        <span className="mycases-card-client">
-                                            {client.clientName || 'Unknown'}
+                                    <div className="mycases-row-col col-client">
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span className="mycases-card-client">{client.clientName || 'Unknown'}</span>
+                                            {client.businessName && (
+                                                <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontStyle: 'italic' }}>
+                                                    {client.businessName}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="mycases-row-col col-email" style={{ flex: 1.5 }}>
+                                        <span style={{ fontSize: '0.8rem', color: '#64748b' }}>{email || '—'}</span>
+                                    </div>
+                                    <div className="mycases-row-col col-phone" style={{ width: 120 }}>
+                                        <span style={{ fontSize: '0.8rem', color: '#64748b' }}>{mobile || '—'}</span>
+                                    </div>
+                                    <div className="mycases-row-col col-tax" style={{ width: 100 }}>
+                                        <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontFamily: 'monospace' }}>
+                                            {client.taxId || '—'}
                                         </span>
-                                        {client.taxId && (
-                                            <span className="mycases-card-amount" style={{ color: '#64748b', fontSize: '0.75rem' }}>
-                                                TIN: {client.taxId}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <div className="mycases-card-meta">
-                                        {email && (
-                                            <span className="mycases-card-items">
-                                                <FontAwesomeIcon icon={faEnvelope} style={{ marginRight: '0.2rem' }} /> {email}
-                                            </span>
-                                        )}
-                                        {mobile && (
-                                            <span className="mycases-card-items">
-                                                <FontAwesomeIcon icon={faPhone} style={{ marginRight: '0.2rem' }} /> {mobile}
-                                            </span>
-                                        )}
                                     </div>
                                 </div>
                             );

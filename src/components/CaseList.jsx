@@ -21,7 +21,8 @@ import { currencyConfig } from '../config';
 import { CSS } from '@dnd-kit/utilities';
 import './CaseList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faMoneyBillWave, faTrash, faClipboardCheck, faUser, faPlus, faSearch, faBox } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faMoneyBillWave, faTrash, faClipboardCheck, faUser, faPlus, faSearch, faBox, faBookmark, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import FireTwitWidget from './FireTwitWidget';
 
 import { useNotification } from '../context/NotificationContext';
 
@@ -70,7 +71,10 @@ const renderUserAvatar = (user) => {
         try {
             const meta = typeof user.metadata === 'string' ? JSON.parse(user.metadata) : user.metadata;
             if (meta && meta.avatarColor) {
-                customStyle = { background: meta.avatarColor }; // Override gradient
+                customStyle = {
+                    backgroundColor: meta.avatarColor,
+                    backgroundImage: 'none'
+                };
             }
         } catch (e) {
             // Ignore parse error
@@ -116,48 +120,46 @@ const SortableItem = ({ id, caseItem, onClick, columnName }) => {
             onClick={() => onClick(caseItem.caseId || caseItem._id)}
         >
             <div className="card-content">
-                <div className="card-header-row">
-                    <div className="card-client">
-                        <div className="client-name">
-                            {caseItem.data?.clientDetails?.clientName || 'Unknown Client'}
+                <div className="card-title-group">
+                    <div className="card-title">
+                        {caseItem.data?.clientDetails?.clientName || caseItem.data?.clientName || 'Untitled Request'}
+                    </div>
+                    {(caseItem.data?.clientDetails?.businessName || caseItem.data?.businessName) && (
+                        <div className="card-subtitle">
+                            {caseItem.data?.clientDetails?.businessName || caseItem.data?.businessName}
                         </div>
-                        {caseItem.data?.clientDetails?.businessName && (
-                            <div className="business-name">
-                                {caseItem.data?.clientDetails?.businessName}
-                            </div>
-                        )}
-                    </div>
+                    )}
                 </div>
 
-                <div className="card-footer-row">
-                    <div className="card-info-item date-item">
-                        <span className="icon"><FontAwesomeIcon icon={faCalendarAlt} /></span>
-                        <span className="text">
-                            {caseItem.data?.orderDetails?.leadTime || caseItem.data?.clientDetails?.date || 'N/A'}
-                        </span>
+                <div className="card-stats">
+                    <div className="stat-item" title="Grand Total">
+                        <FontAwesomeIcon icon={faMoneyBillWave} />
+                        <span>{caseItem.data?.grandTotal ? parseFloat(caseItem.data.grandTotal).toLocaleString(currencyConfig.locale, { style: 'currency', currency: currencyConfig.code }) : '—'}</span>
                     </div>
-
-                    <div className="card-info-item total-item">
-                        <span className="text" style={{ fontWeight: 'bold' }}>
-                            {currencyConfig.code} {caseItem.data?.grandTotal ? parseFloat(caseItem.data.grandTotal).toLocaleString(currencyConfig.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
-                        </span>
+                    <div className="stat-item" title="Items">
+                        <FontAwesomeIcon icon={faBox} />
+                        <span>{caseItem.data?.products?.length || 0} items</span>
                     </div>
-
-                    <div className="card-info-item">
-                        <span className="icon"><FontAwesomeIcon icon={faBox} /></span>
-                        <span className="text">
-                            {caseItem.data?.products?.length || 0} Item{(caseItem.data?.products?.length || 0) !== 1 ? 's' : ''}
-                        </span>
-                    </div>
+                    {caseItem.data?.orderDetails?.leadTime && (
+                        <div className="stat-item" title="Lead Time">
+                            <FontAwesomeIcon icon={faCalendarAlt} />
+                            <span>{caseItem.data.orderDetails.leadTime}</span>
+                        </div>
+                    )}
                 </div>
 
-                <div className="card-user-footer">
-                    <span className={`compact-status-badge status-${COLUMN_TO_STATUS[columnName]}`}>
-                        {columnName
-                            ? `${columnName.slice(0, 3).toUpperCase()}-${String(caseItem.caseId || caseItem._id).slice(-4).toUpperCase()}`
-                            : (caseItem.caseId || caseItem._id)}
-                    </span>
-                    {renderUserAvatar(caseItem.createdBy)}
+                <div className="card-footer">
+                    <div className="card-id-group">
+                        <FontAwesomeIcon icon={faBookmark} className="id-icon" />
+                        <span className="card-id">
+                            {columnName
+                                ? `NUC-${String(caseItem.caseId || caseItem._id).slice(-4).toUpperCase()}`
+                                : (caseItem.caseId || caseItem._id)}
+                        </span>
+                    </div>
+                    <div className="card-avatar">
+                        {renderUserAvatar(caseItem.createdBy)}
+                    </div>
                 </div>
             </div>
         </div >
@@ -481,33 +483,57 @@ const CaseList = ({ onSelectCase, currentUser, onNavigate }) => {
 
     return (
         <div className="case-list-page">
-            <br />
             <div className="kanban-header">
+
                 <h2 className="page-title">Board</h2>
-                <div className="kanban-controls">
-                    <div className="kanban-search-wrapper">
-                        <div className="kanban-search">
-                            <FontAwesomeIcon icon={faSearch} className="search-icon" />
-                            <input
-                                type="text"
-                                placeholder="Search Case ID or Client..."
-                                className="search-input"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
+
+                <div className="kanban-controls-container">
+                    <div className="kanban-controls-left">
+                        <div className="kanban-search-wrapper">
+                            <div className="kanban-search">
+                                <FontAwesomeIcon icon={faSearch} className="search-icon" />
+                                <input
+                                    type="text"
+                                    placeholder="Search"
+                                    className="search-input"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="kanban-users-monitor">
+                            {Array.from(new Set(Object.values(items).flat().map(i => i.createdBy?.email || i.createdBy))).map(userRef => {
+                                const item = Object.values(items).flat().find(i => (i.createdBy?.email || i.createdBy) === userRef);
+                                return (
+                                    <div key={userRef} className="monitor-avatar" title={typeof item.createdBy === 'object' ? `${item.createdBy.firstName} ${item.createdBy.lastName}` : item.createdBy}>
+                                        {renderUserAvatar(item.createdBy)}
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <div className="board-filters">
+                            <div className="filter-dropdown">
+                                <span>Epic</span>
+                                <FontAwesomeIcon icon={faChevronDown} />
+                            </div>
+                            <div className="filter-group-by">
+                                <span className="label">GROUP BY</span>
+                                <div className="selector">
+                                    <span>None</span>
+                                    <FontAwesomeIcon icon={faChevronDown} />
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div className="kanban-users-monitor">
-                        {Array.from(new Set(Object.values(items).flat().map(i => i.createdBy?.email || i.createdBy))).map(userRef => {
-                            // Find the full user object from the first item that matches
-                            const item = Object.values(items).flat().find(i => (i.createdBy?.email || i.createdBy) === userRef);
-                            return (
-                                <div key={userRef} className="monitor-avatar" title={typeof item.createdBy === 'object' ? `${item.createdBy.firstName} ${item.createdBy.lastName}` : item.createdBy}>
-                                    {renderUserAvatar(item.createdBy)}
-                                </div>
-                            );
-                        })}
-                    </div>
+
+                    {/* <div className="kanban-controls-right">
+                        <button className="insights-btn">
+                            <FontAwesomeIcon icon={faChartLine} />
+                            Insights
+                        </button>
+                    </div> */}
                 </div>
             </div>
 
@@ -518,60 +544,71 @@ const CaseList = ({ onSelectCase, currentUser, onNavigate }) => {
                     <p>Loading cases...</p>
                 </div>
             ) : (
-                <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCorners}
-                    onDragStart={handleDragStart}
-                    onDragOver={handleDragOver}
-                    onDragEnd={handleDragEnd}
-                >
-                    <div className="kanban-columns-container">
-                        {Object.keys(COLUMNS).map((key) => {
-                            const columnId = COLUMNS[key];
-                            // Filter items for display
-                            const filteredItems = items[columnId].filter(matchesSearch);
+                <div className="board-main-container">
+                    <div className="board-view-panel">
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCorners}
+                            onDragStart={handleDragStart}
+                            onDragOver={handleDragOver}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <div className="kanban-columns-container">
+                                {Object.keys(COLUMNS).map((key) => {
+                                    const columnId = COLUMNS[key];
+                                    // Filter items for display
+                                    const filteredItems = items[columnId].filter(matchesSearch);
 
-                            return (
-                                <DroppableColumn
-                                    key={columnId}
-                                    id={columnId}
-                                    title={key}
-                                    count={filteredItems.length}
-                                    onAdd={key === 'QUOTATION' ? onNavigate : null}
-                                >
-                                    <div className="card-list">
-                                        <SortableContext
+                                    return (
+                                        <DroppableColumn
+                                            key={columnId}
                                             id={columnId}
-                                            items={filteredItems.map(c => c.dndId)}
-                                            strategy={verticalListSortingStrategy}
+                                            title={key}
+                                            count={filteredItems.length}
+                                            onAdd={key === 'QUOTATION' ? onNavigate : null}
                                         >
-                                            {filteredItems.map((caseItem) => (
-                                                <SortableItem
-                                                    key={caseItem.dndId}
-                                                    id={caseItem.dndId}
-                                                    caseItem={caseItem}
-                                                    onClick={onSelectCase}
-                                                    columnName={columnId}
-                                                />
-                                            ))}
-                                        </SortableContext>
-                                    </div>
-                                </DroppableColumn>
-                            );
-                        })}
-                        {activeId && <TrashDropZone isDelivery={dragStartContainer === COLUMNS.DELIVERY} />}
-                    </div>
-                    <DragOverlay>
-                        {activeId ? (
-                            <div className="kanban-card overlay">
-                                <div className="card-header">
-                                    <span className="card-id">{activeId}</span>
-                                </div>
-                                <div className="card-client">Moving...</div>
+                                            <div className="card-list">
+                                                <SortableContext
+                                                    id={columnId}
+                                                    items={filteredItems.map(c => c.dndId)}
+                                                    strategy={verticalListSortingStrategy}
+                                                >
+                                                    {filteredItems.map((caseItem) => (
+                                                        <SortableItem
+                                                            key={caseItem.dndId}
+                                                            id={caseItem.dndId}
+                                                            caseItem={caseItem}
+                                                            onClick={onSelectCase}
+                                                            columnName={columnId}
+                                                        />
+                                                    ))}
+                                                </SortableContext>
+                                            </div>
+                                        </DroppableColumn>
+                                    );
+                                })}
+                                {activeId && <TrashDropZone isDelivery={dragStartContainer === COLUMNS.DELIVERY} />}
                             </div>
-                        ) : null}
-                    </DragOverlay>
-                </DndContext>
+                            <DragOverlay>
+                                {activeId ? (
+                                    <div className="kanban-card overlay">
+                                        <div className="card-header">
+                                            <span className="card-id">{activeId}</span>
+                                        </div>
+                                        <div className="card-client">Moving...</div>
+                                    </div>
+                                ) : null}
+                            </DragOverlay>
+                        </DndContext>
+                    </div>
+
+                    <div className="board-side-panel">
+                        <FireTwitWidget
+                            currentUser={currentUser}
+                            onSelectCase={onSelectCase}
+                        />
+                    </div>
+                </div>
             )}
         </div>
     );

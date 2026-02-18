@@ -5,6 +5,54 @@ import './CalendarWidget.css';
 import { CaseService } from '../services/api';
 import { getLocalDateString } from '../utils/dateHelpers';
 import { currencyConfig } from '../config';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarAlt, faMoneyBillWave, faUser, faBox, faBookmark } from '@fortawesome/free-solid-svg-icons';
+
+const getInitials = (firstName, lastName) => {
+    const first = firstName ? firstName.charAt(0).toUpperCase() : '';
+    const last = lastName ? lastName.charAt(0).toUpperCase() : '';
+    return `${first}${last}`;
+};
+
+const renderUserAvatar = (user) => {
+    if (!user) return <div className="user-avatar-circle unknown">?</div>;
+
+    if (typeof user === 'string') {
+        return (
+            <div className="user-avatar-circle legacy" title={user}>
+                <FontAwesomeIcon icon={faUser} />
+            </div>
+        );
+    }
+
+    if (user.avatarUrl) {
+        return <img src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} className="user-avatar-circle image" />;
+    }
+
+    let customStyle = {};
+    if (user.metadata) {
+        try {
+            const meta = typeof user.metadata === 'string' ? JSON.parse(user.metadata) : user.metadata;
+            if (meta && meta.avatarColor) {
+                customStyle = {
+                    backgroundColor: meta.avatarColor,
+                    backgroundImage: 'none'
+                };
+            }
+        } catch (e) { }
+    }
+
+    const initials = getInitials(user.firstName, user.lastName);
+    return (
+        <div
+            className="user-avatar-circle initials"
+            title={`${user.firstName} ${user.lastName}`}
+            style={customStyle}
+        >
+            {initials}
+        </div>
+    );
+};
 
 const CalendarWidget = ({ isOpen, onToggle }) => {
     const [date, setDate] = useState(new Date());
@@ -65,25 +113,17 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
     const tileContent = ({ date, view }) => {
         if (view === 'month') {
             const dateString = getLocalDateString(date);
-            const dayCases = cases.filter(c => {
+            const hasCases = cases.some(c => {
                 const leadTime = c.data?.orderDetails?.leadTime || c.data?.clientDetails?.date;
-                let normalizedLeadTime = leadTime;
-                if (leadTime && leadTime.includes('T')) {
-                    normalizedLeadTime = leadTime.split('T')[0];
-                }
-                return normalizedLeadTime === dateString;
+                let normalized = leadTime;
+                if (leadTime && leadTime.includes('T')) normalized = leadTime.split('T')[0];
+                return normalized === dateString;
             });
 
-            if (dayCases.length > 0) {
+            if (hasCases) {
                 return (
                     <div className="calendar-tile-content">
-                        {dayCases.length < 3 ? (
-                            <div className="dots-container">
-                                {dayCases.map((_, i) => <div key={i} className="calendar-dot"></div>)}
-                            </div>
-                        ) : (
-                            <div className="calendar-count-badge">{dayCases.length}</div>
-                        )}
+                        <div className="calendar-dot"></div>
                     </div>
                 );
             }
@@ -118,16 +158,55 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
                         </div>
 
                         <div className="calendar-body-full">
-                            <div className="calendar-main-view">
-                                <Calendar
-                                    onChange={handleDateChange}
-                                    value={date}
-                                    tileContent={tileContent}
-                                    className="custom-calendar-full"
-                                />
+                            <div className="calendar-sidebar-minimal">
+                                <div className="calendar-search-container">
+                                    <div className="search-wrapper">
+                                        <span className="search-icon">🔍</span>
+                                        <input type="text" placeholder="Search memos..." className="mini-search-input" />
+                                        <span className="filter-icon">⚙️</span>
+                                    </div>
+                                </div>
+
+                                <div className="calendar-main-view">
+                                    <Calendar
+                                        onChange={handleDateChange}
+                                        value={date}
+                                        tileContent={tileContent}
+                                        className="custom-calendar-minimal"
+                                        next2Label={null}
+                                        prev2Label={null}
+                                        formatShortWeekday={(locale, date) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()]}
+                                    />
+                                </div>
+
+                                <div className="calendar-mini-stats">
+                                    <div className="mini-stat-chip">🔗 Links 0</div>
+                                    <div className="mini-stat-chip">📋 To-do 0/1</div>
+                                    <div className="mini-stat-chip">{'</>'} Code 0</div>
+                                </div>
+
+                                <div className="calendar-section">
+                                    <div className="section-header">
+                                        <h3>Shortcuts</h3>
+                                        <button className="add-btn">+</button>
+                                    </div>
+                                </div>
+
+                                <div className="calendar-section">
+                                    <div className="section-header">
+                                        <h3>Tags</h3>
+                                        <button className="more-btn">...</button>
+                                    </div>
+                                    <div className="tags-container">
+                                        <span className="tag"># features</span>
+                                        <span className="tag"># hello</span>
+                                        <span className="tag"># sponsor</span>
+                                        <span className="tag"># todo</span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className="calendar-sidebar">
+                            <div className="calendar-content-view">
                                 <h3 className="sidebar-date">
                                     {date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
                                 </h3>
@@ -140,95 +219,51 @@ const CalendarWidget = ({ isOpen, onToggle }) => {
                                     </div>
                                 ) : (
                                     <ul className="events-list-full">
-                                        {selectedDateCases.map(c => {
-                                            // Get user avatar data
-                                            const renderUserAvatar = (createdBy) => {
-                                                if (!createdBy) return null;
-
-                                                let name = 'Unknown';
-                                                let initials = 'U';
-                                                let avatarColor = 'var(--accent-color, #3b82f6)';
-
-
-                                                if (createdBy.firstName || createdBy.lastName) {
-                                                    const first = createdBy.firstName ? createdBy.firstName.charAt(0) : '';
-                                                    const last = createdBy.lastName ? createdBy.lastName.charAt(0) : '';
-                                                    initials = first && last ? `${first}${last}` : (first || last || 'U');
-                                                } else if (createdBy.name) {
-                                                    name = createdBy.name;
-                                                    const nameParts = name.split(' ');
-                                                    initials = nameParts.length > 1
-                                                        ? `${nameParts[0][0]}${nameParts[1][0]}`
-                                                        : `${nameParts[0][0]}${nameParts[0][1] || ''}`;
-                                                }
-
-
-                                                if (createdBy.metadata) {
-                                                    try {
-                                                        const meta = typeof createdBy.metadata === 'string'
-                                                            ? JSON.parse(createdBy.metadata)
-                                                            : createdBy.metadata;
-                                                        initials = meta.initials || initials;
-                                                        avatarColor = meta.avatarColor || avatarColor;
-                                                    } catch (e) {
-                                                        // Use defaults
-                                                    }
-                                                }
-
-
-                                                return (
-                                                    <div
-                                                        className="user-avatar-circle"
-                                                        style={{
-                                                            background: avatarColor,
-                                                            backgroundColor: avatarColor
-                                                        }}
-                                                    >
-                                                        {initials.toUpperCase()}
-                                                    </div>
-                                                );
-                                            };
-
-                                            return (
-                                                <li key={c.caseId} className="event-card kanban-card-style">
-                                                    <div className="card-header-row">
-                                                        <div className="card-client">
-                                                            <div className="client-name">
-                                                                {c.data?.clientDetails?.clientName || c.data?.clientDetails?.businessName || 'Unknown Client'}
+                                        {selectedDateCases.map(c => (
+                                            <div key={c.caseId || c._id} className="kanban-card calendar-card">
+                                                <div className="card-content">
+                                                    <div className="card-title-group">
+                                                        <div className="card-title">
+                                                            {c.data?.clientDetails?.clientName || c.data?.clientName || 'Untitled Request'}
+                                                        </div>
+                                                        {(c.data?.clientDetails?.businessName || c.data?.businessName) && (
+                                                            <div className="card-subtitle">
+                                                                {c.data?.clientDetails?.businessName || c.data?.businessName}
                                                             </div>
-                                                            {c.data?.clientDetails?.businessName && c.data?.clientDetails?.clientName && (
-                                                                <div className="business-name">
-                                                                    {c.data?.clientDetails?.businessName}
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                        )}
                                                     </div>
 
-                                                    <div className="card-footer-row">
-                                                        <div className="card-info-item total-item">
-                                                            <span className="text" style={{ fontWeight: 'bold' }}>
-                                                                {currencyConfig.code} {c.data?.grandTotal ? parseFloat(c.data.grandTotal).toLocaleString(currencyConfig.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+                                                    <div className="card-stats">
+                                                        <div className="stat-item" title="Grand Total">
+                                                            <FontAwesomeIcon icon={faMoneyBillWave} />
+                                                            <span>{c.data?.grandTotal ? parseFloat(c.data.grandTotal).toLocaleString(currencyConfig.locale, { style: 'currency', currency: currencyConfig.code }) : '—'}</span>
+                                                        </div>
+                                                        <div className="stat-item" title="Items">
+                                                            <FontAwesomeIcon icon={faBox} />
+                                                            <span>{c.data?.products?.length || 0} items</span>
+                                                        </div>
+                                                        {c.data?.orderDetails?.leadTime && (
+                                                            <div className="stat-item" title="Lead Time">
+                                                                <FontAwesomeIcon icon={faCalendarAlt} />
+                                                                <span>{c.data.orderDetails.leadTime}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="card-footer">
+                                                        <div className="card-id-group">
+                                                            <FontAwesomeIcon icon={faBookmark} className="id-icon" />
+                                                            <span className="card-id">
+                                                                {`NUC-${String(c.caseId || c._id).slice(-4).toUpperCase()}`}
                                                             </span>
                                                         </div>
-
-                                                        <div className="card-info-item">
-                                                            <span className="text">
-                                                                {c.data?.products?.length || 0} Item{(c.data?.products?.length || 0) !== 1 ? 's' : ''}
-                                                            </span>
+                                                        <div className="card-avatar">
+                                                            {renderUserAvatar(c.createdBy)}
                                                         </div>
                                                     </div>
-
-                                                    <div className="card-user-footer">
-                                                        <span className={`compact-status-badge status-${c.status?.toLowerCase() || 'default'}`}>
-                                                            {c.status
-                                                                ? `${c.status.slice(0, 3).toUpperCase()}-${String(c.caseId).slice(-4).toUpperCase()}`
-                                                                : String(c.caseId).slice(-4).toUpperCase()}
-                                                        </span>
-                                                        {renderUserAvatar(c.createdBy)}
-                                                    </div>
-                                                </li>
-                                            );
-                                        })}
+                                                </div>
+                                            </div>
+                                        ))}
                                     </ul>
                                 )}
                             </div>

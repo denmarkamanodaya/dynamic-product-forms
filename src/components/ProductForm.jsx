@@ -48,6 +48,7 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts, readO
                         value={data.productId || ''}
                         onChange={handleProductSelect}
                         disabled={readOnly}
+                        style={{ fontSize: '0.85rem', padding: '0.5rem 0.6rem' }}
                     >
                         <option value="">Select a Product...</option>
                         {availableProducts && availableProducts.length > 0 ? (
@@ -70,6 +71,7 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts, readO
                     value={data.condition || 'Brand New'}
                     onChange={(e) => handleChange('condition', e.target.value)}
                     disabled={readOnly}
+                    style={{ fontSize: '0.85rem', padding: '0.5rem 0.6rem' }}
                 >
                     <option value="Brand New">Brand New</option>
                     <option value="Refill">Refill</option>
@@ -88,6 +90,7 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts, readO
                         min="0"
                         step="0.01"
                         disabled={readOnly}
+                        style={{ fontSize: '0.85rem', padding: '0.5rem 0.6rem' }}
                     />
                 </div>
             </div>
@@ -101,6 +104,7 @@ const ProductForm = ({ data, onChange, onRemove, index, availableProducts, readO
                     onChange={(e) => handleChange('quantity', parseInt(e.target.value) || 1)}
                     min="1"
                     disabled={readOnly}
+                    style={{ fontSize: '0.85rem', padding: '0.5rem 0.6rem' }}
                 />
             </div>
 

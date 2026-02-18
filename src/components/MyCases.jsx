@@ -3,13 +3,14 @@ import { CaseService } from '../services/api';
 import { currencyConfig } from '../config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faSearch, faFileInvoiceDollar, faUser, faBuilding,
+    faSearch, faFileInvoiceDollar, faUser,
     faEnvelope, faPhone, faMapMarkerAlt, faBoxOpen,
-    faPen, faClipboardList, faInbox, faFilePdf
+    faPen, faClipboardList, faInbox, faFilePdf, faRoute
 } from '@fortawesome/free-solid-svg-icons';
 import generateQuotation from '../utils/pdf/generateQuotation';
 import generateInvoice from '../utils/pdf/generateInvoice';
 import generateDeliveryReceipt from '../utils/pdf/generateDeliveryReceipt';
+import CaseJourney from './CaseJourney';
 import './MyCases.css';
 
 const MyCases = ({ currentUser, onNavigate, showAllCases = false, title = 'My Cases' }) => {
@@ -18,6 +19,7 @@ const MyCases = ({ currentUser, onNavigate, showAllCases = false, title = 'My Ca
     const [selectedCase, setSelectedCase] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [showJourney, setShowJourney] = useState(false);
 
     useEffect(() => {
         const fetchMyCases = async () => {
@@ -187,6 +189,19 @@ const MyCases = ({ currentUser, onNavigate, showAllCases = false, title = 'My Ca
                     </div>
                 </div>
 
+                {/* Column Headers */}
+                <div className="mycases-table-header">
+                    <div className="mycases-header-col col-status">S</div>
+                    <div className="mycases-header-col col-id">ID</div>
+                    <div className="mycases-header-col col-client">Client / Case</div>
+                    <div className="mycases-header-col col-amount">Total</div>
+
+                    {/* <div className="mycases-header-col col-date">Date</div> */}
+                    <div className="mycases-header-col col-lead">Lead</div>
+                    <div className="mycases-header-col col-meta">Items</div>
+                    <div className="mycases-header-col col-user">User</div>
+                </div>
+
                 <div className="mycases-card-list">
                     {filteredCases.length === 0 ? (
                         <div className="mycases-empty">
@@ -206,37 +221,55 @@ const MyCases = ({ currentUser, onNavigate, showAllCases = false, title = 'My Ca
                                     className={`mycases-card ${isActive ? 'active' : ''}`}
                                     onClick={() => setSelectedCase(c)}
                                 >
-                                    <div className="mycases-card-top">
+                                    <div className="mycases-row-col col-status">
+                                        <span className={`status-badge-compact status-${(c.status || 'unknown').toLowerCase()}`} title={c.status || 'Unknown'}>
+                                            <span className="dot"></span>
+                                        </span>
+                                    </div>
+                                    <div className="mycases-row-col col-id">
                                         <span className="mycases-card-id">
                                             #{(c.caseId || c._id || '').slice(-4).toUpperCase()}
                                         </span>
-                                        <span className={`status-badge status-${(c.status || 'unknown').toLowerCase()}`}>
-                                            {c.status || 'Unknown'}
-                                        </span>
-
                                     </div>
-                                    <div className="mycases-card-middle">
-                                        <span className="mycases-card-client">{clientName}</span>
+                                    <div className="mycases-row-col col-client">
+                                        <span className="mycases-card-client" title={clientName}>{clientName}</span>
+                                    </div>
+                                    <div className="mycases-row-col col-amount">
                                         <span className="mycases-card-amount">
                                             {formatCurrency(c.data?.grandTotal)}
                                         </span>
                                     </div>
-                                    <div className="mycases-card-meta">
-                                        <span className="mycases-card-items">
-                                            Created: {formatDate(c.createdAt)}
-                                        </span>
-                                        <span className="mycases-card-items">
-                                            Lead: {c.data?.orderDetails?.leadTime || '—'}
-                                        </span>
 
+                                    {/* <div className="mycases-row-col col-date">
+                                        <span className="mycases-card-date">{formatDate(c.createdAt)}</span>
+                                    </div> */}
+                                    <div className="mycases-row-col col-lead">
+                                        <span className="mycases-card-items" title={c.data?.orderDetails?.leadTime}>{c.data?.orderDetails?.leadTime || '—'}</span>
                                     </div>
-                                    <div className="mycases-card-bottom">
+                                    <div className="mycases-row-col col-meta">
                                         <span className="mycases-card-items">
                                             {c.data?.products?.length || 0} item{(c.data?.products?.length || 0) !== 1 ? 's' : ''}
                                         </span>
-                                        <span className="mycases-card-items">
-                                            Terms: {c.data?.orderDetails?.terms ? `${c.data.orderDetails.terms} Days` : '—'}
-                                        </span>
+                                    </div>
+                                    <div className="mycases-row-col col-user">
+                                        {c.createdBy && (
+                                            <div className="row-user-avatar" title={typeof c.createdBy === 'object' ? `${c.createdBy.firstName} ${c.createdBy.lastName}` : c.createdBy}>
+                                                {typeof c.createdBy === 'object' ? (() => {
+                                                    let customStyle = { background: 'linear-gradient(135deg, #6366f1, #4f46e5)' };
+                                                    try {
+                                                        const meta = typeof c.createdBy.metadata === 'string' ? JSON.parse(c.createdBy.metadata || '{}') : (c.createdBy.metadata || {});
+                                                        if (meta.avatarColor) {
+                                                            customStyle = { backgroundColor: meta.avatarColor, backgroundImage: 'none' };
+                                                        }
+                                                    } catch (e) { }
+                                                    return (
+                                                        <span className="avatar-circle" style={customStyle}>
+                                                            {(c.createdBy.firstName?.[0] || '') + (c.createdBy.lastName?.[0] || '')}
+                                                        </span>
+                                                    );
+                                                })() : <span className="avatar-circle">?</span>}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             );
@@ -266,15 +299,22 @@ const MyCases = ({ currentUser, onNavigate, showAllCases = false, title = 'My Ca
                         getContactInfo={getContactInfo}
                         getAddress={getAddress}
                         onEdit={handleEditCase}
+                        onViewJourney={() => setShowJourney(true)}
                     />
                 )}
             </div>
+            {showJourney && selectedCase && (
+                <CaseJourney
+                    caseId={selectedCase.caseId || selectedCase._id}
+                    onClose={() => setShowJourney(false)}
+                />
+            )}
         </div>
     );
 };
 
 /* ─── Case Detail Sub-Component ─── */
-const CaseDetailView = ({ caseData, formatDate, formatCurrency, getContactInfo, getAddress, onEdit }) => {
+const CaseDetailView = ({ caseData, formatDate, formatCurrency, getContactInfo, getAddress, onEdit, onViewJourney }) => {
     const client = caseData.data?.clientDetails || {};
     const products = caseData.data?.products || [];
     const order = caseData.data?.orderDetails || {};
@@ -421,6 +461,13 @@ const CaseDetailView = ({ caseData, formatDate, formatCurrency, getContactInfo, 
             <div className="detail-actions">
                 {status === 'completed' ? (
                     <>
+                        <button
+                            className="glass-btn primary-gradient"
+                            onClick={onViewJourney}
+                            style={{ marginRight: 'auto' }}
+                        >
+                            <FontAwesomeIcon icon={faRoute} /> View Journey
+                        </button>
                         <button className="glass-btn" onClick={() => handlePDF('quotation')}>
                             <FontAwesomeIcon icon={faFilePdf} /> Quotation
                         </button>

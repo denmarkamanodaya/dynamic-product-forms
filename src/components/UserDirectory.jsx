@@ -58,10 +58,10 @@ const UserDirectory = ({ onNavigate }) => {
         if (user.metadata) {
             try {
                 const meta = typeof user.metadata === 'string' ? JSON.parse(user.metadata) : user.metadata;
-                if (meta?.avatarColor) return { background: meta.avatarColor };
+                if (meta?.avatarColor) return { backgroundColor: meta.avatarColor, backgroundImage: 'none' };
             } catch (e) { /* ignore */ }
         }
-        return {};
+        return { background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' };
     };
 
     const getStatusIcon = (status) => {
@@ -159,6 +159,15 @@ const UserDirectory = ({ onNavigate }) => {
                     </div>
                 </div>
 
+                {/* Column Headers */}
+                <div className="mycases-table-header">
+                    <div className="mycases-header-col col-id">Profile</div>
+                    <div className="mycases-header-col col-client">Full Name</div>
+                    <div className="mycases-header-col col-email" style={{ flex: 1.5 }}>Email Address</div>
+                    <div className="mycases-header-col col-role" style={{ width: 100 }}>Role</div>
+                    <div className="mycases-header-col col-status" style={{ width: 60 }}>Status</div>
+                </div>
+
                 <div className="mycases-card-list">
                     {filteredUsers.length === 0 ? (
                         <div className="mycases-empty">
@@ -175,17 +184,14 @@ const UserDirectory = ({ onNavigate }) => {
                                     className={`mycases-card ${isActive ? 'active' : ''}`}
                                     onClick={() => handleSelectUser(user)}
                                 >
-                                    <div className="mycases-card-top" style={{ gap: '0.5rem' }}>
+                                    <div className="mycases-row-col col-id">
                                         <span
-                                            className="mycases-card-id"
+                                            className="avatar-circle"
                                             style={{
                                                 ...getAvatarStyle(user),
-                                                width: 28, height: 28, minWidth: 28,
-                                                borderRadius: '50%', display: 'inline-flex',
-                                                alignItems: 'center', justifyContent: 'center',
-                                                color: '#fff', fontSize: '0.7rem',
-                                                background: getAvatarStyle(user).background || 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                                                padding: 0
+                                                width: 24, height: 24,
+                                                fontSize: '0.6rem',
+                                                border: 'none'
                                             }}
                                         >
                                             {user.avatarUrl ? (
@@ -194,22 +200,22 @@ const UserDirectory = ({ onNavigate }) => {
                                                 getInitials(user.firstName, user.lastName)
                                             )}
                                         </span>
-                                        <span className={`status-badge status-${(user.role || 'member').toLowerCase()}`}>
-                                            {user.role}
-                                        </span>
-                                        <span style={{ marginLeft: 'auto' }}>
-                                            {getStatusIcon(user.status)}
-                                        </span>
                                     </div>
-                                    <div className="mycases-card-middle">
+                                    <div className="mycases-row-col col-client">
                                         <span className="mycases-card-client">
                                             {user.firstName} {user.lastName}
                                         </span>
                                     </div>
-                                    <div className="mycases-card-meta">
-                                        <span className="mycases-card-items">
-                                            <FontAwesomeIcon icon={faEnvelope} style={{ marginRight: '0.2rem' }} /> {user.emailAddress}
+                                    <div className="mycases-row-col col-email" style={{ flex: 1.5 }}>
+                                        <span style={{ fontSize: '0.8rem', color: '#64748b' }}>{user.emailAddress}</span>
+                                    </div>
+                                    <div className="mycases-row-col col-role" style={{ width: 100 }}>
+                                        <span className={`status-badge-compact status-${(user.role || 'member').toLowerCase()}`} style={{ border: 'none', background: 'transparent' }}>
+                                            <span style={{ fontSize: '0.7rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase' }}>{user.role}</span>
                                         </span>
+                                    </div>
+                                    <div className="mycases-row-col col-status" style={{ width: 60, justifyContent: 'center' }}>
+                                        {getStatusIcon(user.status)}
                                     </div>
                                 </div>
                             );

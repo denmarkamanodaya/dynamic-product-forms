@@ -75,7 +75,15 @@ const CaseJourney = ({ caseId, onClose }) => {
                                         <div className="step-description">{step.description}</div>
                                         {step.user && (
                                             <div className="step-user">
-                                                <div className="step-user-avatar">
+                                                <div className="step-user-avatar" style={(() => {
+                                                    if (step.user.metadata) {
+                                                        try {
+                                                            const meta = typeof step.user.metadata === 'string' ? JSON.parse(step.user.metadata) : step.user.metadata;
+                                                            if (meta.avatarColor) return { backgroundColor: meta.avatarColor, backgroundImage: 'none' };
+                                                        } catch (e) { }
+                                                    }
+                                                    return {};
+                                                })()}>
                                                     {step.user.avatarUrl ? (
                                                         <img src={step.user.avatarUrl} alt="User" />
                                                     ) : (
