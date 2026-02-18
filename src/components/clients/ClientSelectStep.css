@@ -1,0 +1,98 @@
+.client-select-step {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.step-card {
+    width: 100%;
+    max-width: 600px;
+    background: #ffffff;
+    border-radius: var(--radius-md);
+    padding: 3rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.02);
+    border: 1px solid #dadce0;
+    /* text-align: center; */
+}
+
+.step-header {
+    margin-bottom: 0.5rem;
+}
+
+.step-title {
+    font-size: var(--font-xl);
+    font-weight: 800;
+    color: var(--text-heading);
+    margin-bottom: var(--space-xs);
+    letter-spacing: -0.02em;
+}
+
+.step-subtitle {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.selection-area {
+    margin-bottom: 3rem;
+}
+
+.dropdown-container {
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.dropdown-container label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+}
+
+.client-dropdown {
+    width: 100%;
+    padding: var(--space-xs) var(--space-sm);
+    background: #ffffff;
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: var(--font-base);
+    color: var(--text-heading);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+}
+
+.client-dropdown:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(204, 120, 46, 0.1);
+}
+
+.button-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.divider-text {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Cleaned up unused button styles */
+
+/* .loading-spinner and @keyframes spin are now in index.css */

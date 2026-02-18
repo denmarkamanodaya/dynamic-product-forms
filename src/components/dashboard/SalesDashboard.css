@@ -1,0 +1,139 @@
+/* Add this to existing SalesDashboard.css */
+
+.sales-dashboard-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: var(--space-md);
+}
+
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+    width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .dashboard-layout {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dashboard-widget {
+    background: var(--surface-color);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Specific widget styling if needed */
+/* .sales-widget styling removed as it was empty */
+
+.products-widget {
+    /* Takes 50% by default */
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-header {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dashboard-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.dashboard-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.metric-card {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.65rem;
+    border-radius: var(--radius-md);
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.metric-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.metric-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+}
+
+/* Use semantic colors but kept professional */
+.metric-card.sales .metric-icon {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.metric-card.orders .metric-icon {
+    background: #f0fdf4;
+    color: #22c55e;
+}
+
+.metric-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-label {
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+.metric-value {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    line-height: 1.2;
+    font-feature-settings: "tnum";
+}
+
+.dashboard-chart {
+    height: 200px;
+    width: 100%;
+}
+
+/* loading-spinner and @keyframes spin are now in index.css */
