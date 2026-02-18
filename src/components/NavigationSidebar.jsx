@@ -13,12 +13,12 @@ const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, o
         <>
             {isOpen && <div className="nav-backdrop" onClick={onClose} />}
             <nav className={`navigation-sidebar ${isOpen ? 'nav-open' : ''}`}>
-                <div className="nav-header">
+                <a href="/" onClick={() => window.location.reload()}><div className="nav-header">
                     <img src={firetronLogo} alt="Firetron" className="nav-logo" />
                     {clientName && (
                         <span className="client-info">Client: {clientName}</span>
                     )}
-                </div>
+                </div></a>
 
                 <div className="nav-menu">
                     {['superadmin', 'admin'].includes(currentUser?.role) && (
@@ -49,7 +49,7 @@ const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, o
                         onClick={() => onNavigate('form')}
                     >
                         <FontAwesomeIcon icon={faPlus} />
-                        Order Details
+                        New Case
                     </a>
 
                     {['superadmin', 'admin'].includes(currentUser?.role) && (

@@ -57,7 +57,7 @@ export const ArchiverService = {
     archive: (type, age) => apiClient.post('/automation/v1/archiver', { type, age }),
 
     archiveAll: async (age) => {
-        const types = ['CASE', 'HISTORY', 'POST'];
+        const types = ['HISTORY', 'POST'];
         const results = await Promise.allSettled(
             types.map(type => ArchiverService.archive(type, age))
         );
