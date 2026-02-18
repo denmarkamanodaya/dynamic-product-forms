@@ -19,6 +19,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
     const [isEditMode, setIsEditMode] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(false);
     const [showJourney, setShowJourney] = useState(false);
+    const [isManualEntry, setIsManualEntry] = useState(false);
 
     // Data State
     const [activeCaseId, setActiveCaseId] = useState(initialCaseId || null);
@@ -108,6 +109,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
     // Client Selection Logic
     const handleClientSelect = (selectedClient) => {
         if (isReadOnly) return;
+        setIsManualEntry(false);
         let metadata = {};
         if (selectedClient.metadata) {
             try {
@@ -141,6 +143,7 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
 
     const handleManualInput = () => {
         if (isReadOnly) return;
+        setIsManualEntry(true);
         setClientDetails({
             clientName: '', businessName: '', taxId: '', email: '', mobile: '',
             address1: '', address2: '', city: '', province: '', zip: '',
@@ -198,8 +201,8 @@ const ProductList = ({ caseId: initialCaseId, onClientDataLoaded, onNavigate, cu
 
             await CaseService.create(payload);
 
-            // Synchronize Client if creating a new case
-            if (!isEditMode) {
+            // Only create a new client record for manual entries (not when selecting existing)
+            if (!isEditMode && isManualEntry) {
                 try {
                     const clientPayload = {
                         clientName: clientDetails.clientName,
