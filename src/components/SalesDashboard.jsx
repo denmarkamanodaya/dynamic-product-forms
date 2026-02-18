@@ -17,7 +17,7 @@ import { faChartLine, faShoppingCart, faMoneyBillWave } from '@fortawesome/free-
 import './SalesDashboard.css';
 import { CaseService, ReportService } from '../services/api';
 import { currencyConfig } from '../config';
-import LedgerTable from './LedgerTable';
+import MyCases from './MyCases';
 
 const SalesDashboard = () => {
     const [cases, setCases] = useState([]);
@@ -167,19 +167,14 @@ const SalesDashboard = () => {
 
                     <div className="dashboard-chart">
                         {isLoading ? (
-                            <div className="loading-container" style={{ height: '300px' }}>
+                            <div className="loading-container" style={{ height: '200px' }}>
                                 <div className="loading-spinner"></div>
                             </div>
                         ) : (
-                            <ResponsiveContainer width="100%" height={300}>
+                            <ResponsiveContainer width="100%" height={200}>
                                 <LineChart
                                     data={data}
-                                    margin={{
-                                        top: 5,
-                                        right: 30,
-                                        left: 20,
-                                        bottom: 5,
-                                    }}
+                                    margin={{ top: 5, right: 15, left: 10, bottom: 5 }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                                     <XAxis
@@ -231,20 +226,15 @@ const SalesDashboard = () => {
                     {/* ... chart content ... */}
                     <div className="dashboard-chart">
                         {isLoading ? (
-                            <div className="loading-container" style={{ height: '300px' }}>
+                            <div className="loading-container" style={{ height: '200px' }}>
                                 <div className="loading-spinner"></div>
                             </div>
                         ) : (
-                            <ResponsiveContainer width="100%" height={300}>
+                            <ResponsiveContainer width="100%" height={200}>
                                 <BarChart
                                     data={topProducts}
                                     layout="vertical"
-                                    margin={{
-                                        top: 5,
-                                        right: 30,
-                                        left: 40,
-                                        bottom: 5,
-                                    }}
+                                    margin={{ top: 5, right: 15, left: 20, bottom: 5 }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
                                     <XAxis type="number" hide />
@@ -280,19 +270,14 @@ const SalesDashboard = () => {
                     </div>
                     <div className="dashboard-chart">
                         {isLoading ? (
-                            <div className="loading-container" style={{ height: '300px' }}>
+                            <div className="loading-container" style={{ height: '200px' }}>
                                 <div className="loading-spinner"></div>
                             </div>
                         ) : (
-                            <ResponsiveContainer width="100%" height={300}>
+                            <ResponsiveContainer width="100%" height={200}>
                                 <ComposedChart
                                     data={clientPerformanceData}
-                                    margin={{
-                                        top: 5,
-                                        right: 30,
-                                        left: 20,
-                                        bottom: 5,
-                                    }}
+                                    margin={{ top: 5, right: 15, left: 10, bottom: 5 }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                                     <XAxis
@@ -369,8 +354,8 @@ const SalesDashboard = () => {
                 </div>
             </div>
 
-            {/* Ledger Table */}
-            <LedgerTable />
+            {/* Case Browser (replaces LedgerTable) */}
+            <MyCases showAllCases title="Recent Transactions" onNavigate={() => { }} />
         </div>
     );
 };

@@ -21,7 +21,7 @@ const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, o
                 </div></a>
 
                 <div className="nav-menu">
-                    {['superadmin', 'admin'].includes(currentUser?.role) && (
+                    {['superadmin', 'admin', 'Admin'].includes(currentUser?.role) && (
                         <a
                             className={`nav-item ${currentView === 'dashboard' ? 'active' : ''}`}
                             onClick={() => onNavigate('dashboard')}
@@ -52,9 +52,9 @@ const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, o
                         New Case
                     </a>
 
-                    {['superadmin', 'admin'].includes(currentUser?.role) && (
+                    {['superadmin', 'admin', 'Admin'].includes(currentUser?.role) && (
                         <a
-                            className={`nav-item ${currentView === 'user-list' ? 'active' : ''}`}
+                            className={`nav-item ${['user-list', 'user-create'].includes(currentView) ? 'active' : ''}`}
                             onClick={() => onNavigate('user-list')}
                         >
                             <FontAwesomeIcon icon={faUserCircle} />
@@ -62,14 +62,14 @@ const NavigationSidebar = ({ currentView, onNavigate, clientName, currentUser, o
                         </a>
                     )}
                     <a
-                        className={`nav-item ${currentView === 'client-list' ? 'active' : ''}`}
+                        className={`nav-item ${['client-list', 'client-create'].includes(currentView) ? 'active' : ''}`}
                         onClick={() => onNavigate('client-list')}
                     >
                         <FontAwesomeIcon icon={faUserTie} />
                         Clients
                     </a>
 
-                    {['superadmin', 'admin'].includes(currentUser?.role) && (
+                    {['superadmin', 'admin', 'Admin'].includes(currentUser?.role) && (
                         <a
                             className={`nav-item ${currentView === 'settings' ? 'active' : ''}`}
                             onClick={() => onNavigate('settings')}

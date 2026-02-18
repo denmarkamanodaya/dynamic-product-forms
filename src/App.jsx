@@ -9,10 +9,8 @@ import AIChat from './components/AIChat';
 import CalendarWidget from './components/CalendarWidget';
 import HistoryWidget from './components/HistoryWidget';
 import SalesDashboard from './components/SalesDashboard';
-import UserCreate from './components/UserCreate';
-import UserList from './components/UserList';
-import ClientCreate from './components/ClientCreate';
-import ClientList from './components/ClientList';
+import UserDirectory from './components/UserDirectory';
+import ClientDirectory from './components/ClientDirectory';
 import Settings from './components/Settings';
 import { NotificationProvider } from './context/NotificationContext';
 import Notification from './components/Notification';
@@ -185,16 +183,10 @@ function App() {
               <SalesDashboard />
             ) : view === 'my-cases' ? (
               <MyCases currentUser={currentUser} onNavigate={handleNavigate} />
-            ) : view === 'user-create' ? (
-              <UserCreate onNavigate={handleNavigate} />
-            ) : view === 'user-list' ? (
-              <UserList onNavigate={handleNavigate} />
-            ) : view === 'client-list' ? (
-              <ClientList onNavigate={handleNavigate} />
-            ) : view === 'client-create' ? (
-              <ClientCreate onNavigate={handleNavigate} />
-            ) : view === 'client-create' ? (
-              <ClientCreate onNavigate={handleNavigate} />
+            ) : view === 'user-create' || view === 'user-list' ? (
+              <UserDirectory onNavigate={handleNavigate} />
+            ) : view === 'client-list' || view === 'client-create' ? (
+              <ClientDirectory onNavigate={handleNavigate} />
             ) : view === 'settings' ? (
               <Settings />
             ) : view === 'firetwit' ? (
