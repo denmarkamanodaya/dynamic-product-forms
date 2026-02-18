@@ -205,7 +205,6 @@
 /* Main Content Column 2 (65%) */
 .full-page-wrapper {
     flex: 1;
-    background: #f8fafc;
     overflow-y: auto;
     padding: 2rem;
 }
@@ -215,7 +214,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
 }
 
 .back-btn {
