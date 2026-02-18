@@ -29,14 +29,11 @@
 .dashboard-widget {
     background: var(--surface-color);
     border-radius: var(--radius-md);
-    padding: var(--space-md);
+    padding: 0.75rem;
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     border: 1px solid var(--border-color);
-    /* aspect-ratio: 1 / 1; */
-    /* Make it square */
     display: flex;
     flex-direction: column;
-    /* Ensure content doesn't force it taller than width if width is constrained */
     min-height: 0;
 }
 
@@ -50,36 +47,35 @@
 }
 
 .dashboard-header {
-    margin-bottom: var(--space-lg);
+    margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
 .dashboard-title {
-    font-size: var(--font-xl);
+    font-size: 0.85rem;
     font-weight: 700;
     color: var(--text-heading);
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: 0.35rem;
     margin: 0;
     letter-spacing: -0.02em;
 }
 
 .dashboard-metrics {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .metric-card {
     display: flex;
     align-items: center;
-    padding: var(--space-md);
-    /* Comfortable padding */
-    border-radius: var(--radius-lg);
+    padding: 0.5rem 0.65rem;
+    border-radius: var(--radius-md);
     background: var(--surface-color);
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
@@ -87,19 +83,19 @@
 }
 
 .metric-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
 
 .metric-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: var(--radius-md);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
-    margin-right: var(--space-md);
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
 }
 
 /* Use semantic colors but kept professional */
@@ -128,7 +124,7 @@
 }
 
 .metric-value {
-    font-size: var(--font-lg);
+    font-size: 0.9rem;
     font-weight: 700;
     color: var(--text-heading);
     line-height: 1.2;
@@ -136,7 +132,7 @@
 }
 
 .dashboard-chart {
-    height: 300px;
+    height: 200px;
     width: 100%;
 }
 

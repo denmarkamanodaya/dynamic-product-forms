@@ -1,0 +1,613 @@
+/* ============================================
+   My Cases – 2-Column List + Detail Layout
+   ============================================ */
+
+.mycases-wrapper {
+    display: flex;
+    height: calc(100vh - 2rem);
+    gap: 0;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+/* ─── Column 1: Case List ─── */
+.mycases-list-panel {
+    width: 35%;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: var(--radius-md, 12px) 0 0 var(--radius-md, 12px);
+    border: 1px solid #e2e8f0;
+    border-right: none;
+    overflow: hidden;
+}
+
+.mycases-list-header {
+    padding: 1.25rem 1.25rem 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.mycases-list-header h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mycases-list-header h2 svg {
+    color: #6366f1;
+}
+
+.mycases-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.mycases-search {
+    flex: 1;
+    position: relative;
+}
+
+.mycases-search input {
+    width: 100%;
+    padding: 0.5rem 0.5rem 0.5rem 2rem;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-sm, 8px);
+    font-size: 0.8rem;
+    color: #334155;
+    background: #f8fafc;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.mycases-search input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+    background: #fff;
+}
+
+.mycases-search .search-icon {
+    position: absolute;
+    left: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.mycases-filter select {
+    padding: 0.5rem 0.6rem;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-sm, 8px);
+    font-size: 0.8rem;
+    color: #334155;
+    background: #f8fafc;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.mycases-filter select:focus {
+    border-color: #6366f1;
+}
+
+/* Case Cards */
+.mycases-card-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.mycases-card-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.mycases-card-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mycases-card-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.mycases-card {
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-sm, 8px);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.mycases-card:hover {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.mycases-card.active {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    box-shadow: 0 1px 3px rgba(99, 102, 241, 0.08);
+}
+
+.mycases-card-top {
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+    margin-bottom: 0.35rem;
+}
+
+.mycases-card-id {
+    font-family: 'SF Mono', 'Roboto Mono', Menlo, monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6366f1;
+    background: #eef2ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+}
+
+.mycases-card.active .mycases-card-id {
+    background: #c7d2fe;
+    color: #4338ca;
+}
+
+.mycases-card-date {
+    font-size: 0.7rem;
+    color: #94a3b8;
+}
+
+.mycases-card-middle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.3rem;
+}
+
+.mycases-card-middle .mycases-card-amount {
+    font-weight: 700;
+    color: var(--text-primary, #1e293b);
+    white-space: nowrap;
+}
+
+.mycases-card-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--text-secondary, #64748b);
+    padding-top: 0.25rem;
+}
+
+.mycases-card-meta-item {
+    opacity: 0.85;
+}
+
+.mycases-card-client {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60%;
+}
+
+.mycases-card-amount {
+    font-family: 'SF Mono', 'Roboto Mono', Menlo, monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #059669;
+    font-feature-settings: "tnum";
+}
+
+.mycases-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mycases-card-items {
+    font-size: 0.7rem;
+    color: #94a3b8;
+}
+
+/* Empty state */
+.mycases-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+    text-align: center;
+}
+
+.mycases-empty svg {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.4;
+}
+
+.mycases-empty p {
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+/* List count */
+.mycases-list-count {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.7rem;
+    color: #94a3b8;
+    border-top: 1px solid #f1f5f9;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* ─── Column 2: Detail Panel ─── */
+.mycases-detail-panel {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 0 var(--radius-md, 12px) var(--radius-md, 12px) 0;
+    border: 1px solid #e2e8f0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.mycases-detail-panel::-webkit-scrollbar {
+    width: 4px;
+}
+
+.mycases-detail-panel::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+/* Placeholder */
+.mycases-detail-placeholder {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #cbd5e1;
+    text-align: center;
+    padding: 2rem;
+}
+
+.mycases-detail-placeholder svg {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.mycases-detail-placeholder p {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* Detail Content */
+.mycases-detail-content {
+    padding: 1.5rem;
+}
+
+/* Detail Header */
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.detail-header-left h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.detail-header-left .detail-case-id {
+    font-family: 'SF Mono', 'Roboto Mono', Menlo, monospace;
+    font-size: 0.75rem;
+    color: #6366f1;
+    font-weight: 500;
+}
+
+.detail-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Detail Sections */
+.detail-section {
+    margin-bottom: 1.5rem;
+}
+
+.detail-section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+    margin: 0 0 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.detail-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #f1f5f9;
+}
+
+/* Client Info Grid */
+.detail-client-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.detail-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.detail-info-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #94a3b8;
+}
+
+.detail-info-value {
+    font-size: 0.85rem;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.detail-info-value a {
+    color: #6366f1;
+    text-decoration: none;
+}
+
+.detail-info-value a:hover {
+    text-decoration: underline;
+}
+
+.detail-info-value.muted {
+    color: #cbd5e1;
+    font-style: italic;
+    font-weight: 400;
+}
+
+/* Products Table */
+.detail-products-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+
+.detail-products-table th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-products-table th:last-child,
+.detail-products-table td:last-child {
+    text-align: right;
+}
+
+.detail-products-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    vertical-align: middle;
+}
+
+.detail-products-table tr:last-child td {
+    border-bottom: none;
+}
+
+.detail-products-table .product-name {
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.detail-products-table .product-qty {
+    text-align: center;
+    color: #64748b;
+}
+
+.detail-products-table .product-price {
+    font-family: 'SF Mono', 'Roboto Mono', Menlo, monospace;
+    font-feature-settings: "tnum";
+    color: #475569;
+}
+
+.detail-products-table-wrapper {
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-sm, 8px);
+    overflow: hidden;
+}
+
+/* Order Summary */
+.detail-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: var(--radius-sm, 8px);
+    border: 1px solid #e2e8f0;
+}
+
+.detail-summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.detail-summary-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #94a3b8;
+}
+
+.detail-summary-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.detail-summary-value.grand-total {
+    font-size: 1.15rem;
+    color: #059669;
+    font-family: 'SF Mono', 'Roboto Mono', Menlo, monospace;
+    font-feature-settings: "tnum";
+}
+
+/* ── New Button (standalone, for headers) ── */
+.mycases-new-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.85rem;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm, 8px);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(99, 102, 241, 0.3);
+    white-space: nowrap;
+}
+
+.mycases-new-btn:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Detail Actions */
+.detail-actions {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 0.5rem;
+}
+
+.detail-actions .btn-edit-case {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.25rem;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm, 8px);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(99, 102, 241, 0.3);
+}
+
+.detail-actions .btn-edit-case:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Loading */
+.mycases-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    color: #94a3b8;
+    gap: 0.75rem;
+}
+
+.mycases-loading .spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #f1f5f9;
+    border-top: 3px solid #6366f1;
+    border-radius: 50%;
+    animation: mycases-spin 0.8s linear infinite;
+}
+
+@keyframes mycases-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+    .mycases-wrapper {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .mycases-list-panel {
+        width: 100%;
+        min-width: unset;
+        max-height: 40vh;
+        border-radius: var(--radius-md, 12px) var(--radius-md, 12px) 0 0;
+        border-right: 1px solid #e2e8f0;
+        border-bottom: none;
+    }
+
+    .mycases-detail-panel {
+        border-radius: 0 0 var(--radius-md, 12px) var(--radius-md, 12px);
+        min-height: 50vh;
+    }
+
+    .detail-client-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .mycases-wrapper {
+        padding: 0.5rem;
+    }
+
+    .mycases-controls {
+        flex-direction: column;
+    }
+
+    .detail-summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
